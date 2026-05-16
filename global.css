@@ -1,0 +1,27 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+
+@import "nativewind/theme";
+
+@theme {
+  --color-tk-green: #58cc02;
+  --color-tk-green-dark: #46a302;
+  --color-tk-green-light: #d7ffb8;
+  --color-tk-blue: #1cb0f6;
+  --color-tk-blue-light: #ddf4ff;
+  --color-tk-orange: #ff9600;
+  --color-tk-orange-light: #fff4e5;
+  --color-tk-purple: #ce82ff;
+  --color-tk-purple-light: #f3e8ff;
+  --color-tk-bg: #f7f7f7;
+  --color-tk-surface: #ffffff;
+  --color-tk-border: #e5e5e5;
+  --color-tk-text: #3c3c3c;
+  --color-tk-text-secondary: #777777;
+  --color-tk-text-muted: #afafaf;
+  --font-display: "Fredoka_700Bold", system-ui, sans-serif;
+  --font-display-semi: "Fredoka_600SemiBold", system-ui, sans-serif;
+  --font-body: "Nunito_600SemiBold", system-ui, sans-serif;
+  --font-body-regular: "Nunito_400Regular", system-ui, sans-serif;
+}
