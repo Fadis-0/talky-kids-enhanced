@@ -7,5 +7,6 @@ export const Routes = {
   signupParent: "/(auth)/signup/parent",
   signupOrthophonist: "/(auth)/signup/orthophonist",
   tabs: "/(tabs)",
+  settings: "/(tabs)/settings",
   lettersGame: "/letters-game",
 } as const;

@@ -1,39 +1,70 @@
+import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import { Flame, Mic, Sparkles, Type } from "lucide-react-native";
+import { useCallback } from "react";
 import { View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 
+import { TopNavBar } from "@/components/navigation/TopNavBar";
 import { ScreenShell } from "@/components/ScreenShell";
 import { Card } from "@/components/ui/Card";
 import { EmptyStateCard } from "@/components/ui/EmptyStateCard";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Text } from "@/components/ui/Text";
+import { useUserData } from "@/contexts/UserDataContext";
 import { Routes } from "@/lib/routes";
 import { palette } from "@/lib/theme";
 
-function StreakBadge() {
+function StreakBadge({ streak }: { streak: number }) {
+  const scaleAnim = useSharedValue(0.8);
+
+  const streakAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleAnim.value }],
+  }));
+
+  useFocusEffect(
+    useCallback(() => {
+      scaleAnim.value = 0.8;
+      scaleAnim.value = withSpring(1, {
+        damping: 6,
+        mass: 0.6,
+        overshootClamping: false,
+      });
+    }, [scaleAnim])
+  );
+
   return (
-    <View className="flex-row items-center gap-1.5 rounded-full border-2 border-tk-border bg-tk-surface px-3 py-2">
-      <Flame size={20} color={palette.orange} fill={palette.orangeLight} />
-      <Text
-        style={{
-          fontFamily: "Fredoka_700Bold",
-          fontSize: 15,
-          color: palette.orange,
-        }}
-      >
-        0
-      </Text>
-    </View>
+    <Animated.View style={[{ width: "100%" }, streakAnimStyle]}>
+      <View className="flex-row items-center justify-center gap-2 rounded-full border-2 border-tk-border bg-tk-surface px-4 py-2.5">
+        <Flame size={22} color={palette.orange} fill={palette.orangeLight} />
+        <Text
+          style={{
+            fontFamily: "Fredoka_700Bold",
+            fontSize: 16,
+            color: palette.orange,
+          }}
+        >
+          {streak} Day Streak
+        </Text>
+      </View>
+    </Animated.View>
   );
 }
 
 export default function HomeScreen() {
+  const { user } = useUserData();
+
   return (
     <ScreenShell
       title="Ready to practice?"
       subtitle="Warm up your voice with fun mouth and speaking games."
       accent="green"
-      headerRight={<StreakBadge />}
+      topNavBar={<TopNavBar userName={user.name} onProfilePress={() => router.push(Routes.settings)} />}
+      headerRight={<StreakBadge streak={user.streakDays} />}
     >
       <View className="-mt-2 gap-4">
         <Card className="overflow-hidden border-tk-green p-0">

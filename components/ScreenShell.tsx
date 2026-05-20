@@ -21,6 +21,7 @@ type ScreenShellProps = {
   accent?: Accent;
   headerLeft?: ReactNode;
   headerRight?: ReactNode;
+  topNavBar?: ReactNode;
   children?: ReactNode;
 };
 
@@ -30,6 +31,7 @@ export function ScreenShell({
   accent = "green",
   headerLeft,
   headerRight,
+  topNavBar,
   children,
 }: ScreenShellProps) {
   const insets = useSafeAreaInsets();
@@ -42,6 +44,7 @@ export function ScreenShell({
         style={{ paddingTop: insets.top }}
         className="px-5 pb-6 pt-2"
       >
+        {topNavBar ? <View className="mb-2">{topNavBar}</View> : null}
         <SafeAreaView edges={[]} className="flex-row items-start justify-between">
           <View className="mr-4 flex-1 flex-row items-start gap-3">
             {headerLeft ? <View className="pt-1">{headerLeft}</View> : null}

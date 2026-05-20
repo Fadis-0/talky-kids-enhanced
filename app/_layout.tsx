@@ -1,23 +1,25 @@
 import "../global.css";
 
 import {
-  Fredoka_500Medium,
-  Fredoka_600SemiBold,
-  Fredoka_700Bold,
-  useFonts as useFredoka,
+    Fredoka_500Medium,
+    Fredoka_600SemiBold,
+    Fredoka_700Bold,
+    useFonts as useFredoka,
 } from "@expo-google-fonts/fredoka";
 import {
-  Nunito_400Regular,
-  Nunito_600SemiBold,
-  Nunito_800ExtraBold,
-  useFonts as useNunito,
+    Nunito_400Regular,
+    Nunito_600SemiBold,
+    Nunito_800ExtraBold,
+    useFonts as useNunito,
 } from "@expo-google-fonts/nunito";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+
+import { UserDataProvider } from "@/contexts/UserDataContext";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -53,10 +55,12 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-      </Stack>
+      <UserDataProvider>
+        <StatusBar style="dark" />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+        </Stack>
+      </UserDataProvider>
     </SafeAreaProvider>
   );
 }
