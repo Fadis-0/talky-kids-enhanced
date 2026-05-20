@@ -1,4 +1,5 @@
-import { Flame, Mic, Sparkles } from "lucide-react-native";
+import { router } from "expo-router";
+import { Flame, Mic, Sparkles, Type } from "lucide-react-native";
 import { View } from "react-native";
 
 import { ScreenShell } from "@/components/ScreenShell";
@@ -6,6 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { EmptyStateCard } from "@/components/ui/EmptyStateCard";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Text } from "@/components/ui/Text";
+import { Routes } from "@/lib/routes";
 import { palette } from "@/lib/theme";
 
 function StreakBadge() {
@@ -65,22 +67,16 @@ export default function HomeScreen() {
         </Card>
 
         <Text variant="label" className="px-1">
-          Coming soon
+          Explore Games
         </Text>
 
         <EmptyStateCard
-          icon={Mic}
-          title="Speaking games"
-          description="Playful exercises to build confidence with sounds and words."
-          iconColor={palette.green}
-          iconBg={palette.greenLight}
-        />
-        <EmptyStateCard
-          icon={Sparkles}
-          title="Mouth movement"
-          description="Mirror-friendly prompts for lips, tongue, and breath."
-          iconColor={palette.blue}
-          iconBg={palette.blueLight}
+          icon={Type}
+          title="Letters Game"
+          description="Learn the 26 letters of the alphabet with fun sounds and interactions!"
+          iconColor={palette.purple}
+          iconBg={palette.purpleLight}
+          onPress={() => router.push(Routes.lettersGame)}
         />
       </View>
     </ScreenShell>

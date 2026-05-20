@@ -7,11 +7,17 @@ import {
   Settings,
   type LucideIcon,
 } from "lucide-react-native";
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { TabBarItem } from "@/components/navigation/TabBarItem";
-import { palette, spacing, tabAccents, tabConfig, type TabRoute } from "@/lib/theme";
+import { Text } from "@/components/ui/Text";
+import {
+  fonts,
+  palette,
+  spacing,
+  tabConfig,
+  type TabRoute,
+} from "@/lib/theme";
 
 const TAB_ICONS: Record<TabRoute, LucideIcon> = {
   index: House,
@@ -37,10 +43,7 @@ export function TalkyTabBar({ state, navigation }: BottomTabBarProps) {
 
   return (
     <View
-      style={[
-        styles.wrapper,
-        { paddingBottom: Math.max(insets.bottom, 8) },
-      ]}
+      style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom, 8) }]}
     >
       <View style={styles.bar}>
         {state.routes.map((route, index) => {
@@ -49,7 +52,6 @@ export function TalkyTabBar({ state, navigation }: BottomTabBarProps) {
 
           const focused = state.index === index;
           const config = tabConfig[tabRoute];
-          const accent = tabAccents[tabRoute];
           const Icon = TAB_ICONS[tabRoute];
 
           const onPress = () => {
@@ -67,18 +69,39 @@ export function TalkyTabBar({ state, navigation }: BottomTabBarProps) {
           };
 
           return (
-            <TabBarItem
+            <Pressable
               key={route.key}
-              label={config.label}
-              accessibilityLabel={config.accessibilityLabel}
-              icon={Icon}
-              accent={accent}
-              focused={focused}
               onPress={onPress}
               onLongPress={() =>
                 navigation.emit({ type: "tabLongPress", target: route.key })
               }
-            />
+              accessibilityRole="tab"
+              accessibilityState={{ selected: focused }}
+              accessibilityLabel={config.accessibilityLabel}
+              style={styles.tab}
+            >
+              <View
+                style={[styles.iconWrap, focused && styles.iconWrapActive]}
+              >
+                <Icon
+                  size={24}
+                  color={focused ? palette.green : palette.tabInactive}
+                  strokeWidth={focused ? 2.75 : 2}
+                />
+              </View>
+              <Text
+                variant="caption"
+                style={[
+                  styles.label,
+                  {
+                    fontFamily: focused ? fonts.displaySemi : fonts.body,
+                    color: focused ? palette.green : palette.tabInactive,
+                  },
+                ]}
+              >
+                {config.label}
+              </Text>
+            </Pressable>
           );
         })}
       </View>
@@ -94,9 +117,31 @@ const styles = StyleSheet.create({
   },
   bar: {
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "center",
     justifyContent: "space-around",
     height: spacing.tabBarHeight,
-    paddingHorizontal: 4,
+    paddingHorizontal: 8,
+    paddingTop: 6,
+  },
+  tab: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 52,
+    gap: 2,
+  },
+  iconWrap: {
+    width: 44,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 12,
+  },
+  iconWrapActive: {
+    backgroundColor: palette.greenLight,
+  },
+  label: {
+    fontSize: 11,
+    marginTop: 0,
   },
 });

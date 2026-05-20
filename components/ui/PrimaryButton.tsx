@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, View } from "react-native";
+import { ReactNode } from "react";
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
 import { Text } from "@/components/ui/Text";
 import { fonts, palette, radius } from "@/lib/theme";
@@ -6,14 +7,19 @@ import { fonts, palette, radius } from "@/lib/theme";
 type PrimaryButtonProps = {
   label: string;
   onPress?: () => void;
-  color?: "green" | "blue" | "orange";
+  color?: "green" | "blue" | "orange" | "purple" | "red";
   accessibilityLabel?: string;
+  disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
+  icon?: ReactNode;
 };
 
 const colorMap = {
   green: { bg: palette.green, shadow: palette.greenDark, text: palette.textOnPrimary },
   blue: { bg: palette.blue, shadow: palette.blueDark, text: palette.textOnPrimary },
   orange: { bg: palette.orange, shadow: "#E68600", text: palette.textOnPrimary },
+  purple: { bg: palette.purple, shadow: palette.purpleDark, text: palette.textOnPrimary },
+  red: { bg: palette.red, shadow: palette.redDark, text: palette.textOnPrimary },
 };
 
 export function PrimaryButton({
@@ -21,18 +27,27 @@ export function PrimaryButton({
   onPress,
   color = "green",
   accessibilityLabel,
+  disabled,
+  style,
+  icon,
 }: PrimaryButtonProps) {
   const c = colorMap[color];
 
   return (
     <Pressable
-      onPress={onPress}
+      onPress={disabled ? undefined : onPress}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
-      style={({ pressed }) => [styles.wrap, pressed && styles.wrapPressed]}
+      style={({ pressed }) => [
+        styles.wrap,
+        (pressed || disabled) && styles.wrapPressed,
+        disabled && { opacity: 0.6 },
+        style,
+      ]}
     >
       <View style={[styles.shadow, { backgroundColor: c.shadow }]} />
       <View style={[styles.face, { backgroundColor: c.bg }]}>
+        {icon && <View style={{ marginRight: 8 }}>{icon}</View>}
         <Text
           style={{
             fontFamily: fonts.displayBold,
@@ -61,6 +76,7 @@ const styles = StyleSheet.create({
     transform: [{ translateY: 4 }],
   },
   face: {
+    flexDirection: "row",
     borderRadius: radius.lg,
     paddingVertical: 14,
     paddingHorizontal: 24,

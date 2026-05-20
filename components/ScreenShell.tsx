@@ -19,6 +19,7 @@ type ScreenShellProps = {
   title: string;
   subtitle?: string;
   accent?: Accent;
+  headerLeft?: ReactNode;
   headerRight?: ReactNode;
   children?: ReactNode;
 };
@@ -27,6 +28,7 @@ export function ScreenShell({
   title,
   subtitle,
   accent = "green",
+  headerLeft,
   headerRight,
   children,
 }: ScreenShellProps) {
@@ -41,13 +43,16 @@ export function ScreenShell({
         className="px-5 pb-6 pt-2"
       >
         <SafeAreaView edges={[]} className="flex-row items-start justify-between">
-          <View className="mr-4 flex-1">
-            <Text variant="hero">{title}</Text>
-            {subtitle ? (
-              <Text variant="subtitle" className="mt-2">
-                {subtitle}
-              </Text>
-            ) : null}
+          <View className="mr-4 flex-1 flex-row items-start gap-3">
+            {headerLeft ? <View className="pt-1">{headerLeft}</View> : null}
+            <View className="flex-1">
+              <Text variant="hero">{title}</Text>
+              {subtitle ? (
+                <Text variant="subtitle" className="mt-2">
+                  {subtitle}
+                </Text>
+              ) : null}
+            </View>
           </View>
           {headerRight ? <View className="pt-1">{headerRight}</View> : null}
         </SafeAreaView>

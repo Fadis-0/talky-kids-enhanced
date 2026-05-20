@@ -44,40 +44,11 @@ export const radius = {
 } as const;
 
 export const spacing = {
-  tabBarHeight: 68,
+  tabBarHeight: 64,
   screenPadding: 20,
 } as const;
 
 export type TabRoute = "index" | "stats" | "notifications" | "settings";
-
-export type TabAccent = {
-  color: string;
-  light: string;
-  dark: string;
-};
-
-export const tabAccents: Record<TabRoute, TabAccent> = {
-  index: {
-    color: palette.green,
-    light: palette.greenLight,
-    dark: palette.greenDark,
-  },
-  stats: {
-    color: palette.blue,
-    light: palette.blueLight,
-    dark: palette.blueDark,
-  },
-  notifications: {
-    color: palette.purple,
-    light: palette.purpleLight,
-    dark: "#B565F0",
-  },
-  settings: {
-    color: palette.orange,
-    light: palette.orangeLight,
-    dark: "#E68600",
-  },
-};
 
 export const tabConfig: Record<
   TabRoute,
