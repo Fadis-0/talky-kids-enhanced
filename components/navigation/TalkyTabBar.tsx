@@ -174,14 +174,6 @@ function TabBarItem({
     ),
   }));
 
-  const iconColorAnim = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      scaleAnim.value,
-      [0, 1],
-      [palette.tabInactive, colors.primary]
-    ),
-  }));
-
   return (
     <AnimatedPressable
       onPress={onPress}
@@ -193,7 +185,7 @@ function TabBarItem({
     >
       <Animated.View style={[styles.iconWrap, iconWrapStyle]}>
         <Animated.View style={[styles.iconBg, bgAnimatedStyle, { backgroundColor: colors.light }]} />
-        <Animated.View style={[styles.iconContainer, iconAnimatedStyle, iconColorAnim]}>
+        <Animated.View style={[styles.iconContainer, iconAnimatedStyle]}>
           <Icon
             size={24}
             color={focused ? colors.primary : palette.tabInactive}
