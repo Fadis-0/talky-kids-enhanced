@@ -18,8 +18,8 @@ const colorMap = {
   green: { bg: palette.green, shadow: palette.greenDark, text: palette.textOnPrimary },
   blue: { bg: palette.blue, shadow: palette.blueDark, text: palette.textOnPrimary },
   orange: { bg: palette.orange, shadow: "#E68600", text: palette.textOnPrimary },
-  purple: { bg: palette.purple, shadow: palette.purpleDark, text: palette.textOnPrimary },
-  red: { bg: palette.red, shadow: palette.redDark, text: palette.textOnPrimary },
+  purple: { bg: palette.purple, shadow: "#B167E4", text: palette.textOnPrimary },
+  red: { bg: palette.red, shadow: "#EA2B2B", text: palette.textOnPrimary },
 };
 
 export function PrimaryButton({

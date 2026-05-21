@@ -8,6 +8,7 @@ export type ImageItem = {
   label: string;
   emoji: string; // using emoji as placeholder for images
   audioFile: string; // audio pronunciation file
+  imageUrl?: string; // option for actual images later
 };
 
 export type LetterLevel = {

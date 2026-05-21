@@ -1,11 +1,20 @@
 import { Audio } from "expo-av";
-import { Pause, Play } from "lucide-react-native";
+import * as Speech from "expo-speech";
+import { Play } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { Pressable, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 
 import { Text } from "@/components/ui/Text";
 import type { ImageItem } from "@/lib/letters-game-data";
-import { palette, radius } from "@/lib/theme";
+import { palette } from "@/lib/theme";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 type GameImageCardProps = {
   image: ImageItem;
@@ -21,16 +30,30 @@ export function GameImageCard({
   const [isPlaying, setIsPlaying] = useState(false);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
 
+  // Animation values
+  const cardScale = useSharedValue(1);
+  const overlayOpacity = useSharedValue(0);
+  const playIconScale = useSharedValue(0.8);
+
   const playAudio = async () => {
     try {
-      // Mock audio playback - in a real app, you'd load actual audio files
       setIsPlaying(true);
-      // Simulate audio duration
+      // Speak the label aloud using native Text-to-Speech
+      Speech.speak(image.label, {
+        language: "en-US",
+        pitch: 1.1, // slightly higher pitch for a kid-friendly tone
+        rate: 0.85,  // slightly slower speaking rate for clarity
+        onDone: () => setIsPlaying(false),
+        onError: () => setIsPlaying(false),
+      });
+
+      // Safety fallback timeout to reset state
       setTimeout(() => {
         setIsPlaying(false);
-      }, 1000);
+      }, 1200);
     } catch (error) {
       console.log("Error playing audio:", error);
+      setIsPlaying(false);
     }
   };
 
@@ -42,81 +65,148 @@ export function GameImageCard({
     };
   }, [sound]);
 
+  useEffect(() => {
+    cardScale.value = withSpring(isSelected ? 1.05 : 1.0, {
+      damping: 12,
+      stiffness: 110,
+    });
+  }, [isSelected]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      overlayOpacity.value = withTiming(1, { duration: 150 });
+      playIconScale.value = withSpring(1.0, { damping: 10, stiffness: 150 });
+    } else {
+      overlayOpacity.value = withTiming(0, { duration: 150 });
+      playIconScale.value = withTiming(0.8, { duration: 150 });
+    }
+  }, [isPlaying]);
+
+  const handlePress = () => {
+    onSelect();
+    playAudio();
+  };
+
+  // Fixed the endpoint format to .png, ensuring it loads correctly in React Native's Image component
+  const placeholderSource = image.imageUrl
+    ? { uri: image.imageUrl }
+    : { uri: `https://placehold.co/150x150/DDF4FF/3C3C3C.png?text=${image.label}` };
+
+  const animatedCardStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: cardScale.value }],
+      borderColor: isSelected ? palette.green : palette.border,
+      borderWidth: isSelected ? 3 : 2,
+    };
+  });
+
+  const animatedOverlayStyle = useAnimatedStyle(() => {
+    return {
+      opacity: overlayOpacity.value,
+    };
+  });
+
+  const animatedIconStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: playIconScale.value }],
+    };
+  });
+
   return (
-    <Pressable
-      onPress={onSelect}
+    <AnimatedPressable
+      onPress={handlePress}
       accessibilityRole="button"
-      accessibilityLabel={`${image.label}, tap to select`}
-      className={`flex-1 overflow-hidden rounded-2xl`}
+      accessibilityLabel={`${image.label}, tap to select and play pronunciation`}
+      className="flex-1 overflow-hidden rounded-2xl"
       style={({ pressed }) => [
         {
           backgroundColor: pressed ? palette.greenLight : palette.blueLight,
-          borderWidth: isSelected ? 3 : 2,
-          borderColor: isSelected ? palette.green : palette.border,
-          opacity: pressed ? 0.8 : 1,
+          opacity: pressed ? 0.95 : 1,
+          height: 135,
         },
+        animatedCardStyle,
       ]}
     >
-      <View className="flex-1 items-center justify-between p-4">
-        {/* Emoji/Image */}
-        <View className="flex-1 items-center justify-center">
-          <Text
+      <View className="flex-1 items-center justify-between p-2">
+        {/* Fixed Width & Height Image Container */}
+        <View
+          style={{
+            width: "100%",
+            height: 76,
+            borderRadius: 12,
+            overflow: "hidden",
+            backgroundColor: "#FFFFFF",
+            position: "relative",
+          }}
+        >
+          {/* Static default layout placeholder background while the network fetches */}
+          <View
             style={{
-              fontSize: 60,
-              lineHeight: 70,
+              ...StyleSheet.absoluteFillObject,
+              backgroundColor: palette.blueLight,
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            {image.emoji}
-          </Text>
-        </View>
+            <Play size={18} color={palette.blue} opacity={0.3} />
+          </View>
 
-        {/* Label and Audio Button */}
-        <View className="w-full gap-2">
-          <Text
-            variant="body"
-            className="text-center text-sm"
-            style={{ color: palette.text }}
-          >
-            {image.label}
-          </Text>
+          <Image
+            source={placeholderSource}
+            style={{ width: "100%", height: 76 }}
+            resizeMode="cover"
+          />
 
-          <Pressable
-            onPress={playAudio}
-            accessibilityRole="button"
-            accessibilityLabel={`Play audio for ${image.label}`}
-            style={({ pressed }) => [
+          {/* Playing overlay with animated play icon */}
+          <Animated.View
+            style={[
               {
-                backgroundColor: isPlaying
-                  ? palette.green
-                  : palette.greenMuted,
-                opacity: pressed ? 0.8 : 1,
-                paddingVertical: 8,
-                paddingHorizontal: 12,
-                borderRadius: radius.sm,
-                flexDirection: "row",
+                ...StyleSheet.absoluteFillObject,
+                backgroundColor: "rgba(88, 204, 2, 0.45)",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 6,
               },
+              animatedOverlayStyle,
             ]}
           >
-            {isPlaying ? (
-              <Pause size={16} color="#FFFFFF" strokeWidth={2.5} />
-            ) : (
-              <Play size={16} color="#FFFFFF" strokeWidth={2.5} />
-            )}
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: 13,
-                fontWeight: "600",
-              }}
+            <Animated.View
+              style={[
+                {
+                  backgroundColor: "rgba(255, 255, 255, 0.95)",
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 3,
+                  elevation: 3,
+                },
+                animatedIconStyle,
+              ]}
             >
-              {isPlaying ? "Playing" : "Listen"}
-            </Text>
-          </Pressable>
+              <Play
+                size={18}
+                color={palette.green}
+                fill={palette.green}
+                style={{ marginLeft: 2 }}
+              />
+            </Animated.View>
+          </Animated.View>
         </View>
+
+        {/* Word Label */}
+        <Text
+          variant="label"
+          className="text-center text-xs font-semibold"
+          numberOfLines={1}
+          style={{ color: palette.text }}
+        >
+          {image.label}
+        </Text>
       </View>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
