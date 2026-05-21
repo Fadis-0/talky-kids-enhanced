@@ -23,6 +23,7 @@ type ScreenShellProps = {
   headerRight?: ReactNode;
   topNavBar?: ReactNode;
   children?: ReactNode;
+  hideTabBarClearance?: boolean;
 };
 
 export function ScreenShell({
@@ -33,9 +34,12 @@ export function ScreenShell({
   headerRight,
   topNavBar,
   children,
+  hideTabBarClearance = false,
 }: ScreenShellProps) {
   const insets = useSafeAreaInsets();
-  const tabClearance = spacing.tabBarHeight + Math.max(insets.bottom, 8) + 16;
+  const tabClearance = hideTabBarClearance
+    ? Math.max(insets.bottom, 16)
+    : spacing.tabBarHeight + Math.max(insets.bottom, 8) + 16;
 
   return (
     <View className="flex-1 bg-tk-bg">

@@ -58,6 +58,12 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function TalkyTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const currentRouteName = state.routes[state.index]?.name;
+
+  // Hide tab bar completely on the letters game screen
+  if (currentRouteName === "letters-game") {
+    return null;
+  }
 
   return (
     <View

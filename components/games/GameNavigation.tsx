@@ -1,8 +1,8 @@
 import { CheckCircle, ChevronLeft, ChevronRight } from "lucide-react-native";
-import { Pressable, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/Text";
-import { palette } from "@/lib/theme";
+import { fonts, palette } from "@/lib/theme";
 
 type GameNavigationProps = {
   currentLevel: number;
@@ -23,47 +23,50 @@ export function GameNavigation({
   const isLastLevel = currentLevel === totalLevels;
 
   return (
-    <View className="flex-row gap-3">
+    <View style={styles.container}>
       {/* Previous Button */}
       <Pressable
         onPress={onPrevious}
         disabled={isFirstLevel}
         accessibilityRole="button"
         accessibilityLabel="Previous level"
-        style={({ pressed }) => [
-          {
-            flex: 1,
-            opacity: isFirstLevel ? 0.4 : pressed ? 0.8 : 1,
-          },
-        ]}
+        style={styles.buttonWrapper}
       >
-        <View
-          style={{
-            backgroundColor: isFirstLevel ? palette.border : palette.blue,
-            borderRadius: 12,
-            paddingVertical: 12,
-            paddingHorizontal: 16,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 8,
-          }}
-        >
-          <ChevronLeft
-            size={20}
-            color={isFirstLevel ? palette.textMuted : "#FFFFFF"}
-            strokeWidth={2.5}
-          />
-          <Text
-            style={{
-              color: isFirstLevel ? palette.textMuted : "#FFFFFF",
-              fontSize: 14,
-              fontWeight: "600",
-            }}
-          >
-            Previous
-          </Text>
-        </View>
+        {({ pressed }) => {
+          const shadowColor = isFirstLevel ? palette.borderStrong : palette.blueDark;
+          const faceColor = isFirstLevel ? palette.border : palette.blue;
+          const textColor = isFirstLevel ? palette.textMuted : "#FFFFFF";
+
+          return (
+            <View style={styles.buttonInner}>
+              {/* Shadow Layer */}
+              <View style={[styles.shadow, { backgroundColor: shadowColor }]} />
+              {/* Face Layer */}
+              <View
+                style={[
+                  styles.face,
+                  { backgroundColor: faceColor },
+                  pressed && !isFirstLevel && styles.facePressed,
+                ]}
+              >
+                <ChevronLeft
+                  size={20}
+                  color={textColor}
+                  strokeWidth={3}
+                />
+                <Text
+                  style={{
+                    color: textColor,
+                    fontSize: 14,
+                    fontFamily: fonts.displayBold,
+                  }}
+                >
+                  PREVIOUS
+                </Text>
+              </View>
+            </View>
+          );
+        }}
       </Pressable>
 
       {/* Next/Finish Button */}
@@ -71,54 +74,98 @@ export function GameNavigation({
         onPress={isLastLevel ? onFinish : onNext}
         accessibilityRole="button"
         accessibilityLabel={isLastLevel ? "Finish game" : "Next level"}
-        style={({ pressed }) => [
-          {
-            flex: 1,
-            opacity: pressed ? 0.8 : 1,
-          },
-        ]}
+        style={styles.buttonWrapper}
       >
-        <View
-          style={{
-            backgroundColor: palette.green,
-            borderRadius: 12,
-            paddingVertical: 12,
-            paddingHorizontal: 16,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 8,
-          }}
-        >
-          {isLastLevel ? (
-            <>
-              <CheckCircle size={20} color="#FFFFFF" strokeWidth={2.5} />
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: 14,
-                  fontWeight: "600",
-                }}
+        {({ pressed }) => {
+          const shadowColor = isLastLevel ? "#E68600" : palette.greenDark;
+          const faceColor = isLastLevel ? palette.orange : palette.green;
+
+          return (
+            <View style={styles.buttonInner}>
+              {/* Shadow Layer */}
+              <View style={[styles.shadow, { backgroundColor: shadowColor }]} />
+              {/* Face Layer */}
+              <View
+                style={[
+                  styles.face,
+                  { backgroundColor: faceColor },
+                  pressed && styles.facePressed,
+                ]}
               >
-                Finish
-              </Text>
-            </>
-          ) : (
-            <>
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: 14,
-                  fontWeight: "600",
-                }}
-              >
-                Next
-              </Text>
-              <ChevronRight size={20} color="#FFFFFF" strokeWidth={2.5} />
-            </>
-          )}
-        </View>
+                {isLastLevel ? (
+                  <>
+                    <CheckCircle size={20} color="#FFFFFF" strokeWidth={3} />
+                    <Text
+                      style={{
+                        color: "#FFFFFF",
+                        fontSize: 14,
+                        fontFamily: fonts.displayBold,
+                      }}
+                    >
+                      FINISH
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text
+                      style={{
+                        color: "#FFFFFF",
+                        fontSize: 14,
+                        fontFamily: fonts.displayBold,
+                      }}
+                    >
+                      NEXT
+                    </Text>
+                    <ChevronRight size={20} color="#FFFFFF" strokeWidth={3} />
+                  </>
+                )}
+              </View>
+            </View>
+          );
+        }}
       </Pressable>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    gap: 12,
+    width: "100%",
+    paddingVertical: 10,
+    marginTop: 6,
+  },
+  buttonWrapper: {
+    flex: 1,
+  },
+  buttonInner: {
+    position: "relative",
+    height: 52,
+  },
+  shadow: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 48,
+    borderRadius: 14,
+  },
+  face: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 46,
+    borderRadius: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.15)",
+  },
+  facePressed: {
+    top: 4,
+  },
+});

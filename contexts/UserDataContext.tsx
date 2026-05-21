@@ -4,12 +4,14 @@ export type UserData = {
   name: string;
   streakDays: number;
   lastPracticeDate: string | null;
+  gender?: "male" | "female" | null;
 };
 
 const defaultUserData: UserData = {
   name: "Buddy",
   streakDays: 0,
   lastPracticeDate: null,
+  gender: "male",
 };
 
 type UserDataContextValue = {

@@ -18,11 +18,13 @@ import { palette } from "@/lib/theme";
 type RecordButtonProps = {
   selectedImageLabel: string | null;
   onRecordingComplete?: (duration: number) => void;
+  onRecordingStatusChange?: (isRecording: boolean) => void;
 };
 
 export function RecordButton({
   selectedImageLabel,
   onRecordingComplete,
+  onRecordingStatusChange,
 }: RecordButtonProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
@@ -100,6 +102,7 @@ export function RecordButton({
 
       setRecording(newRecording);
       setIsRecording(true);
+      onRecordingStatusChange?.(true);
       setRecordingDuration(0);
     } catch (error) {
       console.log("Error starting recording:", error);
@@ -115,6 +118,7 @@ export function RecordButton({
 
         setRecording(null);
         setIsRecording(false);
+        onRecordingStatusChange?.(false);
         onRecordingComplete?.(recordingDuration);
       }
     } catch (error) {
