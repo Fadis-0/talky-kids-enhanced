@@ -122,7 +122,7 @@ export function GameImageCard({
         {
           backgroundColor: pressed ? palette.greenLight : palette.blueLight,
           opacity: pressed ? 0.95 : 1,
-          height: 135,
+          aspectRatio: 0.82,
         },
         animatedCardStyle,
       ]}
@@ -132,7 +132,7 @@ export function GameImageCard({
         <View
           style={{
             width: "100%",
-            height: 76,
+            aspectRatio: 1,
             borderRadius: 12,
             overflow: "hidden",
             backgroundColor: "#FFFFFF",
@@ -153,7 +153,7 @@ export function GameImageCard({
 
           <Image
             source={placeholderSource}
-            style={{ width: "100%", height: 76 }}
+            style={{ width: "100%", height: "100%" }}
             resizeMode="cover"
           />
 
@@ -200,9 +200,9 @@ export function GameImageCard({
         {/* Word Label */}
         <Text
           variant="label"
-          className="text-center text-xs font-semibold"
+          className="text-center text-sm font-bold"
           numberOfLines={1}
-          style={{ color: palette.text }}
+          style={{ color: palette.text, marginTop: 4 }}
         >
           {image.label}
         </Text>
