@@ -96,17 +96,41 @@ export function TalkyMascot({ state, label }: TalkyMascotProps) {
     transform: [{ translateY: bounceY.value }, { scale: scale.value }],
   }));
 
-  const eyesProps = useAnimatedProps(() => ({
-    scaleY: blinkScaleY.value,
-  }));
+  const eyesProps = useAnimatedProps(() => {
+    return {
+      transform: [
+        { translateX: 50 },
+        { translateY: 50 },
+        { scaleY: blinkScaleY.value },
+        { translateX: -50 },
+        { translateY: -50 },
+      ] as any,
+    };
+  });
 
-  const leftPigtailProps = useAnimatedProps(() => ({
-    rotation: wiggleRotation.value,
-  }));
+  const leftPigtailProps = useAnimatedProps(() => {
+    return {
+      transform: [
+        { translateX: 25 },
+        { translateY: 45 },
+        { rotate: `${wiggleRotation.value}deg` },
+        { translateX: -25 },
+        { translateY: -45 },
+      ] as any,
+    };
+  });
 
-  const rightPigtailProps = useAnimatedProps(() => ({
-    rotation: -wiggleRotation.value,
-  }));
+  const rightPigtailProps = useAnimatedProps(() => {
+    return {
+      transform: [
+        { translateX: 75 },
+        { translateY: 45 },
+        { rotate: `${-wiggleRotation.value}deg` },
+        { translateX: -75 },
+        { translateY: -45 },
+      ] as any,
+    };
+  });
 
   const getSpeechBubbleText = () => {
     const characterName = gender === "male" ? "Leo" : "Mia";
@@ -139,11 +163,11 @@ export function TalkyMascot({ state, label }: TalkyMascotProps) {
             {/* --- GIRL PIGTAILS (Behind Head) --- */}
             {gender === "female" && (
               <G>
-                <AnimatedG animatedProps={leftPigtailProps as any} originX={25} originY={45}>
+                <AnimatedG animatedProps={leftPigtailProps as any}>
                   <Ellipse cx="15" cy="55" rx="12" ry="16" fill="#EF6C00" />
                   <Circle cx="25" cy="45" r="4" fill="#E91E63" />
                 </AnimatedG>
-                <AnimatedG animatedProps={rightPigtailProps as any} originX={75} originY={45}>
+                <AnimatedG animatedProps={rightPigtailProps as any}>
                   <Ellipse cx="85" cy="55" rx="12" ry="16" fill="#EF6C00" />
                   <Circle cx="75" cy="45" r="4" fill="#E91E63" />
                 </AnimatedG>
@@ -165,7 +189,7 @@ export function TalkyMascot({ state, label }: TalkyMascotProps) {
             )}
 
             {/* --- EYES --- */}
-            <AnimatedG animatedProps={eyesProps as any} originX={50} originY={50}>
+            <AnimatedG animatedProps={eyesProps as any}>
               <Circle cx="35" cy="46" r="8" fill="#3C3C3C" />
               <Circle cx="33" cy="44" r="3" fill="#FFFFFF" />
               

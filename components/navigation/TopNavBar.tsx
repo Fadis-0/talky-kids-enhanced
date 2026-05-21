@@ -1,37 +1,42 @@
 import { User } from "lucide-react-native";
 import { Pressable, StyleSheet, View } from "react-native";
 
+import { NavbarCharacter } from "@/components/navigation/NavbarCharacter";
 import { Text } from "@/components/ui/Text";
 import { fonts, palette } from "@/lib/theme";
 
 type TopNavBarProps = {
   userName: string;
+  gender?: "male" | "female" | null;
   onProfilePress?: () => void;
 };
 
-export function TopNavBar({ userName, onProfilePress }: TopNavBarProps) {
+export function TopNavBar({ userName, gender, onProfilePress }: TopNavBarProps) {
   return (
     <View style={styles.container}>
-      <View>
-        <Text
-          style={{
-            fontFamily: fonts.body,
-            fontSize: 13,
-            color: palette.textMuted,
-          }}
-        >
-          Hello,
-        </Text>
-        <Text
-          style={{
-            fontFamily: fonts.displaySemi,
-            fontSize: 16,
-            color: palette.text,
-            marginTop: 2,
-          }}
-        >
-          {userName}
-        </Text>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+        <NavbarCharacter gender={gender} size={46} />
+        <View>
+          <Text
+            style={{
+              fontFamily: fonts.body,
+              fontSize: 13,
+              color: palette.textMuted,
+            }}
+          >
+            Hello,
+          </Text>
+          <Text
+            style={{
+              fontFamily: fonts.displaySemi,
+              fontSize: 18,
+              color: palette.text,
+              marginTop: 0,
+            }}
+          >
+            {userName}
+          </Text>
+        </View>
       </View>
 
       <Pressable

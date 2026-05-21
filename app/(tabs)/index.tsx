@@ -2,7 +2,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import { Flame, Mic, Sparkles, Type } from "lucide-react-native";
 import { useCallback } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -12,7 +12,6 @@ import Animated, {
 import { TopNavBar } from "@/components/navigation/TopNavBar";
 import { ScreenShell } from "@/components/ScreenShell";
 import { Card } from "@/components/ui/Card";
-import { EmptyStateCard } from "@/components/ui/EmptyStateCard";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Text } from "@/components/ui/Text";
 import { useUserData } from "@/contexts/UserDataContext";
@@ -63,7 +62,7 @@ export default function HomeScreen() {
       title="Ready to practice?"
       subtitle="Warm up your voice with fun mouth and speaking games."
       accent="green"
-      topNavBar={<TopNavBar userName={user.name} onProfilePress={() => router.push(Routes.settings)} />}
+      topNavBar={<TopNavBar userName={user.name} gender={user.gender} onProfilePress={() => router.push(Routes.settings)} />}
       headerRight={<StreakBadge streak={user.streakDays} />}
     >
       <View className="-mt-2 gap-4">
@@ -101,14 +100,62 @@ export default function HomeScreen() {
           Explore Games
         </Text>
 
-        <EmptyStateCard
-          icon={Type}
-          title="Letters Game"
-          description="Learn the 26 letters of the alphabet with fun sounds and interactions!"
-          iconColor={palette.purple}
-          iconBg={palette.purpleLight}
+        <Pressable
           onPress={() => router.push(Routes.lettersGame)}
-        />
+          accessibilityRole="button"
+          accessibilityLabel="Play Letters Game"
+        >
+          {({ pressed }: { pressed: boolean }) => {
+            const progressPercent = Math.max(5, (user.lettersGameLevel / 26) * 100);
+            
+            return (
+              <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
+                <Card className={`overflow-hidden p-0 border-tk-purple`}>
+                  <View className="flex-row items-center justify-between bg-tk-purple-light p-4">
+                    <View className="flex-row items-center gap-3">
+                      <View className="h-12 w-12 items-center justify-center rounded-2xl bg-tk-purple">
+                        <Type size={26} color="#FFFFFF" strokeWidth={2.5} />
+                      </View>
+                      <View>
+                        <Text variant="title" className="text-lg">
+                          Letters Game
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: "Fredoka_600SemiBold",
+                            fontSize: 14,
+                            color: palette.purple,
+                            marginTop: 2,
+                          }}
+                        >
+                          {user.lettersGameLevel === 0
+                            ? "Not started yet"
+                            : user.lettersGameLevel >= 26
+                              ? "Completed! 🎉"
+                              : `Level ${user.lettersGameLevel} of 26`}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  
+                  <View className="gap-4 p-5">
+                    <Text variant="body">
+                      Learn the 26 letters of the alphabet with fun sounds and interactions!
+                    </Text>
+                    
+                    {/* Progress Bar Container */}
+                    <View className="h-4 w-full overflow-hidden rounded-full bg-[#F3E8FF]">
+                      <Animated.View
+                        className="h-full rounded-full bg-tk-purple"
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </View>
+                  </View>
+                </Card>
+              </Animated.View>
+            );
+          }}
+        </Pressable>
       </View>
     </ScreenShell>
   );

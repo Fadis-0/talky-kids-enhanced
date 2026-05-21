@@ -5,6 +5,7 @@ export type UserData = {
   streakDays: number;
   lastPracticeDate: string | null;
   gender?: "male" | "female" | null;
+  lettersGameLevel: number;
 };
 
 const defaultUserData: UserData = {
@@ -12,6 +13,7 @@ const defaultUserData: UserData = {
   streakDays: 0,
   lastPracticeDate: null,
   gender: "male",
+  lettersGameLevel: 0,
 };
 
 type UserDataContextValue = {
