@@ -9,6 +9,7 @@ import { LevelHeader } from "@/components/games/LevelHeader";
 import { RecordButton } from "@/components/games/RecordButton";
 import { TalkyMascot } from "@/components/games/TalkyMascot";
 import { ScreenShell } from "@/components/ScreenShell";
+import { useUserData } from "@/contexts/UserDataContext";
 import {
   LETTER_LEVELS,
   getLetterLevel,
@@ -19,6 +20,7 @@ import { palette } from "@/lib/theme";
 export default function LettersGameScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const { setUser } = useUserData();
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -50,12 +52,16 @@ export default function LettersGameScreen() {
 
   const handleNext = () => {
     if (currentLevelIndex < totalLevels - 1) {
-      setCurrentLevelIndex(currentLevelIndex + 1);
+      const nextLevel = currentLevelIndex + 1;
+      setCurrentLevelIndex(nextLevel);
+      // Persist highest level reached
+      setUser({ lettersGameLevel: nextLevel + 1 });
     }
   };
 
   const handleFinish = () => {
-    // Show completion screen or navigate back
+    // Mark game as fully completed
+    setUser({ lettersGameLevel: totalLevels });
     router.back();
   };
 

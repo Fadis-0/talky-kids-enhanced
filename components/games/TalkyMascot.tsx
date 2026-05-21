@@ -159,7 +159,7 @@ export function TalkyMascot({ state, label }: TalkyMascotProps) {
       <View style={styles.characterContainer}>
         <Animated.View style={[styles.mascotWrapper, animatedBodyStyle]}>
           <Svg width={140} height={140} viewBox="0 0 100 100">
-            
+
             {/* --- GIRL PIGTAILS (Behind Head) --- */}
             {gender === "female" && (
               <G>
@@ -192,7 +192,7 @@ export function TalkyMascot({ state, label }: TalkyMascotProps) {
             <AnimatedG animatedProps={eyesProps as any}>
               <Circle cx="35" cy="46" r="8" fill="#3C3C3C" />
               <Circle cx="33" cy="44" r="3" fill="#FFFFFF" />
-              
+
               <Circle cx="65" cy="46" r="8" fill="#3C3C3C" />
               <Circle cx="63" cy="44" r="3" fill="#FFFFFF" />
             </AnimatedG>
@@ -205,7 +205,7 @@ export function TalkyMascot({ state, label }: TalkyMascotProps) {
               // Girl Hair (Mia) - bangs
               <Path d="M12,45 C15,20 30,8 50,8 C70,8 85,20 88,45 C75,35 60,35 50,38 C40,35 25,35 12,45 Z" fill="#EF6C00" />
             )}
-            
+
             {/* Top Tuft/Cowlick */}
             {gender === "male" ? (
               <Path d="M45,8 Q50,0 55,8" fill="none" stroke="#5D4037" strokeWidth="4" strokeLinecap="round" />
