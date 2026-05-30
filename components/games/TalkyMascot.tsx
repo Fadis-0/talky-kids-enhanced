@@ -150,10 +150,10 @@ export function TalkyMascot({ state, label }: TalkyMascotProps) {
   return (
     <View style={styles.container}>
       <View style={styles.bubbleContainer}>
-        <View style={styles.bubble}>
+        {/*<View style={styles.bubble}>
           <Text style={styles.bubbleText}>{getSpeechBubbleText()}</Text>
         </View>
-        <View style={styles.bubbleArrow} />
+        <View style={styles.bubbleArrow} />*/}
       </View>
 
       <View style={styles.characterContainer}>

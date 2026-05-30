@@ -151,18 +151,8 @@ export function RecordButton({
   });
 
   return (
-    <View className="items-center justify-center gap-3 py-2">
-      <Text
-        variant="body"
-        className="text-center text-sm font-semibold"
-        style={{ color: palette.textSecondary }}
-      >
-        {isRecording
-          ? `Say "${selectedImageLabel}" now!`
-          : selectedImageLabel
-          ? `Press and say "${selectedImageLabel}"`
-          : "Tap an image above to start"}
-      </Text>
+    <View className="items-center justify-center gap-3 py-2 mt-0">
+      
 
       <View className="relative items-center justify-center" style={{ width: 120, height: 120 }}>
         {/* Animated Ripple Ring behind the button */}

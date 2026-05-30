@@ -6,6 +6,7 @@ export type UserData = {
   lastPracticeDate: string | null;
   gender?: "male" | "female" | null;
   lettersGameLevel: number;
+  videoQuestionsGameLevel: number;
 };
 
 const defaultUserData: UserData = {
@@ -14,6 +15,7 @@ const defaultUserData: UserData = {
   lastPracticeDate: null,
   gender: "male",
   lettersGameLevel: 0,
+  videoQuestionsGameLevel: 0,
 };
 
 type UserDataContextValue = {

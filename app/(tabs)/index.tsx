@@ -163,6 +163,8 @@ export default function HomeScreen() {
           accessibilityLabel="Play Video Questions Game"
         >
           {({ pressed }: { pressed: boolean }) => {
+            const videoProgressPercent = Math.max(5, (user.videoQuestionsGameLevel / 8) * 100);
+            
             return (
               <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
                 <Card className={`overflow-hidden p-0 border-tk-blue`}>
@@ -183,7 +185,11 @@ export default function HomeScreen() {
                             marginTop: 2,
                           }}
                         >
-                          Not started yet
+                          {user.videoQuestionsGameLevel === 0
+                            ? "Not started yet"
+                            : user.videoQuestionsGameLevel >= 8
+                              ? "Completed! 🎉"
+                              : `Level ${user.videoQuestionsGameLevel} of 8`}
                         </Text>
                       </View>
                     </View>
@@ -193,6 +199,14 @@ export default function HomeScreen() {
                     <Text variant="body">
                       Watch videos and GIFs, then answer questions with your voice!
                     </Text>
+                    
+                    {/* Progress Bar Container */}
+                    <View className="h-4 w-full overflow-hidden rounded-full bg-[#DDF4FF]">
+                      <Animated.View
+                        className="h-full rounded-full bg-tk-blue"
+                        style={{ width: `${videoProgressPercent}%` }}
+                      />
+                    </View>
                   </View>
                 </Card>
               </Animated.View>
