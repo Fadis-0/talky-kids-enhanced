@@ -90,29 +90,31 @@ export function LevelHeader({
       </View>
 
       {/* Letter Display */}
-      <View className="items-center justify-center gap-1 py-1">
-        <Animated.View style={animatedLetterStyle}>
+      {!!letter && (
+        <View className="items-center justify-center gap-1 py-1">
+          <Animated.View style={animatedLetterStyle}>
+            <Text
+              style={{
+                fontSize: 58,
+                lineHeight: 68,
+                fontFamily: "Fredoka_700Bold",
+                color: palette.green,
+                paddingVertical: 4,
+                textAlign: "center",
+              }}
+            >
+              {letter.toUpperCase()}
+            </Text>
+          </Animated.View>
           <Text
-            style={{
-              fontSize: 58,
-              lineHeight: 68,
-              fontFamily: "Fredoka_700Bold",
-              color: palette.green,
-              paddingVertical: 4,
-              textAlign: "center",
-            }}
+            variant="title"
+            className="text-sm text-center"
+            style={{ color: palette.text }}
           >
-            {letter.toUpperCase()}
+            Pick an image and learn to say it!
           </Text>
-        </Animated.View>
-        <Text
-          variant="title"
-          className="text-sm text-center"
-          style={{ color: palette.text }}
-        >
-          Pick an image and learn to say it!
-        </Text>
-      </View>
+        </View>
+      )}
     </View>
   );
 }

@@ -7,6 +7,7 @@ export type UserData = {
   gender?: "male" | "female" | null;
   lettersGameLevel: number;
   videoQuestionsGameLevel: number;
+  balloonGameLevel: number;
 };
 
 const defaultUserData: UserData = {
@@ -16,6 +17,7 @@ const defaultUserData: UserData = {
   gender: "male",
   lettersGameLevel: 0,
   videoQuestionsGameLevel: 0,
+  balloonGameLevel: 0,
 };
 
 type UserDataContextValue = {

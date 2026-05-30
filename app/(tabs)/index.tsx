@@ -1,6 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import { Flame, Mic, Sparkles, Type, Video, Wind } from "lucide-react-native";
+import { getTotalBalloonLevels } from "@/lib/balloon-game-data";
 import { useCallback } from "react";
 import { Pressable, View } from "react-native";
 import Animated, {
@@ -220,6 +221,9 @@ export default function HomeScreen() {
           accessibilityLabel="Play Balloon Blowing Game"
         >
           {({ pressed }: { pressed: boolean }) => {
+            const balloonTotal = getTotalBalloonLevels();
+            const balloonProgressPercent = Math.max(5, (user.balloonGameLevel / balloonTotal) * 100);
+
             return (
               <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
                 <Card className={`overflow-hidden p-0 border-tk-orange`}>
@@ -240,7 +244,11 @@ export default function HomeScreen() {
                             marginTop: 2,
                           }}
                         >
-                          Not started yet
+                          {user.balloonGameLevel === 0
+                            ? "Not started yet"
+                            : user.balloonGameLevel >= balloonTotal
+                              ? "Completed! 🎉"
+                              : `Level ${user.balloonGameLevel} of ${balloonTotal}`}
                         </Text>
                       </View>
                     </View>
@@ -250,6 +258,14 @@ export default function HomeScreen() {
                     <Text variant="body">
                       Blow air to inflate balloons and have fun with breathing exercises!
                     </Text>
+                    
+                    {/* Progress Bar Container */}
+                    <View className="h-4 w-full overflow-hidden rounded-full bg-[#FFF4E5]">
+                      <Animated.View
+                        className="h-full rounded-full bg-tk-orange"
+                        style={{ width: `${balloonProgressPercent}%` }}
+                      />
+                    </View>
                   </View>
                 </Card>
               </Animated.View>
@@ -258,7 +274,7 @@ export default function HomeScreen() {
         </Pressable>
 
         <Pressable
-          onPress={() => router.push(Routes.candlesGame)}
+          onPress={() => router.push(Routes.candlesGame as any)}
           accessibilityRole="button"
           accessibilityLabel="Play Candles Blowing Game"
         >
