@@ -67,7 +67,7 @@ export function ScreenShell({
 
       <ScrollView 
         className="flex-1" 
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: tabClearance }}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: tabClearance }}
         showsVerticalScrollIndicator={false}
       >
         {children}
