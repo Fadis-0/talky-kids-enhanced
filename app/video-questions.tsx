@@ -119,7 +119,7 @@ export default function VideoQuestionsScreen() {
 
           {/* Video/GIF Box - Centered Rectangle */}
           <View
-            className="mt-[-48] items-center justify-center overflow-hidden rounded-2xl border-2 border-tk-border bg-white self-center"
+            className="mt-4 items-center justify-center overflow-hidden rounded-2xl border-2 border-tk-border bg-white self-center"
             style={{
               width: "100%",
               aspectRatio: 16 / 9,
