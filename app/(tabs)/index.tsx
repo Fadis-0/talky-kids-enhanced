@@ -1,12 +1,12 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
-import { Flame, Mic, Sparkles, Type } from "lucide-react-native";
+import { Flame, Mic, Sparkles, Type, Video, Wind } from "lucide-react-native";
 import { useCallback } from "react";
 import { Pressable, View } from "react-native";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
 } from "react-native-reanimated";
 
 import { TopNavBar } from "@/components/navigation/TopNavBar";
@@ -150,6 +150,135 @@ export default function HomeScreen() {
                         style={{ width: `${progressPercent}%` }}
                       />
                     </View>
+                  </View>
+                </Card>
+              </Animated.View>
+            );
+          }}
+        </Pressable>
+
+        <Pressable
+          onPress={() => router.push(Routes.videoQuestionsGame)}
+          accessibilityRole="button"
+          accessibilityLabel="Play Video Questions Game"
+        >
+          {({ pressed }: { pressed: boolean }) => {
+            return (
+              <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
+                <Card className={`overflow-hidden p-0 border-tk-blue`}>
+                  <View className="flex-row items-center justify-between bg-tk-blue-light p-4">
+                    <View className="flex-row items-center gap-3">
+                      <View className="h-12 w-12 items-center justify-center rounded-2xl bg-tk-blue">
+                        <Video size={26} color="#FFFFFF" strokeWidth={2.5} />
+                      </View>
+                      <View>
+                        <Text variant="title" className="text-lg">
+                          Video Questions
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: "Fredoka_600SemiBold",
+                            fontSize: 14,
+                            color: palette.blue,
+                            marginTop: 2,
+                          }}
+                        >
+                          Not started yet
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  
+                  <View className="gap-4 p-5">
+                    <Text variant="body">
+                      Watch videos and GIFs, then answer questions with your voice!
+                    </Text>
+                  </View>
+                </Card>
+              </Animated.View>
+            );
+          }}
+        </Pressable>
+
+        <Pressable
+          onPress={() => router.push(Routes.balloonGame)}
+          accessibilityRole="button"
+          accessibilityLabel="Play Balloon Blowing Game"
+        >
+          {({ pressed }: { pressed: boolean }) => {
+            return (
+              <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
+                <Card className={`overflow-hidden p-0 border-tk-orange`}>
+                  <View className="flex-row items-center justify-between bg-tk-orange-light p-4">
+                    <View className="flex-row items-center gap-3">
+                      <View className="h-12 w-12 items-center justify-center rounded-2xl bg-tk-orange">
+                        <Wind size={26} color="#FFFFFF" strokeWidth={2.5} />
+                      </View>
+                      <View>
+                        <Text variant="title" className="text-lg">
+                          Balloon Blowing
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: "Fredoka_600SemiBold",
+                            fontSize: 14,
+                            color: palette.orange,
+                            marginTop: 2,
+                          }}
+                        >
+                          Not started yet
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  
+                  <View className="gap-4 p-5">
+                    <Text variant="body">
+                      Blow air to inflate balloons and have fun with breathing exercises!
+                    </Text>
+                  </View>
+                </Card>
+              </Animated.View>
+            );
+          }}
+        </Pressable>
+
+        <Pressable
+          onPress={() => router.push(Routes.candlesGame)}
+          accessibilityRole="button"
+          accessibilityLabel="Play Candles Blowing Game"
+        >
+          {({ pressed }: { pressed: boolean }) => {
+            return (
+              <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
+                <Card className={`overflow-hidden p-0 border-tk-red`}>
+                  <View className="flex-row items-center justify-between bg-tk-red-light p-4">
+                    <View className="flex-row items-center gap-3">
+                      <View className="h-12 w-12 items-center justify-center rounded-2xl bg-tk-red">
+                        <Flame size={26} color="#FFFFFF" strokeWidth={2.5} />
+                      </View>
+                      <View>
+                        <Text variant="title" className="text-lg">
+                          Candles Blowing
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: "Fredoka_600SemiBold",
+                            fontSize: 14,
+                            color: palette.red,
+                            marginTop: 2,
+                          }}
+                        >
+                          Not started yet
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  
+                  <View className="gap-4 p-5">
+                    <Text variant="body">
+                      Blow out the candles while practicing controlled breathing!
+                    </Text>
                   </View>
                 </Card>
               </Animated.View>

@@ -9,4 +9,7 @@ export const Routes = {
   tabs: "/(tabs)",
   settings: "/(tabs)/settings",
   lettersGame: "/letters-game",
+  videoQuestionsGame: "/video-questions",
+  balloonGame: "/balloon-game",
+  candlesGame: "/candles-game",
 } as const;

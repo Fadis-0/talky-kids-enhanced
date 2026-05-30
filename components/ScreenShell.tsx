@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { ReactNode } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Text } from "@/components/ui/Text";
@@ -65,9 +65,13 @@ export function ScreenShell({
         </SafeAreaView>
       </LinearGradient>
 
-      <View className="flex-1 px-5" style={{ paddingBottom: tabClearance }}>
+      <ScrollView 
+        className="flex-1" 
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: tabClearance }}
+        showsVerticalScrollIndicator={false}
+      >
         {children}
-      </View>
+      </ScrollView>
     </View>
   );
 }
