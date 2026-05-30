@@ -8,6 +8,7 @@ export type UserData = {
   lettersGameLevel: number;
   videoQuestionsGameLevel: number;
   balloonGameLevel: number;
+  candlesGameLevel: number;
 };
 
 const defaultUserData: UserData = {
@@ -18,6 +19,7 @@ const defaultUserData: UserData = {
   lettersGameLevel: 0,
   videoQuestionsGameLevel: 0,
   balloonGameLevel: 0,
+  candlesGameLevel: 0,
 };
 
 type UserDataContextValue = {

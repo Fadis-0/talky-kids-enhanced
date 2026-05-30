@@ -12,6 +12,7 @@ export const palette = {
   purple: "#CE82FF",
   purpleLight: "#F3E8FF",
   red: "#FF4B4B",
+  redLight: "#FFEBEB",
   background: "#F7F7F7",
   surface: "#FFFFFF",
   surfaceElevated: "#FFFFFF",

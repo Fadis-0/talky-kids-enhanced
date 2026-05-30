@@ -6,13 +6,14 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { Text } from "@/components/ui/Text";
 import { palette, spacing } from "@/lib/theme";
 
-type Accent = "green" | "blue" | "orange" | "purple";
+type Accent = "green" | "blue" | "orange" | "purple" | "red";
 
 const accentGradients: Record<Accent, readonly [string, string]> = {
   green: [palette.greenLight, "#FFFFFF"],
   blue: [palette.blueLight, "#FFFFFF"],
   orange: [palette.orangeLight, "#FFFFFF"],
   purple: [palette.purpleLight, "#FFFFFF"],
+  red: [palette.redLight, "#FFFFFF"],
 };
 
 type ScreenShellProps = {
