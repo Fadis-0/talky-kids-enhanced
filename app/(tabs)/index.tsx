@@ -1,14 +1,15 @@
+import { getTotalBalloonLevels } from "@/lib/balloon-game-data";
+import { getTotalCandlesLevels } from "@/lib/candles-game-data";
 import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import { Flame, Mic, Sparkles, Type, Video, Wind } from "lucide-react-native";
-import { getTotalBalloonLevels } from "@/lib/balloon-game-data";
-import { getTotalCandlesLevels } from "@/lib/candles-game-data";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 
 import { TopNavBar } from "@/components/navigation/TopNavBar";
@@ -16,12 +17,15 @@ import { ScreenShell } from "@/components/ScreenShell";
 import { Card } from "@/components/ui/Card";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Text } from "@/components/ui/Text";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserData } from "@/contexts/UserDataContext";
 import { Routes } from "@/lib/routes";
 import { palette } from "@/lib/theme";
 
 function StreakBadge({ streak }: { streak: number }) {
   const scaleAnim = useSharedValue(0.8);
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
 
   const streakAnimStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scaleAnim.value }],
@@ -44,12 +48,12 @@ function StreakBadge({ streak }: { streak: number }) {
         <Flame size={22} color={palette.orange} fill={palette.orangeLight} />
         <Text
           style={{
-            fontFamily: "Fredoka_700Bold",
+            fontFamily: isRTL ? "Cairo_700Bold" : "Fredoka_700Bold",
             fontSize: 16,
             color: palette.orange,
           }}
         >
-          {streak} Day Streak
+          {t("tabs.home.streakDay", { streak })}
         </Text>
       </View>
     </Animated.View>
@@ -58,16 +62,18 @@ function StreakBadge({ streak }: { streak: number }) {
 
 export default function HomeScreen() {
   const { user } = useUserData();
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
 
   return (
     <ScreenShell
-      title="Ready to practice?"
-      subtitle="Warm up your voice with fun mouth and speaking games."
+      title={t("tabs.home.title")}
+      subtitle={t("tabs.home.subtitle")}
       accent="green"
       topNavBar={<TopNavBar userName={user.name} gender={user.gender} onProfilePress={() => router.push(Routes.settings)} />}
       headerRight={<StreakBadge streak={user.streakDays} />}
     >
-      <View className="-mt-2 gap-4">
+      <View style={{ direction: isRTL ? 'rtl' : 'ltr' }} className="-mt-2 gap-4">
         <Card className="overflow-hidden border-tk-green p-0">
           <View className="bg-tk-green-light px-5 py-4">
             <View className="flex-row items-center gap-3">
@@ -75,41 +81,40 @@ export default function HomeScreen() {
                 <Mic size={26} color="#FFFFFF" strokeWidth={2.5} />
               </View>
               <View className="flex-1">
-                <Text variant="label" className="text-tk-green-dark">
-                  Daily practice
+                <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="label" className="text-tk-green-dark">
+                  {t("tabs.home.dailyPractice")}
                 </Text>
-                <Text variant="title" className="text-lg">
-                  Start a session
+                <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="title" className="text-lg">
+                  {t("tabs.home.startSession")}
                 </Text>
               </View>
               <Sparkles size={22} color={palette.green} />
             </View>
           </View>
           <View className="gap-3 p-5">
-            <Text variant="body">
-              Games for speaking and mouth movements are on the way. Tap below to
-              preview the flow.
+            <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="body">
+              {t("tabs.home.dailyDesc")}
             </Text>
             <PrimaryButton
-              label="CONTINUE"
+              label={t("common.continue")}
               color="green"
-              accessibilityLabel="Continue to practice"
+              accessibilityLabel={t("accessibilityLabels.homeBtn")}
             />
           </View>
         </Card>
 
-        <Text variant="label" className="px-1">
-          Explore Games
+        <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="label" className="px-1">
+          {t("tabs.home.exploreGames")}
         </Text>
 
         <Pressable
           onPress={() => router.push(Routes.lettersGame)}
           accessibilityRole="button"
-          accessibilityLabel="Play Letters Game"
+          accessibilityLabel={t("accessibilityLabels.lettersBtn")}
         >
           {({ pressed }: { pressed: boolean }) => {
             const progressPercent = Math.max(5, (user.lettersGameLevel / 26) * 100);
-            
+
             return (
               <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
                 <Card className={`overflow-hidden p-0 border-tk-purple`}>
@@ -119,32 +124,33 @@ export default function HomeScreen() {
                         <Type size={26} color="#FFFFFF" strokeWidth={2.5} />
                       </View>
                       <View>
-                        <Text variant="title" className="text-lg">
-                          Letters Game
+                        <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="title" className="text-lg">
+                          {t("tabs.home.lettersGame")}
                         </Text>
                         <Text
                           style={{
-                            fontFamily: "Fredoka_600SemiBold",
+                            fontFamily: isRTL ? "Cairo_600SemiBold" : "Fredoka_600SemiBold",
                             fontSize: 14,
                             color: palette.purple,
                             marginTop: 2,
+                            textAlign: isRTL ? 'right' : 'left',
                           }}
                         >
                           {user.lettersGameLevel === 0
-                            ? "Not started yet"
+                            ? t("tabs.home.notStarted")
                             : user.lettersGameLevel >= 26
-                              ? "Completed! 🎉"
-                              : `Level ${user.lettersGameLevel} of 26`}
+                              ? t("tabs.home.completed")
+                              : t("games.letters.levelFormat", { level: user.lettersGameLevel, total: 26 })}
                         </Text>
                       </View>
                     </View>
                   </View>
-                  
+
                   <View className="gap-4 p-5">
-                    <Text variant="body">
-                      Learn the 26 letters of the alphabet with fun sounds and interactions!
+                    <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="body">
+                      {t("tabs.home.lettersDesc")}
                     </Text>
-                    
+
                     {/* Progress Bar Container */}
                     <View className="h-4 w-full overflow-hidden rounded-full bg-[#F3E8FF]">
                       <Animated.View
@@ -162,11 +168,11 @@ export default function HomeScreen() {
         <Pressable
           onPress={() => router.push(Routes.videoQuestionsGame)}
           accessibilityRole="button"
-          accessibilityLabel="Play Video Questions Game"
+          accessibilityLabel={t("accessibilityLabels.videoBtn")}
         >
           {({ pressed }: { pressed: boolean }) => {
             const videoProgressPercent = Math.max(5, (user.videoQuestionsGameLevel / 8) * 100);
-            
+
             return (
               <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
                 <Card className={`overflow-hidden p-0 border-tk-blue`}>
@@ -176,32 +182,33 @@ export default function HomeScreen() {
                         <Video size={26} color="#FFFFFF" strokeWidth={2.5} />
                       </View>
                       <View>
-                        <Text variant="title" className="text-lg">
-                          Video Questions
+                        <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="title" className="text-lg">
+                          {t("tabs.home.videoQuestions")}
                         </Text>
                         <Text
                           style={{
-                            fontFamily: "Fredoka_600SemiBold",
+                            fontFamily: isRTL ? "Cairo_600SemiBold" : "Fredoka_600SemiBold",
                             fontSize: 14,
                             color: palette.blue,
                             marginTop: 2,
+                            textAlign: isRTL ? 'right' : 'left',
                           }}
                         >
                           {user.videoQuestionsGameLevel === 0
-                            ? "Not started yet"
+                            ? t("tabs.home.notStarted")
                             : user.videoQuestionsGameLevel >= 8
-                              ? "Completed! 🎉"
-                              : `Level ${user.videoQuestionsGameLevel} of 8`}
+                              ? t("tabs.home.completed")
+                              : t("games.video.levelFormat", { level: user.videoQuestionsGameLevel, total: 8 })}
                         </Text>
                       </View>
                     </View>
                   </View>
-                  
+
                   <View className="gap-4 p-5">
-                    <Text variant="body">
-                      Watch videos and GIFs, then answer questions with your voice!
+                    <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="body">
+                      {t("tabs.home.videoDesc")}
                     </Text>
-                    
+
                     {/* Progress Bar Container */}
                     <View className="h-4 w-full overflow-hidden rounded-full bg-[#DDF4FF]">
                       <Animated.View
@@ -234,32 +241,33 @@ export default function HomeScreen() {
                         <Wind size={26} color="#FFFFFF" strokeWidth={2.5} />
                       </View>
                       <View>
-                        <Text variant="title" className="text-lg">
-                          Balloon Blowing
+                        <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="title" className="text-lg">
+                          {t("tabs.home.balloonTitle")}
                         </Text>
                         <Text
                           style={{
-                            fontFamily: "Fredoka_600SemiBold",
+                            fontFamily: isRTL ? "Cairo_600SemiBold" : "Fredoka_600SemiBold",
                             fontSize: 14,
                             color: palette.orange,
                             marginTop: 2,
+                            textAlign: isRTL ? 'right' : 'left',
                           }}
                         >
                           {user.balloonGameLevel === 0
-                            ? "Not started yet"
+                            ? t("tabs.home.notStarted")
                             : user.balloonGameLevel >= balloonTotal
-                              ? "Completed! 🎉"
-                              : `Level ${user.balloonGameLevel} of ${balloonTotal}`}
+                              ? t("tabs.home.completed")
+                              : t("games.levelHeader", { levelNumber: user.balloonGameLevel, totalLevels: balloonTotal })}
                         </Text>
                       </View>
                     </View>
                   </View>
-                  
+
                   <View className="gap-4 p-5">
-                    <Text variant="body">
-                      Blow air to inflate balloons and have fun with breathing exercises!
+                    <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="body">
+                      {t("tabs.home.balloonDesc")}
                     </Text>
-                    
+
                     {/* Progress Bar Container */}
                     <View className="h-4 w-full overflow-hidden rounded-full bg-[#FFF4E5]">
                       <Animated.View
@@ -292,30 +300,31 @@ export default function HomeScreen() {
                         <Flame size={26} color="#FFFFFF" strokeWidth={2.5} />
                       </View>
                       <View>
-                        <Text variant="title" className="text-lg">
-                          Candles Blowing
+                        <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="title" className="text-lg">
+                          {t("tabs.home.candlesTitle")}
                         </Text>
                         <Text
                           style={{
-                            fontFamily: "Fredoka_600SemiBold",
+                            fontFamily: isRTL ? "Cairo_600SemiBold" : "Fredoka_600SemiBold",
                             fontSize: 14,
                             color: palette.red,
                             marginTop: 2,
+                            textAlign: isRTL ? 'right' : 'left',
                           }}
                         >
                           {user.candlesGameLevel === 0
-                            ? "Not started yet"
+                            ? t("tabs.home.notStarted")
                             : user.candlesGameLevel >= candlesTotal
-                              ? "Completed! 🎉"
-                              : `Level ${user.candlesGameLevel} of ${candlesTotal}`}
+                              ? t("tabs.home.completed")
+                              : t("games.levelHeader", { levelNumber: user.candlesGameLevel, totalLevels: candlesTotal })}
                         </Text>
                       </View>
                     </View>
                   </View>
-                  
+
                   <View className="gap-4 p-5">
-                    <Text variant="body">
-                      Blow out the candles while practicing controlled breathing!
+                    <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="body">
+                      {t("tabs.home.candlesDesc")}
                     </Text>
 
                     {/* Progress Bar Container */}

@@ -10,6 +10,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslation } from "react-i18next";
 import { Text } from "@/components/ui/Text";
 import type { ImageItem } from "@/lib/letters-game-data";
 import { palette } from "@/lib/theme";
@@ -29,6 +31,8 @@ export function GameImageCard({
 }: GameImageCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const { language } = useLanguage();
+  const { t } = useTranslation();
 
   // Animation values
   const cardScale = useSharedValue(1);
@@ -38,9 +42,9 @@ export function GameImageCard({
   const playAudio = async () => {
     try {
       setIsPlaying(true);
-      // Speak the label aloud using native Text-to-Speech
+      // Speak the label aloud using native Text-to-Speech with the correct language
       Speech.speak(image.label, {
-        language: "en-US",
+        language: language === 'ar' ? 'ar-SA' : 'en-US',
         pitch: 1.1, // slightly higher pitch for a kid-friendly tone
         rate: 0.85,  // slightly slower speaking rate for clarity
         onDone: () => setIsPlaying(false),
@@ -87,10 +91,10 @@ export function GameImageCard({
     playAudio();
   };
 
-  // Fixed the endpoint format to .png, ensuring it loads correctly in React Native's Image component
+  // Fixed the endpoint format to .png, ensuring it loads correctly in React Native's Image component and is URL safe
   const placeholderSource = image.imageUrl
     ? { uri: image.imageUrl }
-    : { uri: `https://placehold.co/150x150/DDF4FF/3C3C3C.png?text=${image.label}` };
+    : { uri: `https://placehold.co/150x150/DDF4FF/3C3C3C.png?text=${encodeURIComponent(image.label)}` };
 
   const animatedCardStyle = useAnimatedStyle(() => {
     return {
@@ -116,7 +120,7 @@ export function GameImageCard({
     <AnimatedPressable
       onPress={handlePress}
       accessibilityRole="button"
-      accessibilityLabel={`${image.label}, tap to select and play pronunciation`}
+      accessibilityLabel={t("games.imageLabel", { label: image.label })}
       className="flex-1 overflow-hidden rounded-2xl"
       style={({ pressed }) => [
         {

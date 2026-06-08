@@ -31,7 +31,16 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Cairo-Regular.ttf",
+            "./assets/fonts/Cairo-Bold.ttf",
+            "./assets/fonts/Cairo-SemiBold.ttf"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

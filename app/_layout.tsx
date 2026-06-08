@@ -1,17 +1,18 @@
 import "../global.css";
+import "../lib/i18n"; // Initialize i18n
 
+import {
+    Cairo_400Regular,
+    Cairo_600SemiBold,
+    Cairo_700Bold,
+    useFonts as useCairo,
+} from "@expo-google-fonts/cairo";
 import {
     Fredoka_500Medium,
     Fredoka_600SemiBold,
     Fredoka_700Bold,
     useFonts as useFredoka,
 } from "@expo-google-fonts/fredoka";
-import {
-    Nunito_400Regular,
-    Nunito_600SemiBold,
-    Nunito_800ExtraBold,
-    useFonts as useNunito,
-} from "@expo-google-fonts/nunito";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
@@ -19,6 +20,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import { UserDataProvider } from "@/contexts/UserDataContext";
 
 export { ErrorBoundary } from "expo-router";
@@ -35,13 +37,13 @@ export default function RootLayout() {
     Fredoka_600SemiBold,
     Fredoka_700Bold,
   });
-  const [nunitoLoaded] = useNunito({
-    Nunito_400Regular,
-    Nunito_600SemiBold,
-    Nunito_800ExtraBold,
+  const [cairoLoaded] = useCairo({
+    Cairo_400Regular,
+    Cairo_600SemiBold,
+    Cairo_700Bold,
   });
 
-  const loaded = fredokaLoaded && nunitoLoaded;
+  const loaded = fredokaLoaded && cairoLoaded;
 
   useEffect(() => {
     if (loaded) {
@@ -55,12 +57,15 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <UserDataProvider>
-        <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-        </Stack>
-      </UserDataProvider>
+      <LanguageProvider>
+        <UserDataProvider>
+          <StatusBar style="dark" />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+          </Stack>
+        </UserDataProvider>
+      </LanguageProvider>
     </SafeAreaProvider>
   );
 }
+

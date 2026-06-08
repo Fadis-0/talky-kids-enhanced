@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { Mail } from "lucide-react-native";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
 
 import { AuthInput } from "@/components/auth/AuthInput";
@@ -16,17 +17,19 @@ import { Routes } from "@/lib/routes";
 import { fonts, palette } from "@/lib/theme";
 
 const STEPS = 5;
-const TITLES = [
-  "About you",
-  "Your child",
-  "Speech therapist",
-  "Sign up method",
-  "Create account",
-];
 
 export default function ParentSignupScreen() {
+  const { t } = useTranslation();
   const { parent, setParent } = useSignup();
   const [step, setStep] = useState(0);
+
+  const TITLES = [
+    t("auth.signup.parentSteps.step1"),
+    t("auth.signup.parentSteps.step2"),
+    t("auth.signup.parentSteps.step3"),
+    t("auth.signup.parentSteps.step4"),
+    t("auth.signup.parentSteps.step5"),
+  ];
 
   const next = () => {
     if (step < STEPS - 1) {
@@ -55,12 +58,12 @@ export default function ParentSignupScreen() {
     return false;
   };
 
-  const footerLabel = step === STEPS - 1 ? "CREATE ACCOUNT" : "CONTINUE";
+  const footerLabel = step === STEPS - 1 ? t("auth.signup.createBtn") : t("common.continue");
 
   return (
     <AuthShell
       title={TITLES[step]}
-      subtitle={`Step ${step + 1} of ${STEPS}`}
+      subtitle={t("auth.signup.stepCounter", { step: step + 1, total: STEPS })}
       onBack={back}
       accent="green"
       footer={
@@ -78,19 +81,19 @@ export default function ParentSignupScreen() {
       {step === 0 ? (
         <View className="gap-4">
           <AuthInput
-            label="First name"
+            label={t("auth.signup.firstName")}
             value={parent.firstName}
             onChangeText={(v) => setParent({ firstName: v })}
             autoComplete="given-name"
           />
           <AuthInput
-            label="Last name"
+            label={t("auth.signup.lastName")}
             value={parent.lastName}
             onChangeText={(v) => setParent({ lastName: v })}
             autoComplete="family-name"
           />
           <AuthInput
-            label="Phone"
+            label={t("common.phone")}
             value={parent.phone}
             onChangeText={(v) => setParent({ phone: v })}
             keyboardType="phone-pad"
@@ -102,21 +105,21 @@ export default function ParentSignupScreen() {
       {step === 1 ? (
         <View className="gap-4">
           <AuthInput
-            label="Child's first name"
+            label={t("auth.signup.childFirstName")}
             value={parent.kidName}
             onChangeText={(v) => setParent({ kidName: v })}
           />
           <View className="gap-2">
-            <Text style={{ fontFamily: fonts.displaySemi, fontSize: 14 }}>Age range</Text>
+            <Text style={{ fontFamily: fonts.displaySemi, fontSize: 14 }}>{t("auth.signup.ageRange")}</Text>
             <View className="flex-row gap-2">
               <OptionChip<KidAgeRange>
-                label="3 – 5"
+                label={t("auth.signup.age3to5")}
                 value="3-5"
                 selected={parent.kidAge}
                 onSelect={(v) => setParent({ kidAge: v })}
               />
               <OptionChip<KidAgeRange>
-                label="5 – 9"
+                label={t("auth.signup.age5to9")}
                 value="5-9"
                 selected={parent.kidAge}
                 onSelect={(v) => setParent({ kidAge: v })}
@@ -124,16 +127,16 @@ export default function ParentSignupScreen() {
             </View>
           </View>
           <View className="gap-2">
-            <Text style={{ fontFamily: fonts.displaySemi, fontSize: 14 }}>Gender</Text>
+            <Text style={{ fontFamily: fonts.displaySemi, fontSize: 14 }}>{t("auth.signup.gender")}</Text>
             <View className="flex-row gap-2">
               <OptionChip<KidGender>
-                label="Boy"
+                label={t("auth.signup.boy")}
                 value="male"
                 selected={parent.kidGender}
                 onSelect={(v) => setParent({ kidGender: v })}
               />
               <OptionChip<KidGender>
-                label="Girl"
+                label={t("auth.signup.girl")}
                 value="female"
                 selected={parent.kidGender}
                 onSelect={(v) => setParent({ kidGender: v })}
@@ -146,7 +149,7 @@ export default function ParentSignupScreen() {
       {step === 2 ? (
         <View className="gap-3">
           <Text variant="body">
-            Link an orthophonist now, or skip and add one later.
+            {t("auth.signup.linkOrthNow")}
           </Text>
           {MOCK_ORTHOPHONISTS.map((o) => {
             const selected = parent.orthophonistId === o.id;
@@ -184,7 +187,7 @@ export default function ParentSignupScreen() {
                 marginTop: 8,
               }}
             >
-              Skip for now
+              {t("common.skip")}
             </Text>
           </Pressable>
         </View>
@@ -193,13 +196,13 @@ export default function ParentSignupScreen() {
       {step === 3 ? (
         <View className="gap-3">
           <SocialAuthButton
-            label="Sign up with Google"
+            label={t("auth.signup.googleSignup")}
             icon={Mail}
             variant="google"
             onPress={() => setParent({ method: "google" })}
           />
           <SocialAuthButton
-            label="Sign up with Email"
+            label={t("auth.signup.emailSignup")}
             icon={Mail}
             onPress={() => setParent({ method: "email" })}
           />
@@ -215,19 +218,19 @@ export default function ParentSignupScreen() {
         <View className="gap-4">
           {parent.method === "google" ? (
             <Text variant="body">
-              Tap create account to finish with Google (mock — no real OAuth yet).
+              {t("auth.signup.googleMock")}
             </Text>
           ) : (
             <>
               <AuthInput
-                label="Email"
+                label={t("common.email")}
                 value={parent.email}
                 onChangeText={(v) => setParent({ email: v })}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
               <AuthInput
-                label="Password"
+                label={t("common.password")}
                 value={parent.password}
                 onChangeText={(v) => setParent({ password: v })}
                 secureTextEntry

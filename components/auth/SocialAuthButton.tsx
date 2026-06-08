@@ -2,7 +2,8 @@ import { LucideIcon } from "lucide-react-native";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/Text";
-import { fonts, palette, radius } from "@/lib/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getFontForLanguage, palette, radius } from "@/lib/theme";
 
 type SocialAuthButtonProps = {
   label: string;
@@ -17,6 +18,7 @@ export function SocialAuthButton({
   onPress,
   variant = "outline",
 }: SocialAuthButtonProps) {
+  const { language } = useLanguage();
   const isGoogle = variant === "google";
   const isPrimary = variant === "primary";
 
@@ -41,7 +43,7 @@ export function SocialAuthButton({
         />
         <Text
           style={{
-            fontFamily: fonts.displaySemi,
+            fontFamily: getFontForLanguage(language, 'semi'),
             fontSize: 16,
             color: isPrimary ? palette.textOnPrimary : palette.text,
           }}

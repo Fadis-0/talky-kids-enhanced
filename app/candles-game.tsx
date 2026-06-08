@@ -14,6 +14,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 import Svg, {
   Defs,
   LinearGradient,
@@ -26,6 +27,7 @@ import { LevelHeader } from "@/components/games/LevelHeader";
 import { TalkyMascot } from "@/components/games/TalkyMascot";
 import { ScreenShell } from "@/components/ScreenShell";
 import { Text } from "@/components/ui/Text";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserData } from "@/contexts/UserDataContext";
 import {
   CANDLES_LEVELS,
@@ -239,9 +241,15 @@ function Candle({ color, isLit, isBlowing, index }: { color: string; isLit: bool
   );
 }
 
+// ═══════════════════════════════════════════════════════════
+// MAIN SCREEN component
+// ═══════════════════════════════════════════════════════════
+
 export default function CandlesGameScreen() {
   const router = useRouter();
   const { setUser } = useUserData();
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
 
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [gameState, setGameState] = useState<"idle" | "listening" | "popped">("idle");
@@ -518,7 +526,7 @@ export default function CandlesGameScreen() {
     <Pressable
       onPress={() => router.back()}
       accessibilityRole="button"
-      accessibilityLabel="Go back"
+      accessibilityLabel={t("common.back")}
       hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       style={({ pressed }) => [{
         width: 44, height: 44, borderRadius: 14,
@@ -529,6 +537,7 @@ export default function CandlesGameScreen() {
         elevation: 4, shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1, shadowRadius: 2, zIndex: 10,
+        transform: [{ scaleX: isRTL ? -1 : 1 }], // Flip arrow for RTL
       }]}
     >
       <ChevronLeft size={24} color={palette.text} />
@@ -537,18 +546,20 @@ export default function CandlesGameScreen() {
 
   return (
     <ScreenShell
-      title="Candles Blowing"
-      subtitle="Blow into the mic to put out candles!"
+      title={t("games.candles.title")}
+      subtitle={t("games.candles.subtitle")}
       accent="red"
       topNavBar={backButton}
       hideTabBarClearance
     >
-      <View style={{ flex: 1, justifyContent: "space-between", minHeight: 520 }}>
+      <View style={{ flex: 1, justifyContent: "space-between", minHeight: 520, direction: isRTL ? 'rtl' : 'ltr' }}>
         {/* Header section */}
         <View className="gap-2">
           <LevelHeader levelNumber={currentLevelIndex + 1} totalLevels={totalLevels} letter="" />
           <View style={s.levelBadge}>
-            <Text style={s.levelBadgeText}>{currentLevel.label}</Text>
+            <Text style={[s.levelBadgeText, { fontFamily: isRTL ? "Cairo_600SemiBold" : fonts.displaySemi }]}>
+              {t(`candlesGame.level${currentLevelIndex + 1}`, { defaultValue: currentLevel.label })}
+            </Text>
           </View>
         </View>
 
@@ -564,7 +575,7 @@ export default function CandlesGameScreen() {
           )}
 
           {gameState !== "popped" ? (
-            <View style={s.candlesRow}>
+            <View style={[s.candlesRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               {extinguished.map((isExt, idx) => (
                 <Candle
                   key={idx}
@@ -577,8 +588,12 @@ export default function CandlesGameScreen() {
             </View>
           ) : (
             <View style={s.completeWrap}>
-              <Text style={s.completeText}>ALL OUT! 💨🕯️</Text>
-              <Text style={s.completeSub}>Outstanding breath control! 🎉</Text>
+              <Text style={[s.completeText, { fontFamily: isRTL ? "Cairo_700Bold" : fonts.displayBold }]}>
+                {t("games.candles.blownOutText")} 💨🕯️
+              </Text>
+              <Text style={[s.completeSub, { fontFamily: isRTL ? "Cairo_600SemiBold" : fonts.displaySemi }]}>
+                {t("games.candles.congrats")}
+              </Text>
             </View>
           )}
         </View>
@@ -587,7 +602,7 @@ export default function CandlesGameScreen() {
         <Animated.View style={[mascotAnimStyle, { marginBottom: 4 }]}>
           <TalkyMascot
             state={gameState === "popped" ? "completed" : gameState === "listening" ? "recording" : "idle"}
-            label={gameState === "popped" ? "Yay!" : gameState === "listening" ? "Puff!" : "🎂"}
+            label={gameState === "popped" ? t("games.candles.blownOutText") : gameState === "listening" ? t("games.candles.blow") : "🎂"}
           />
         </Animated.View>
 
@@ -598,7 +613,7 @@ export default function CandlesGameScreen() {
               <Pressable
                 onPress={gameState === "listening" ? stopListening : startListening}
                 accessibilityRole="button"
-                accessibilityLabel={gameState === "listening" ? "Stop listening" : "Start blowing candles"}
+                accessibilityLabel={gameState === "listening" ? t("games.candles.stopListening") : t("games.candles.startListening")}
               >
                 {({ pressed }) => {
                   const isListen = gameState === "listening";
@@ -625,7 +640,9 @@ export default function CandlesGameScreen() {
             </Animated.View>
           ) : (
             <View style={s.poppedBanner}>
-              <Text style={s.poppedText}>🕯️ ALL CANDLES EXTINCTION! 🕯️</Text>
+              <Text style={[s.poppedText, { fontFamily: isRTL ? "Cairo_700Bold" : fonts.displayBold }]}>
+                {t("games.candles.blownOutBanner")}
+              </Text>
             </View>
           )}
 
@@ -656,7 +673,7 @@ const s = StyleSheet.create({
     marginBottom: 6,
   },
   levelBadgeText: {
-    fontFamily: fonts.displaySemi, fontSize: 14,
+    fontSize: 14,
     color: palette.red, textAlign: "center",
   },
   candleArea: {
@@ -664,7 +681,6 @@ const s = StyleSheet.create({
     marginVertical: 16,
   },
   candlesRow: {
-    flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
     alignItems: "center",
@@ -676,8 +692,8 @@ const s = StyleSheet.create({
     width: 1, height: 1, zIndex: 20,
   },
   completeWrap: { alignItems: "center", gap: 4 },
-  completeText: { fontFamily: fonts.displayBold, fontSize: 36, color: palette.red, textAlign: "center" },
-  completeSub: { fontFamily: fonts.displaySemi, fontSize: 16, color: palette.textSecondary, textAlign: "center" },
+  completeText: { fontSize: 36, color: palette.red, textAlign: "center" },
+  completeSub: { fontSize: 16, color: palette.textSecondary, textAlign: "center" },
   btnOuter: { position: "relative", height: 76, width: 76, alignSelf: "center" },
   btnShadow: { position: "absolute", left: 0, right: 0, bottom: 0, height: 72, borderRadius: 38 },
   btnFace: {
@@ -689,5 +705,5 @@ const s = StyleSheet.create({
     backgroundColor: palette.redLight, paddingVertical: 14, paddingHorizontal: 24,
     borderRadius: 18, borderWidth: 2, borderColor: palette.red, alignItems: "center",
   },
-  poppedText: { fontFamily: fonts.displayBold, fontSize: 16, color: palette.red },
+  poppedText: { fontSize: 16, color: palette.red },
 });

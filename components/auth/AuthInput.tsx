@@ -1,7 +1,8 @@
 import { TextInput, View, type TextInputProps } from "react-native";
 
 import { Text } from "@/components/ui/Text";
-import { fonts, palette } from "@/lib/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getFontForLanguage, palette } from "@/lib/theme";
 
 type AuthInputProps = TextInputProps & {
   label: string;
@@ -9,11 +10,13 @@ type AuthInputProps = TextInputProps & {
 };
 
 export function AuthInput({ label, error, style, ...props }: AuthInputProps) {
+  const { language } = useLanguage();
+  
   return (
     <View className="gap-1.5">
       <Text
         style={{
-          fontFamily: fonts.displaySemi,
+          fontFamily: getFontForLanguage(language, 'semi'),
           fontSize: 14,
           color: palette.text,
         }}
@@ -23,11 +26,11 @@ export function AuthInput({ label, error, style, ...props }: AuthInputProps) {
       <TextInput
         placeholderTextColor={palette.textMuted}
         className="rounded-2xl border-2 border-tk-border bg-tk-surface px-4 py-3.5 text-base text-tk-text"
-        style={[{ fontFamily: fonts.bodyRegular }, style]}
+        style={[{ fontFamily: getFontForLanguage(language, 'regular') }, style]}
         {...props}
       />
       {error ? (
-        <Text style={{ fontFamily: fonts.body, fontSize: 12, color: palette.red }}>
+        <Text style={{ fontFamily: getFontForLanguage(language, 'regular'), fontSize: 12, color: palette.red }}>
           {error}
         </Text>
       ) : null}

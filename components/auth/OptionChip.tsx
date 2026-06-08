@@ -1,7 +1,8 @@
 import { Pressable, View } from "react-native";
 
 import { Text } from "@/components/ui/Text";
-import { fonts, palette } from "@/lib/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getFontForLanguage, palette } from "@/lib/theme";
 
 type OptionChipProps<T extends string> = {
   label: string;
@@ -19,6 +20,7 @@ export function OptionChip<T extends string>({
   accent = palette.green,
 }: OptionChipProps<T>) {
   const isSelected = selected === value;
+  const { language } = useLanguage();
 
   return (
     <Pressable
@@ -36,7 +38,7 @@ export function OptionChip<T extends string>({
       >
         <Text
           style={{
-            fontFamily: fonts.displaySemi,
+            fontFamily: getFontForLanguage(language, 'semi'),
             fontSize: 15,
             color: isSelected ? accent : palette.textSecondary,
           }}

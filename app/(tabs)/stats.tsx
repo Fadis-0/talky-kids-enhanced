@@ -1,24 +1,29 @@
 import { Award, Calendar, Target } from "lucide-react-native";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { ScreenShell } from "@/components/ScreenShell";
 import { EmptyStateCard } from "@/components/ui/EmptyStateCard";
 import { Text } from "@/components/ui/Text";
 import { palette } from "@/lib/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function StatsScreen() {
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
+
   return (
     <ScreenShell
-      title="Your progress"
-      subtitle="Track streaks, minutes practiced, and milestones."
+      title={t("tabs.stats.title")}
+      subtitle={t("tabs.stats.subtitle")}
       accent="blue"
     >
-      <View className="-mt-2 gap-4">
+      <View style={{ direction: isRTL ? 'rtl' : 'ltr' }} className="-mt-2 gap-4">
         <View className="flex-row gap-3">
           {[
-            { value: "0", label: "Day streak", color: palette.orange },
-            { value: "0", label: "Minutes", color: palette.blue },
-            { value: "0", label: "Goals met", color: palette.green },
+            { value: "0", label: t("tabs.stats.dayStreak"), color: palette.orange },
+            { value: "0", label: t("tabs.stats.minutes"), color: palette.blue },
+            { value: "0", label: t("tabs.stats.goalsMet"), color: palette.green },
           ].map((stat) => (
             <View
               key={stat.label}
@@ -26,7 +31,7 @@ export default function StatsScreen() {
             >
               <Text
                 style={{
-                  fontFamily: "Fredoka_700Bold",
+                  fontFamily: isRTL ? "Cairo_700Bold" : "Fredoka_700Bold",
                   fontSize: 26,
                   color: stat.color,
                 }}
@@ -40,28 +45,28 @@ export default function StatsScreen() {
           ))}
         </View>
 
-        <Text variant="label" className="px-1">
-          Insights
+        <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="label" className="px-1">
+          {t("tabs.stats.insights")}
         </Text>
 
         <EmptyStateCard
           icon={Target}
-          title="Weekly goals"
-          description="Set gentle targets that fit your child's pace."
+          title={t("tabs.stats.weeklyGoalsTitle")}
+          description={t("tabs.stats.weeklyGoalsDesc")}
           iconColor={palette.green}
           iconBg={palette.greenLight}
         />
         <EmptyStateCard
           icon={Calendar}
-          title="Practice history"
-          description="See which days you showed up — celebrate small wins."
+          title={t("tabs.stats.practiceHistoryTitle")}
+          description={t("tabs.stats.practiceHistoryDesc")}
           iconColor={palette.blue}
           iconBg={palette.blueLight}
         />
         <EmptyStateCard
           icon={Award}
-          title="Achievements"
-          description="Badges and rewards will unlock as you play."
+          title={t("tabs.stats.achievementsTitle")}
+          description={t("tabs.stats.achievementsDesc")}
           iconColor={palette.purple}
           iconBg={palette.purpleLight}
         />

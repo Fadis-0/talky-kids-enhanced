@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { Baby, Stethoscope } from "lucide-react-native";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 
 import { AuthShell } from "@/components/auth/AuthShell";
@@ -12,6 +13,7 @@ import { Routes } from "@/lib/routes";
 import { palette } from "@/lib/theme";
 
 export default function CreateAccountScreen() {
+  const { t } = useTranslation();
   const { role, setRole } = useSignup();
   const [picked, setPicked] = useState<UserRole | null>(role);
 
@@ -25,22 +27,22 @@ export default function CreateAccountScreen() {
 
   return (
     <AuthShell
-      title="Create account"
-      subtitle="Tell us who you are so we can tailor Talky Kids for you."
+      title={t("auth.createAccount.title")}
+      subtitle={t("auth.createAccount.subtitle")}
       onBack={() => router.back()}
       accent="green"
       footer={
         <PrimaryButton
-          label="CONTINUE"
+          label={t("common.continue")}
           onPress={continueFlow}
-          accessibilityLabel="Continue signup"
+          accessibilityLabel={t("accessibilityLabels.continueSignup")}
         />
       }
     >
       <View style={styles.cards}>
         <RoleCard
-          title="Parent"
-          description="Sign up for your child and track their speaking practice."
+          title={t("auth.createAccount.parentTitle")}
+          description={t("auth.createAccount.parentDesc")}
           icon={Baby}
           selected={picked === "parent"}
           accent={palette.green}
@@ -48,8 +50,8 @@ export default function CreateAccountScreen() {
           onPress={() => setPicked("parent")}
         />
         <RoleCard
-          title="Orthophonist"
-          description="Speech therapist — manage patients and assign exercises."
+          title={t("auth.createAccount.orthTitle")}
+          description={t("auth.createAccount.orthDesc")}
           icon={Stethoscope}
           selected={picked === "orthophonist"}
           accent={palette.blue}

@@ -2,6 +2,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { GameImageCard } from "@/components/games/GameImageCard";
 import { GameNavigation } from "@/components/games/GameNavigation";
@@ -9,6 +10,7 @@ import { LevelHeader } from "@/components/games/LevelHeader";
 import { RecordButton } from "@/components/games/RecordButton";
 import { TalkyMascot } from "@/components/games/TalkyMascot";
 import { ScreenShell } from "@/components/ScreenShell";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserData } from "@/contexts/UserDataContext";
 import {
   LETTER_LEVELS,
@@ -20,7 +22,9 @@ import { palette } from "@/lib/theme";
 export default function LettersGameScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { setUser } = useUserData();
+  const { setUser, user } = useUserData();
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -28,7 +32,18 @@ export default function LettersGameScreen() {
 
   const totalLevels = getTotalLevels();
   const currentLevel = getLetterLevel(currentLevelIndex) || LETTER_LEVELS[0];
-  const selectedImage = currentLevel.images.find(
+
+  // Dynamically translate the labels of current level's images
+  const translatedImages = currentLevel.images.map((image, index) => {
+    const letterTranslations = t(`letters.${currentLevel.letterUpper}`, { returnObjects: true });
+    let label = image.label;
+    if (Array.isArray(letterTranslations) && letterTranslations[index]) {
+      label = letterTranslations[index];
+    }
+    return { ...image, label };
+  });
+
+  const selectedImage = translatedImages.find(
     (img) => img.id === selectedImageId
   );
 
@@ -84,7 +99,7 @@ export default function LettersGameScreen() {
     <Pressable
       onPress={() => router.back()}
       accessibilityRole="button"
-      accessibilityLabel="Go back"
+      accessibilityLabel={t("common.back")}
       hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       style={({ pressed }) => [
         {
@@ -103,6 +118,7 @@ export default function LettersGameScreen() {
           shadowOpacity: 0.1,
           shadowRadius: 2,
           zIndex: 10,
+          transform: [{ scaleX: isRTL ? -1 : 1 }], // Flip arrow for RTL
         },
       ]}
     >
@@ -112,13 +128,13 @@ export default function LettersGameScreen() {
 
   return (
     <ScreenShell
-      title="Letters Game"
-      subtitle="Learn to pronounce with fun!"
+      title={t("games.letters.title")}
+      subtitle={t("games.letters.subtitle")}
       accent="green"
       topNavBar={backButton}
       hideTabBarClearance={true}
     >
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, direction: isRTL ? 'rtl' : 'ltr' }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -136,8 +152,8 @@ export default function LettersGameScreen() {
             />
 
             {/* Image Cards Row */}
-            <View className="flex-row gap-3">
-              {currentLevel.images.map((image) => (
+            <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }} className="gap-3">
+              {translatedImages.map((image) => (
                 <GameImageCard
                   key={image.id}
                   image={image}

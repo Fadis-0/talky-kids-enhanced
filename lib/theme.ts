@@ -31,10 +31,25 @@ export const fonts = {
   displayBold: "Fredoka_700Bold",
   displaySemi: "Fredoka_600SemiBold",
   displayMedium: "Fredoka_500Medium",
-  body: "Nunito_600SemiBold",
-  bodyRegular: "Nunito_400Regular",
-  bodyBold: "Nunito_800ExtraBold",
+  body: "Fredoka_500Medium",
+  bodyRegular: "Fredoka_500Medium",
+  bodyBold: "Fredoka_700Bold",
 } as const;
+
+// Language-aware font selection
+export const getFontForLanguage = (language: 'en' | 'ar', weight: 'regular' | 'semi' | 'bold' = 'regular') => {
+  if (language === 'ar') {
+    // Use Cairo for Arabic - optimized for Arabic script
+    if (weight === 'bold') return 'Cairo_700Bold';
+    if (weight === 'semi') return 'Cairo_600SemiBold';
+    return 'Cairo_400Regular';
+  } else {
+    // Use Fredoka for English
+    if (weight === 'bold') return 'Fredoka_700Bold';
+    if (weight === 'semi') return 'Fredoka_600SemiBold';
+    return 'Fredoka_500Medium';
+  }
+};
 
 export const radius = {
   sm: 12,

@@ -1,4 +1,5 @@
 import { User } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { NavbarCharacter } from "@/components/navigation/NavbarCharacter";
@@ -12,6 +13,8 @@ type TopNavBarProps = {
 };
 
 export function TopNavBar({ userName, gender, onProfilePress }: TopNavBarProps) {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
@@ -24,7 +27,7 @@ export function TopNavBar({ userName, gender, onProfilePress }: TopNavBarProps) 
               color: palette.textMuted,
             }}
           >
-            Hello,
+            {t("auth.welcome.greeting")}
           </Text>
           <Text
             style={{
@@ -45,7 +48,7 @@ export function TopNavBar({ userName, gender, onProfilePress }: TopNavBarProps) 
           styles.profileButton,
           pressed && { opacity: 0.7 },
         ]}
-        accessibilityLabel="Profile"
+        accessibilityLabel={t("accessibilityLabels.profileBtn")}
         accessibilityRole="button"
       >
         <View style={styles.profileCircle}>

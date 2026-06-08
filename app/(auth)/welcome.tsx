@@ -1,5 +1,6 @@
 import { router } from "expo-router";
 import { AtSign, Globe, Mic, Phone } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -10,6 +11,8 @@ import { Routes } from "@/lib/routes";
 import { fonts, palette } from "@/lib/theme";
 
 export default function WelcomeScreen() {
+  const { t } = useTranslation();
+
   const mockAuth = (method: "google" | "phone" | "email") => {
     router.push({ pathname: "/(auth)/login", params: { method } });
   };
@@ -21,38 +24,38 @@ export default function WelcomeScreen() {
           <View style={styles.logo}>
             <Mic size={44} color={palette.textOnPrimary} strokeWidth={2.5} />
           </View>
-          <Text style={styles.title}>Talky Kids</Text>
+          <Text style={styles.title}>{t("auth.welcome.title")}</Text>
           <Text style={styles.subtitle}>
-            Sign in to continue your speaking journey
+            {t("auth.welcome.subtitle")}
           </Text>
         </View>
 
         <View style={styles.actions}>
           <SocialAuthButton
-            label="Continue with Google"
+            label={t("auth.welcome.googleBtn")}
             icon={Globe}
             variant="google"
             onPress={() => mockAuth("google")}
           />
           <SocialAuthButton
-            label="Continue with Phone"
+            label={t("auth.welcome.phoneBtn")}
             icon={Phone}
             onPress={() => mockAuth("phone")}
           />
           <SocialAuthButton
-            label="Continue with Email"
+            label={t("auth.welcome.emailBtn")}
             icon={AtSign}
             onPress={() => mockAuth("email")}
           />
 
           <View style={styles.dividerRow}>
             <View style={styles.divider} />
-            <Text style={styles.dividerText}>or</Text>
+            <Text style={styles.dividerText}>{t("common.or")}</Text>
             <View style={styles.divider} />
           </View>
 
           <SocialAuthButton
-            label="Create an account"
+            label={t("auth.welcome.createAccount")}
             icon={Mic}
             variant="primary"
             onPress={() => router.push(Routes.createAccount)}
@@ -60,14 +63,14 @@ export default function WelcomeScreen() {
 
           <View style={styles.loginLink}>
             <AuthLink
-              label="Already have an account? Log in"
+              label={t("auth.welcome.haveAccount")}
               onPress={() =>
                 router.push({ pathname: "/(auth)/login", params: { method: "email" } })
               }
             />
           </View>
 
-          <Text style={styles.mockNote}>Mock auth only — no real sign-in yet</Text>
+          <Text style={styles.mockNote}>{t("auth.welcome.mockNote")}</Text>
         </View>
       </SafeAreaView>
     </View>

@@ -1,0 +1,268 @@
+{
+  "common": {
+    "appName": "Talky Kids",
+    "continue": "CONTINUE",
+    "skip": "Skip for now",
+    "next": "NEXT",
+    "previous": "Previous",
+    "finish": "FINISH",
+    "back": "Go back",
+    "home": "Home",
+    "stats": "Stats",
+    "inbox": "Inbox",
+    "profile": "Profile",
+    "settings": "Settings",
+    "email": "Email",
+    "password": "Password",
+    "phone": "Phone",
+    "or": "or"
+  },
+  "auth": {
+    "welcome": {
+      "title": "Talky Kids",
+      "subtitle": "Sign in to continue your speaking journey",
+      "googleBtn": "Continue with Google",
+      "phoneBtn": "Continue with Phone",
+      "emailBtn": "Continue with Email",
+      "createAccount": "Create an account",
+      "haveAccount": "Already have an account? Log in",
+      "mockNote": "Mock auth only — no real sign-in yet",
+      "greeting": "Hello,"
+    },
+    "login": {
+      "googleTitle": "Google sign in",
+      "emailTitle": "Email sign in",
+      "phoneTitle": "Phone sign in",
+      "googleSubtitle": "Mock flow — tap continue to enter the app.",
+      "otherSubtitle": "Enter your details (mock — any value works).",
+      "phonePlaceholder": "+212 6XX XXX XXX",
+      "emailPlaceholder": "you@email.com",
+      "passwordPlaceholder": "Your password",
+      "googleNote": "We will connect your Google account in a future release. For now, continue to preview the app."
+    },
+    "createAccount": {
+      "title": "Create account",
+      "subtitle": "Tell us who you are so we can tailor Talky Kids for you.",
+      "parentTitle": "Parent",
+      "parentDesc": "Sign up for your child and track their speaking practice.",
+      "orthTitle": "Orthophonist",
+      "orthDesc": "Speech therapist — manage patients and assign exercises."
+    },
+    "signup": {
+      "parentSteps": {
+        "step1": "About you",
+        "step2": "Your child",
+        "step3": "Speech therapist",
+        "step4": "Sign up method",
+        "step5": "Create account"
+      },
+      "orthSteps": {
+        "step1": "Your profile",
+        "step2": "Practice details",
+        "step3": "Sign up method",
+        "step4": "Create account"
+      },
+      "stepCounter": "Step {{step}} of {{total}}",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "childFirstName": "Child's first name",
+      "ageRange": "Age range",
+      "age3to5": "3 – 5",
+      "age5to9": "5 – 9",
+      "gender": "Gender",
+      "boy": "Boy",
+      "girl": "Girl",
+      "clinicName": "Clinic / practice name",
+      "license": "License / registration no. (optional)",
+      "city": "City",
+      "profEmail": "Professional email",
+      "linkOrthNow": "Link an orthophonist now, or skip and add one later.",
+      "googleSignup": "Sign up with Google",
+      "emailSignup": "Sign up with Email",
+      "googleMock": "Finish registration with Google (mock — coming soon).",
+      "createBtn": "CREATE ACCOUNT"
+    }
+  },
+  "tabs": {
+    "home": {
+      "title": "Ready to practice?",
+      "subtitle": "Warm up your voice with fun mouth and speaking games.",
+      "dailyPractice": "Daily practice",
+      "startSession": "Start a session",
+      "dailyDesc": "Games for speaking and mouth movements are on the way. Tap below to preview the flow.",
+      "exploreGames": "Explore Games",
+      "lettersGame": "Letters Game",
+      "lettersDesc": "Learn the 26 letters of the alphabet with fun sounds and interactions!",
+      "videoQuestions": "Video Questions",
+      "videoDesc": "Watch videos and GIFs, then answer questions with your voice!",
+      "balloonTitle": "Balloon Blowing",
+      "balloonDesc": "Blow air to inflate balloons and have fun with breathing exercises!",
+      "candlesTitle": "Candles Blowing",
+      "candlesDesc": "Blow out the candles while practicing controlled breathing!",
+      "notStarted": "Not started yet",
+      "completed": "Completed! 🎉",
+      "streakDay": "{{streak}} Day Streak"
+    },
+    "stats": {
+      "title": "Your progress",
+      "subtitle": "Track streaks, minutes practiced, and milestones.",
+      "dayStreak": "Day streak",
+      "minutes": "Minutes",
+      "goalsMet": "Goals met",
+      "insights": "Insights",
+      "weeklyGoalsTitle": "Weekly goals",
+      "weeklyGoalsDesc": "Set gentle targets that fit your child's pace.",
+      "practiceHistoryTitle": "Practice history",
+      "practiceHistoryDesc": "See which days you showed up — celebrate small wins.",
+      "achievementsTitle": "Achievements",
+      "achievementsDesc": "Badges and rewards will unlock as you play."
+    },
+    "notifications": {
+      "title": "Inbox",
+      "subtitle": "Reminders, cheers, and tips from Talky Kids.",
+      "empty": "All caught up!",
+      "emptyDesc": "Practice reminders and celebration messages will appear here.",
+      "youWillSee": "You will see",
+      "milestones": "Milestone celebrations",
+      "nudges": "Gentle practice nudges"
+    },
+    "settings": {
+      "title": "Profile",
+      "subtitle": "Sound, safety, and account preferences.",
+      "userName": "Little learner",
+      "userDesc": "Add a name and avatar soon",
+      "sound": "Sound and voice",
+      "soundDesc": "Effects and speech feedback",
+      "parentControls": "Parent controls",
+      "parentControlsDesc": "PIN, screen time, privacy",
+      "helpSupport": "Help and support",
+      "helpSupportDesc": "FAQs and contact",
+      "language": "Language",
+      "languageDesc": "Choose your preferred language",
+      "arabic": "العربية",
+      "english": "English"
+    }
+  },
+  "games": {
+    "letters": {
+      "title": "Letters Game",
+      "subtitle": "Learn to pronounce with fun!",
+      "levelFormat": "Level {{level}} of {{total}}",
+      "instruction": "Pick an image and learn to say it!"
+    },
+    "video": {
+      "title": "Video Questions",
+      "subtitle": "Watch and answer!",
+      "levelFormat": "Level {{level}} of {{total}}"
+    },
+    "balloon": {
+      "title": "Balloon Blowing",
+      "subtitle": "Blow into the mic to inflate!",
+      "blow": "Blow!",
+      "pop": "POP!",
+      "splendid": "Splendid! 🎉",
+      "poppedBanner": "🎈 BALLOON POPPED! 🎈",
+      "stopListening": "Stop listening",
+      "startListening": "Start blowing game"
+    },
+    "candles": {
+      "title": "Candles Blowing",
+      "subtitle": "Blow into the mic to blow out the candles!",
+      "blow": "Blow!",
+      "blownOutText": "BLOWN OUT!",
+      "congrats": "Great breathing! 🌬️",
+      "blownOutBanner": "🕯️ CANDLES BLOWN OUT! 🕯️",
+      "stopListening": "Stop listening",
+      "startListening": "Start blowing game"
+    },
+    "levelHeader": "Level {{levelNumber}} of {{totalLevels}}",
+    "progress": "{{progress}}%",
+    "previousLevel": "Previous level",
+    "nextLevel": "Next level",
+    "finishGame": "Finish game",
+    "imageLabel": "{{label}}, tap to select and play pronunciation",
+    "record": {
+      "stop": "Stop recording",
+      "start": "Record pronunciation for {{label}}",
+      "selectedItem": "selected item",
+      "recordingFormat": "Recording ({{duration}}s)"
+    }
+  },
+  "letters": {
+    "A": ["Apple", "Ant", "Arrow"],
+    "B": ["Ball", "Balloon", "Banana"],
+    "C": ["Cat", "Car", "Cake"],
+    "D": ["Dog", "Dinosaur", "Duck"],
+    "E": ["Elephant", "Egg", "Eggplant"],
+    "F": ["Fish", "Flower", "Frog"],
+    "G": ["Grapes", "Giraffe", "Guitar"],
+    "H": ["Hat", "Heart", "House"],
+    "I": ["Ice Cream", "Igloo", "Ink"],
+    "J": ["Jellyfish", "Jacket", "Jar"],
+    "K": ["Kite", "Key", "Keyboard"],
+    "L": ["Lion", "Leaf", "Lollipop"],
+    "M": ["Monkey", "Moon", "Mountain"],
+    "N": ["Nest", "Nose", "Necklace"],
+    "O": ["Orange", "Octopus", "Owl"],
+    "P": ["Penguin", "Pig", "Pizza"],
+    "Q": ["Queen", "Quest", "Quilt"],
+    "R": ["Rainbow", "Rabbit", "Robot"],
+    "S": ["Sun", "Snake", "Strawberry"],
+    "T": ["Tiger", "Tree", "Train"],
+    "U": ["Umbrella", "Unicorn", "Ukulele"],
+    "V": ["Violin", "Volcano", "Van"],
+    "W": ["Whale", "Watermelon", "Watch"],
+    "X": ["Xylophone", "X-ray", "Xmas"],
+    "Y": ["Yo-Yo", "Yacht", "Yogurt"],
+    "Z": ["Zebra", "Zipper", "Zoo"]
+  },
+  "balloonGame": {
+    "level1": "Easy peasy! 🎈",
+    "level2": "A bit harder! 💨",
+    "level3": "Keep blowing! 🌬️",
+    "level4": "Getting tough! 💪",
+    "level5": "Halfway there! 🔥",
+    "level6": "Super lungs! 🦸",
+    "level7": "Almost pro! ⭐",
+    "level8": "Expert mode! 🏆",
+    "level9": "Legendary! 🐉",
+    "level10": "CHAMPION! 👑"
+  },
+  "candlesGame": {
+    "level1": "Make a wish! 🎂",
+    "level2": "Double trouble! 🕯️🕯️",
+    "level3": "Three little lights! ✨",
+    "level4": "Light breeze needed! 🌬️",
+    "level5": "Big birthday blow! 🥳",
+    "level6": "Super storm puff! 🌪️"
+  },
+  "videoQuestions": {
+    "question1": "What animal do you see in the video?",
+    "question2": "What color is the ball?",
+    "question3": "How many cats do you see?",
+    "question4": "What sound does the animal make?",
+    "question5": "What is the person doing?",
+    "question6": "What fruit do you see?",
+    "question7": "What is the name of this toy?",
+    "question8": "What color is the flower?"
+  },
+  "notFound": {
+    "title": "Oops!",
+    "message": "This screen doesn't exist.",
+    "link": "Go to home screen!"
+  },
+  "tabAccess": {
+    "homeDesc": "Home",
+    "statsDesc": "Progress and stats",
+    "notificationsDesc": "Notifications",
+    "profileDesc": "Settings"
+  },
+  "accessibilityLabels": {
+    "homeBtn": "Continue to practice",
+    "lettersBtn": "Play Letters Game",
+    "videoBtn": "Play Video Questions Game",
+    "profileBtn": "Profile",
+    "continueSignup": "Continue signup",
+    "createAccount": "Create account"
+  }
+}

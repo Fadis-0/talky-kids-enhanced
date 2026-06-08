@@ -6,6 +6,8 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { Text } from "@/components/ui/Text";
 import { palette, spacing } from "@/lib/theme";
 
+import { useLanguage } from "@/contexts/LanguageContext";
+
 type Accent = "green" | "blue" | "orange" | "purple" | "red";
 
 const accentGradients: Record<Accent, readonly [string, string]> = {
@@ -38,12 +40,13 @@ export function ScreenShell({
   hideTabBarClearance = false,
 }: ScreenShellProps) {
   const insets = useSafeAreaInsets();
+  const { isRTL } = useLanguage();
   const tabClearance = hideTabBarClearance
     ? Math.max(insets.bottom, 16)
     : spacing.tabBarHeight + Math.max(insets.bottom, 8) + 16;
 
   return (
-    <View className="flex-1 bg-tk-bg">
+    <View style={{ direction: isRTL ? 'rtl' : 'ltr' }} className="flex-1 bg-tk-bg">
       <LinearGradient
         colors={[...accentGradients[accent]]}
         style={{ paddingTop: insets.top }}
@@ -51,12 +54,12 @@ export function ScreenShell({
       >
         {topNavBar ? <View className="mb-2">{topNavBar}</View> : null}
         <SafeAreaView edges={[]} className="flex-row items-start justify-between">
-          <View className="mr-4 flex-1 flex-row items-start gap-3">
+          <View className="flex-1 flex-row items-start gap-3">
             {headerLeft ? <View className="pt-1">{headerLeft}</View> : null}
             <View className="flex-1">
-              <Text variant="hero">{title}</Text>
+              <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="hero">{title}</Text>
               {subtitle ? (
-                <Text variant="subtitle" className="mt-2">
+                <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="subtitle" className="mt-2">
                   {subtitle}
                 </Text>
               ) : null}

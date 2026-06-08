@@ -5,9 +5,11 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import { Text } from "@/components/ui/Text";
 import { palette } from "@/lib/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type LevelHeaderProps = {
   levelNumber: number;
@@ -20,6 +22,8 @@ export function LevelHeader({
   totalLevels,
   letter,
 }: LevelHeaderProps) {
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
   const progress = (levelNumber / totalLevels) * 100;
 
   // Reanimated shared values
@@ -48,7 +52,7 @@ export function LevelHeader({
   });
 
   return (
-    <View className="gap-3">
+    <View style={{ direction: isRTL ? 'rtl' : 'ltr' }} className="gap-3">
       {/* Level Counter and Progress */}
       <View className="flex-row items-center justify-between">
         <Text
@@ -56,14 +60,14 @@ export function LevelHeader({
           className="text-xs"
           style={{ color: palette.textSecondary }}
         >
-          Level {levelNumber} of {totalLevels}
+          {t("games.letters.levelFormat", { level: levelNumber, total: totalLevels })}
         </Text>
         <Text
           variant="label"
           className="text-xs"
           style={{ color: palette.textSecondary }}
         >
-          {Math.round(progress)}%
+          {t("games.progress", { progress: Math.round(progress) })}
         </Text>
       </View>
 
@@ -111,7 +115,7 @@ export function LevelHeader({
             className="text-sm text-center"
             style={{ color: palette.text }}
           >
-            Pick an image and learn to say it!
+            {t("games.letters.instruction")}
           </Text>
         </View>
       )}

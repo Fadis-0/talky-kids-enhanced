@@ -1,5 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 
 import { AuthInput } from "@/components/auth/AuthInput";
@@ -10,6 +11,7 @@ import type { SignupMethod } from "@/lib/auth-types";
 import { Routes } from "@/lib/routes";
 
 export default function LoginScreen() {
+  const { t } = useTranslation();
   const { method } = useLocalSearchParams<{ method?: SignupMethod }>();
   const authMethod = method ?? "email";
 
@@ -19,15 +21,15 @@ export default function LoginScreen() {
 
   const title =
     authMethod === "google"
-      ? "Google sign in"
+      ? t("auth.login.googleTitle")
       : authMethod === "phone"
-        ? "Phone sign in"
-        : "Email sign in";
+        ? t("auth.login.phoneTitle")
+        : t("auth.login.emailTitle");
 
   const subtitle =
     authMethod === "google"
-      ? "Mock flow — tap continue to enter the app."
-      : "Enter your details (mock — any value works).";
+      ? t("auth.login.googleSubtitle")
+      : t("auth.login.otherSubtitle");
 
   const finish = () => router.replace(Routes.tabs);
 
@@ -37,22 +39,22 @@ export default function LoginScreen() {
       subtitle={subtitle}
       onBack={() => router.back()}
       accent="blue"
-      footer={<PrimaryButton label="CONTINUE" color="blue" onPress={finish} />}
+      footer={<PrimaryButton label={t("common.continue")} color="blue" onPress={finish} />}
     >
       <View className="gap-4 pt-2">
         {authMethod === "google" ? (
           <Text variant="body">
-            We will connect your Google account in a future release. For now, continue to preview the app.
+            {t("auth.login.googleNote")}
           </Text>
         ) : null}
 
         {authMethod === "phone" ? (
           <AuthInput
-            label="Phone number"
+            label={t("common.phone")}
             value={phone}
             onChangeText={setPhone}
             keyboardType="phone-pad"
-            placeholder="+212 6XX XXX XXX"
+            placeholder={t("auth.login.phonePlaceholder")}
             autoComplete="tel"
           />
         ) : null}
@@ -60,20 +62,20 @@ export default function LoginScreen() {
         {authMethod === "email" ? (
           <>
             <AuthInput
-              label="Email"
+              label={t("common.email")}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
-              placeholder="you@email.com"
+              placeholder={t("auth.login.emailPlaceholder")}
             />
             <AuthInput
-              label="Password"
+              label={t("common.password")}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
-              placeholder="Your password"
+              placeholder={t("auth.login.passwordPlaceholder")}
             />
           </>
         ) : null}

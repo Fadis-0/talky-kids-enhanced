@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Image, Pressable, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { GameNavigation } from "@/components/games/GameNavigation";
 import { LevelHeader } from "@/components/games/LevelHeader";
@@ -10,6 +11,7 @@ import { TalkyMascot } from "@/components/games/TalkyMascot";
 import { ScreenShell } from "@/components/ScreenShell";
 import { Text } from "@/components/ui/Text";
 import { useUserData } from "@/contexts/UserDataContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { palette } from "@/lib/theme";
 import {
     VIDEO_QUESTION_LEVELS,
@@ -20,12 +22,17 @@ import {
 export default function VideoQuestionsScreen() {
   const router = useRouter();
   const { setUser } = useUserData();
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
 
   const totalLevels = getTotalVideoLevels();
   const currentLevel = getVideoQuestionLevel(currentLevelIndex) || VIDEO_QUESTION_LEVELS[0];
+  
+  // Get translated question
+  const translatedQuestion = t(`videoQuestions.question${currentLevelIndex + 1}`);
 
   useEffect(() => {
     // Reset recording state when level changes
@@ -73,7 +80,7 @@ export default function VideoQuestionsScreen() {
     <Pressable
       onPress={() => router.back()}
       accessibilityRole="button"
-      accessibilityLabel="Go back"
+      accessibilityLabel={t("common.back")}
       hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       style={({ pressed }) => [
         {
@@ -92,6 +99,7 @@ export default function VideoQuestionsScreen() {
           shadowOpacity: 0.1,
           shadowRadius: 2,
           zIndex: 10,
+          transform: [{ scaleX: isRTL ? -1 : 1 }], // Flip arrow for RTL
         },
       ]}
     >
@@ -101,13 +109,13 @@ export default function VideoQuestionsScreen() {
 
   return (
     <ScreenShell
-      title="Video Questions"
-      subtitle="Watch and answer!"
+      title={t("games.video.title")}
+      subtitle={t("games.video.subtitle")}
       accent="blue"
       topNavBar={backButton}
       hideTabBarClearance={true}
     >
-      <View style={{ flex: 1, justifyContent: "space-between" }}>
+      <View style={{ flex: 1, justifyContent: "space-between", direction: isRTL ? 'rtl' : 'ltr' }}>
         {/* Top Content */}
         <View className="gap-2">
           {/* Level Header */}
@@ -158,7 +166,7 @@ export default function VideoQuestionsScreen() {
                 color: palette.text,
               }}
             >
-              {currentLevel.videoQuestion.question}
+              {translatedQuestion}
             </Text>
           </View>
 
@@ -166,7 +174,7 @@ export default function VideoQuestionsScreen() {
           <View style={{ height: 70, justifyContent: "center", alignItems: "center", marginTop: 8 }}>
             <TalkyMascot 
               state={mascotState} 
-              label={currentLevel.videoQuestion.question}
+              label={translatedQuestion}
             />
           </View>
         </View>
@@ -175,7 +183,7 @@ export default function VideoQuestionsScreen() {
         <View className="gap-4" style={{ marginTop: 45 }}>
           {/* Record Button */}
           <RecordButton
-            selectedImageLabel={currentLevel.videoQuestion.question}
+            selectedImageLabel={translatedQuestion}
             onRecordingComplete={handleRecordingComplete}
             onRecordingStatusChange={(recording) => setIsRecording(recording)}
           />

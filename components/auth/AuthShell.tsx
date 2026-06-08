@@ -2,17 +2,18 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ChevronLeft } from "lucide-react-native";
 import { ReactNode } from "react";
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Text } from "@/components/ui/Text";
-import { fonts, palette } from "@/lib/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getFontForLanguage, palette } from "@/lib/theme";
 
 type AuthShellProps = {
   title: string;
@@ -39,6 +40,29 @@ export function AuthShell({
   accent = "green",
 }: AuthShellProps) {
   const insets = useSafeAreaInsets();
+  const { language } = useLanguage();
+
+  const dynamicStyles = {
+    title: {
+      fontFamily: getFontForLanguage(language, 'bold'),
+      fontSize: 28,
+      lineHeight: 34,
+      color: palette.text,
+    },
+    subtitle: {
+      fontFamily: getFontForLanguage(language, 'regular'),
+      fontSize: 16,
+      lineHeight: 24,
+      color: palette.textSecondary,
+      marginTop: 8,
+    },
+    link: {
+      fontFamily: getFontForLanguage(language, 'semi'),
+      fontSize: 15,
+      color: palette.blue,
+      textAlign: "center" as const,
+    },
+  };
 
   return (
     <View style={styles.screen}>
@@ -58,8 +82,8 @@ export function AuthShell({
         ) : (
           <View style={styles.backSpacer} />
         )}
-        <Text style={styles.title}>{title}</Text>
-        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+        <Text style={dynamicStyles.title}>{title}</Text>
+        {subtitle ? <Text style={dynamicStyles.subtitle}>{subtitle}</Text> : null}
       </LinearGradient>
 
       <KeyboardAvoidingView
@@ -92,9 +116,20 @@ export function AuthLink({
   label: string;
   onPress: () => void;
 }) {
+  const { language } = useLanguage();
+
+  const dynamicStyles = {
+    link: {
+      fontFamily: getFontForLanguage(language, 'semi'),
+      fontSize: 15,
+      color: palette.blue,
+      textAlign: "center" as const,
+    },
+  };
+
   return (
     <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8}>
-      <Text style={styles.link}>{label}</Text>
+      <Text style={dynamicStyles.link}>{label}</Text>
     </Pressable>
   );
 }
@@ -125,19 +160,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   pressed: { opacity: 0.85 },
-  title: {
-    fontFamily: fonts.displayBold,
-    fontSize: 28,
-    lineHeight: 34,
-    color: palette.text,
-  },
-  subtitle: {
-    fontFamily: fonts.body,
-    fontSize: 16,
-    lineHeight: 24,
-    color: palette.textSecondary,
-    marginTop: 8,
-  },
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 20,
@@ -151,11 +173,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 12,
-  },
-  link: {
-    fontFamily: fonts.displaySemi,
-    fontSize: 15,
-    color: palette.blue,
-    textAlign: "center",
   },
 });

@@ -2,7 +2,8 @@ import { LucideIcon } from "lucide-react-native";
 import { Pressable, View } from "react-native";
 
 import { Text } from "@/components/ui/Text";
-import { fonts, palette } from "@/lib/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getFontForLanguage, palette } from "@/lib/theme";
 
 type RoleCardProps = {
   title: string;
@@ -23,6 +24,8 @@ export function RoleCard({
   accentLight,
   onPress,
 }: RoleCardProps) {
+  const { language } = useLanguage();
+
   return (
     <Pressable
       onPress={onPress}
@@ -48,7 +51,7 @@ export function RoleCard({
           />
         </View>
         <View className="flex-1">
-          <Text style={{ fontFamily: fonts.displayBold, fontSize: 18, color: palette.text }}>
+          <Text style={{ fontFamily: getFontForLanguage(language, 'bold'), fontSize: 18, color: palette.text }}>
             {title}
           </Text>
           <Text variant="body" className="mt-1">

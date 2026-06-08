@@ -24,6 +24,25 @@
   --color-tk-text-muted: #afafaf;
   --font-display: "Fredoka_700Bold", system-ui, sans-serif;
   --font-display-semi: "Fredoka_600SemiBold", system-ui, sans-serif;
-  --font-body: "Nunito_600SemiBold", system-ui, sans-serif;
-  --font-body-regular: "Nunito_400Regular", system-ui, sans-serif;
+  --font-body: "Fredoka_500Medium", system-ui, sans-serif;
+  --font-body-regular: "Fredoka_500Medium", system-ui, sans-serif;
+}
+
+/* Language-aware font rendering */
+body, * {
+  font-family: "Fredoka_500Medium", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+html[lang="ar"] {
+  direction: rtl;
+  font-family: "Cairo_400Regular", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+html[lang="ar"] * {
+  font-family: "Cairo_400Regular", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+html[lang="en"] {
+  direction: ltr;
+  font-family: "Fredoka_500Medium", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }

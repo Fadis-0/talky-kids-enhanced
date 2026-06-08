@@ -11,7 +11,9 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Text } from "@/components/ui/Text";
 import { palette } from "@/lib/theme";
 
@@ -29,6 +31,8 @@ export function RecordButton({
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
 
   // Animation values
   const scale = useSharedValue(1);
@@ -176,8 +180,8 @@ export function RecordButton({
           accessibilityRole="button"
           accessibilityLabel={
             isRecording
-              ? "Stop recording"
-              : `Record pronunciation for ${selectedImageLabel || "selected item"}`
+              ? t("games.record.stop")
+              : t("games.record.start", { label: selectedImageLabel || t("games.record.selectedItem") })
           }
           style={({ pressed }) => [
             {
@@ -209,7 +213,7 @@ export function RecordButton({
 
       {/* Recording progress timer */}
       {isRecording && (
-        <View className="flex-row items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 border border-red-100">
+        <View className="flex-row items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 border border-red-100" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
           <View
             style={{
               width: 8,
@@ -221,9 +225,9 @@ export function RecordButton({
           <Text
             variant="label"
             className="text-sm font-bold"
-            style={{ color: palette.red }}
+            style={{ color: palette.red, fontFamily: isRTL ? "Cairo_700Bold" : undefined }}
           >
-            Recording ({recordingDuration}s)
+            {t("games.record.recordingFormat", { duration: recordingDuration })}
           </Text>
         </View>
       )}

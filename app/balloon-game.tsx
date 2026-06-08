@@ -14,6 +14,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 import Svg, {
   Circle,
   Defs,
@@ -28,6 +29,7 @@ import { LevelHeader } from "@/components/games/LevelHeader";
 import { TalkyMascot } from "@/components/games/TalkyMascot";
 import { ScreenShell } from "@/components/ScreenShell";
 import { Text } from "@/components/ui/Text";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserData } from "@/contexts/UserDataContext";
 import {
   BALLOON_LEVELS,
@@ -166,9 +168,12 @@ function BalloonShape({ color, size, isBlowing }: { color: string; size: number;
 // ═══════════════════════════════════════════════════════════
 // MAIN SCREEN component
 // ═══════════════════════════════════════════════════════════
+
 export default function BalloonGameScreen() {
   const router = useRouter();
   const { setUser } = useUserData();
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
 
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [gameState, setGameState] = useState<"idle" | "listening" | "popped">("idle");
@@ -454,7 +459,7 @@ export default function BalloonGameScreen() {
     <Pressable
       onPress={() => router.back()}
       accessibilityRole="button"
-      accessibilityLabel="Go back"
+      accessibilityLabel={t("common.back")}
       hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       style={({ pressed }) => [{
         width: 44, height: 44, borderRadius: 14,
@@ -465,6 +470,7 @@ export default function BalloonGameScreen() {
         elevation: 4, shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1, shadowRadius: 2, zIndex: 10,
+        transform: [{ scaleX: isRTL ? -1 : 1 }], // Flip arrow for RTL
       }]}
     >
       <ChevronLeft size={24} color={palette.text} />
@@ -473,18 +479,20 @@ export default function BalloonGameScreen() {
 
   return (
     <ScreenShell
-      title="Balloon Blowing"
-      subtitle="Blow into the mic to inflate!"
+      title={t("games.balloon.title")}
+      subtitle={t("games.balloon.subtitle")}
       accent="orange"
       topNavBar={backButton}
       hideTabBarClearance
     >
-      <View style={{ flex: 1, justifyContent: "space-between", minHeight: 520 }}>
+      <View style={{ flex: 1, justifyContent: "space-between", minHeight: 520, direction: isRTL ? 'rtl' : 'ltr' }}>
         {/* Header section */}
         <View className="gap-2">
           <LevelHeader levelNumber={currentLevelIndex + 1} totalLevels={totalLevels} letter="" />
           <View style={s.levelBadge}>
-            <Text style={s.levelBadgeText}>{currentLevel.label}</Text>
+            <Text style={[s.levelBadgeText, { fontFamily: isRTL ? "Cairo_600SemiBold" : fonts.displaySemi }]}>
+              {t(`balloonGame.level${currentLevelIndex + 1}`, { defaultValue: currentLevel.label })}
+            </Text>
           </View>
         </View>
 
@@ -505,8 +513,12 @@ export default function BalloonGameScreen() {
             </Animated.View>
           ) : (
             <View style={s.popWrap}>
-              <Text style={s.popText}>POP! 💥</Text>
-              <Text style={s.popSub}>Splendid! 🎉</Text>
+              <Text style={[s.popText, { fontFamily: isRTL ? "Cairo_700Bold" : fonts.displayBold }]}>
+                {t("games.balloon.pop")} 💥
+              </Text>
+              <Text style={[s.popSub, { fontFamily: isRTL ? "Cairo_600SemiBold" : fonts.displaySemi }]}>
+                {t("games.balloon.splendid")}
+              </Text>
             </View>
           )}
         </View>
@@ -515,7 +527,7 @@ export default function BalloonGameScreen() {
         <Animated.View style={[mascotAnimStyle, { marginBottom: 4 }]}>
           <TalkyMascot
             state={gameState === "popped" ? "completed" : gameState === "listening" ? "recording" : "idle"}
-            label={gameState === "popped" ? "POP!" : gameState === "listening" ? "Blow!" : "🎈"}
+            label={gameState === "popped" ? t("games.balloon.pop") : gameState === "listening" ? t("games.balloon.blow") : "🎈"}
           />
         </Animated.View>
 
@@ -526,7 +538,7 @@ export default function BalloonGameScreen() {
               <Pressable
                 onPress={gameState === "listening" ? stopListening : startListening}
                 accessibilityRole="button"
-                accessibilityLabel={gameState === "listening" ? "Stop listening" : "Start blowing game"}
+                accessibilityLabel={gameState === "listening" ? t("games.balloon.stopListening") : t("games.balloon.startListening")}
               >
                 {({ pressed }) => {
                   const isListen = gameState === "listening";
@@ -553,7 +565,9 @@ export default function BalloonGameScreen() {
             </Animated.View>
           ) : (
             <View style={s.poppedBanner}>
-              <Text style={s.poppedText}>🎈 BALLOON POPPED! 🎈</Text>
+              <Text style={[s.poppedText, { fontFamily: isRTL ? "Cairo_700Bold" : fonts.displayBold }]}>
+                {t("games.balloon.poppedBanner")}
+              </Text>
             </View>
           )}
 
@@ -584,7 +598,7 @@ const s = StyleSheet.create({
     marginBottom: 6,
   },
   levelBadgeText: {
-    fontFamily: fonts.displaySemi, fontSize: 14,
+    fontSize: 14,
     color: palette.orange, textAlign: "center",
   },
   balloonArea: {
@@ -597,8 +611,8 @@ const s = StyleSheet.create({
     width: 1, height: 1, zIndex: 20,
   },
   popWrap: { alignItems: "center", gap: 4 },
-  popText: { fontFamily: fonts.displayBold, fontSize: 42, color: palette.orange, textAlign: "center" },
-  popSub: { fontFamily: fonts.displaySemi, fontSize: 18, color: palette.textSecondary, textAlign: "center" },
+  popText: { fontSize: 42, color: palette.orange, textAlign: "center" },
+  popSub: { fontSize: 18, color: palette.textSecondary, textAlign: "center" },
   btnOuter: { position: "relative", height: 76, width: 76, alignSelf: "center" },
   btnShadow: { position: "absolute", left: 0, right: 0, bottom: 0, height: 72, borderRadius: 38 },
   btnFace: {
@@ -610,5 +624,5 @@ const s = StyleSheet.create({
     backgroundColor: palette.orangeLight, paddingVertical: 14, paddingHorizontal: 24,
     borderRadius: 18, borderWidth: 2, borderColor: palette.orange, alignItems: "center",
   },
-  poppedText: { fontFamily: fonts.displayBold, fontSize: 17, color: palette.orange },
+  poppedText: { fontSize: 17, color: palette.orange },
 });

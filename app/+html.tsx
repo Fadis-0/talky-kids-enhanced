@@ -6,7 +6,7 @@ import { ScrollViewStyleReset } from 'expo-router/html';
 // do not have access to the DOM or browser APIs.
 export default function Root({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ar" dir="auto">
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -28,11 +28,28 @@ export default function Root({ children }: { children: React.ReactNode }) {
 }
 
 const responsiveBackground = `
-body {
-  background-color: #fff;
-}
-@media (prefers-color-scheme: dark) {
   body {
-    background-color: #000;
+    background-color: #fff;
+    font-family: 'Fredoka', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
   }
-}`;
+  
+  html[lang="ar"] {
+    direction: rtl;
+    font-family: 'Cairo', 'Fredoka', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  }
+  
+  html[lang="ar"] * {
+    font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  }
+  
+  html[lang="en"] {
+    direction: ltr;
+    font-family: 'Fredoka', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #000;
+    }
+  }
+`;

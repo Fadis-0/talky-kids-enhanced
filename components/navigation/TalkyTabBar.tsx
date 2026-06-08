@@ -1,30 +1,31 @@
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import * as Haptics from "expo-haptics";
 import {
-  BarChart3,
-  Bell,
-  House,
-  Settings,
-  type LucideIcon,
+    BarChart3,
+    Bell,
+    House,
+    Settings,
+    type LucideIcon,
 } from "lucide-react-native";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 import Animated, {
-  Extrapolate,
-  interpolate,
-  interpolateColor,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
+    Extrapolate,
+    interpolate,
+    interpolateColor,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
-  fonts,
-  palette,
-  spacing,
-  tabConfig,
-  type TabRoute,
+    getFontForLanguage,
+    palette,
+    spacing,
+    type TabRoute
 } from "@/lib/theme";
 
 const TAB_ICONS: Record<TabRoute, LucideIcon> = {
@@ -121,9 +122,34 @@ function TabBarItem({
   onPress,
   onLongPress,
 }: TabBarItemProps) {
-  const config = tabConfig[tabRoute];
+  const { t } = useTranslation();
+  const { language } = useLanguage();
   const Icon = TAB_ICONS[tabRoute];
   const colors = TAB_COLORS[tabRoute];
+
+  // Get labels from translations
+  const getTabLabel = (route: TabRoute) => {
+    const labels: Record<TabRoute, string> = {
+      index: t("common.home"),
+      stats: t("common.stats"),
+      notifications: t("common.inbox"),
+      settings: t("common.settings"),
+    };
+    return labels[route];
+  };
+
+  const getTabAccessibility = (route: TabRoute) => {
+    const labels: Record<TabRoute, string> = {
+      index: t("tabAccess.homeDesc"),
+      stats: t("tabAccess.statsDesc"),
+      notifications: t("tabAccess.notificationsDesc"),
+      settings: t("tabAccess.profileDesc"),
+    };
+    return labels[route];
+  };
+
+  const label = getTabLabel(tabRoute);
+  const accessibilityLabel = getTabAccessibility(tabRoute);
 
   const scaleAnim = useSharedValue(0);
   const bgScaleAnim = useSharedValue(0);
@@ -186,7 +212,7 @@ function TabBarItem({
       onLongPress={onLongPress}
       accessibilityRole="tab"
       accessibilityState={{ selected: focused }}
-      accessibilityLabel={config.accessibilityLabel}
+      accessibilityLabel={accessibilityLabel}
       style={styles.tab}
     >
       <Animated.View style={[styles.iconWrap, iconWrapStyle]}>
@@ -203,13 +229,13 @@ function TabBarItem({
         style={[
           styles.label,
           {
-            fontFamily: focused ? fonts.displaySemi : fonts.body,
+            fontFamily: getFontForLanguage(language, focused ? 'semi' : 'regular'),
             fontSize: 11,
           },
           labelAnimatedStyle,
         ]}
       >
-        {config.label}
+        {label}
       </Animated.Text>
     </AnimatedPressable>
   );

@@ -1,8 +1,10 @@
 import { CheckCircle, ChevronLeft, ChevronRight } from "lucide-react-native";
 import { Pressable, StyleSheet, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Text } from "@/components/ui/Text";
 import { fonts, palette } from "@/lib/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type GameNavigationProps = {
   currentLevel: number;
@@ -19,17 +21,24 @@ export function GameNavigation({
   onNext,
   onFinish,
 }: GameNavigationProps) {
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
+  
   const isFirstLevel = currentLevel === 1;
   const isLastLevel = currentLevel === totalLevels;
 
+  // Swapped chevrons for RTL
+  const PrevIcon = isRTL ? ChevronRight : ChevronLeft;
+  const NextIcon = isRTL ? ChevronLeft : ChevronRight;
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { direction: isRTL ? 'rtl' : 'ltr' }]}>
       {/* Previous Button */}
       <Pressable
         onPress={onPrevious}
         disabled={isFirstLevel}
         accessibilityRole="button"
-        accessibilityLabel="Previous level"
+        accessibilityLabel={t("games.previousLevel")}
         style={styles.buttonWrapper}
       >
         {({ pressed }) => {
@@ -49,7 +58,7 @@ export function GameNavigation({
                   pressed && !isFirstLevel && styles.facePressed,
                 ]}
               >
-                <ChevronLeft
+                <PrevIcon
                   size={20}
                   color={textColor}
                   strokeWidth={3}
@@ -58,10 +67,10 @@ export function GameNavigation({
                   style={{
                     color: textColor,
                     fontSize: 14,
-                    fontFamily: fonts.displayBold,
+                    fontFamily: isRTL ? "Cairo_700Bold" : fonts.displayBold,
                   }}
                 >
-                  PREVIOUS
+                  {t("common.previous").toUpperCase()}
                 </Text>
               </View>
             </View>
@@ -73,7 +82,7 @@ export function GameNavigation({
       <Pressable
         onPress={isLastLevel ? onFinish : onNext}
         accessibilityRole="button"
-        accessibilityLabel={isLastLevel ? "Finish game" : "Next level"}
+        accessibilityLabel={isLastLevel ? t("games.finishGame") : t("games.nextLevel")}
         style={styles.buttonWrapper}
       >
         {({ pressed }) => {
@@ -99,24 +108,41 @@ export function GameNavigation({
                       style={{
                         color: "#FFFFFF",
                         fontSize: 14,
-                        fontFamily: fonts.displayBold,
+                        fontFamily: isRTL ? "Cairo_700Bold" : fonts.displayBold,
                       }}
                     >
-                      FINISH
+                      {t("common.finish").toUpperCase()}
                     </Text>
                   </>
                 ) : (
                   <>
-                    <Text
-                      style={{
-                        color: "#FFFFFF",
-                        fontSize: 14,
-                        fontFamily: fonts.displayBold,
-                      }}
-                    >
-                      NEXT
-                    </Text>
-                    <ChevronRight size={20} color="#FFFFFF" strokeWidth={3} />
+                    {isRTL ? (
+                      <>
+                        <NextIcon size={20} color="#FFFFFF" strokeWidth={3} />
+                        <Text
+                          style={{
+                            color: "#FFFFFF",
+                            fontSize: 14,
+                            fontFamily: "Cairo_700Bold",
+                          }}
+                        >
+                          {t("common.next").toUpperCase()}
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                        <Text
+                          style={{
+                            color: "#FFFFFF",
+                            fontSize: 14,
+                            fontFamily: fonts.displayBold,
+                          }}
+                        >
+                          {t("common.next").toUpperCase()}
+                        </Text>
+                        <NextIcon size={20} color="#FFFFFF" strokeWidth={3} />
+                      </>
+                    )}
                   </>
                 )}
               </View>
