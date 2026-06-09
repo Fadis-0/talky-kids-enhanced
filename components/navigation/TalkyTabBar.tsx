@@ -1,31 +1,31 @@
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import * as Haptics from "expo-haptics";
 import {
-    BarChart3,
-    Bell,
-    House,
-    Settings,
-    type LucideIcon,
+  BarChart3,
+  Bell,
+  House,
+  Settings,
+  type LucideIcon,
 } from "lucide-react-native";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 import Animated, {
-    Extrapolate,
-    interpolate,
-    interpolateColor,
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
+  Extrapolate,
+  interpolate,
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
-    getFontForLanguage,
-    palette,
-    spacing,
-    type TabRoute
+  getFontForLanguage,
+  palette,
+  spacing,
+  type TabRoute
 } from "@/lib/theme";
 
 const TAB_ICONS: Record<TabRoute, LucideIcon> = {
@@ -59,6 +59,7 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function TalkyTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const { isRTL } = useLanguage();
   const currentRouteName = state.routes[state.index]?.name;
 
   // Hide tab bar completely on the letters game screen
@@ -70,7 +71,13 @@ export function TalkyTabBar({ state, navigation }: BottomTabBarProps) {
     <View
       style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom, 12) }]}
     >
-      <View style={styles.bar}>
+      <View style={[
+        styles.bar,
+        {
+          flexDirection: isRTL ? "row-reverse" : "row",
+          paddingTop: isRTL ? 16 : 8
+        }
+      ]}>
         {state.routes.map((route, index) => {
           const tabRoute = getTabRoute(route.name);
           if (!tabRoute) return null;
