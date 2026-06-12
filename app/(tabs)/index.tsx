@@ -1,5 +1,6 @@
 import { getTotalBalloonLevels } from "@/lib/balloon-game-data";
 import { getTotalCandlesLevels } from "@/lib/candles-game-data";
+import { getTotalLevels as getTotalLetterLevels } from "@/lib/letters-game-data";
 import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import { Flame, Mic, Sparkles, Type, Video, Wind } from "lucide-react-native";
@@ -113,7 +114,8 @@ export default function HomeScreen() {
           accessibilityLabel={t("accessibilityLabels.lettersBtn")}
         >
           {({ pressed }: { pressed: boolean }) => {
-            const progressPercent = Math.max(5, (user.lettersGameLevel / 26) * 100);
+            const letterTotal = getTotalLetterLevels();
+            const progressPercent = Math.max(5, (user.lettersGameLevel / letterTotal) * 100);
 
             return (
               <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
@@ -138,9 +140,9 @@ export default function HomeScreen() {
                         >
                           {user.lettersGameLevel === 0
                             ? t("tabs.home.notStarted")
-                            : user.lettersGameLevel >= 26
+                            : user.lettersGameLevel >= letterTotal
                               ? t("tabs.home.completed")
-                              : t("games.letters.levelFormat", { level: user.lettersGameLevel, total: 26 })}
+                              : t("games.letters.levelFormat", { level: user.lettersGameLevel, total: letterTotal })}
                         </Text>
                       </View>
                     </View>

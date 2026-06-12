@@ -204,9 +204,13 @@ export function GameImageCard({
         {/* Word Label */}
         <Text
           variant="label"
-          className="text-center text-sm font-bold"
+          className="text-center text-sm"
           numberOfLines={1}
-          style={{ color: palette.text, marginTop: 4 }}
+          style={{
+            color: palette.text,
+            marginTop: 4,
+            fontFamily: language === "ar" ? "Cairo_700Bold" : "Fredoka_700Bold",
+          }}
         >
           {image.label}
         </Text>

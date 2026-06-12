@@ -3,7 +3,10 @@ import { View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
+  withRepeat,
+  withSequence,
   withSpring,
+  withTiming,
 } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 
@@ -29,6 +32,7 @@ export function LevelHeader({
   // Reanimated shared values
   const progressWidth = useSharedValue(progress);
   const letterScale = useSharedValue(0.6);
+  const bodyBounce = useSharedValue(0);
 
   useEffect(() => {
     // Smooth progress bar update
@@ -37,6 +41,16 @@ export function LevelHeader({
     // Bouncy letter entrance when it changes
     letterScale.value = 0.6;
     letterScale.value = withSpring(1.0, { damping: 10, stiffness: 120 });
+
+    // Subtle idle bounce animation
+    bodyBounce.value = withRepeat(
+      withSequence(
+        withTiming(-4, { duration: 800 }),
+        withTiming(4, { duration: 800 })
+      ),
+      -1, // infinite
+      true
+    );
   }, [levelNumber, letter, progress]);
 
   const animatedProgressStyle = useAnimatedStyle(() => {
@@ -48,6 +62,12 @@ export function LevelHeader({
   const animatedLetterStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: letterScale.value }],
+    };
+  });
+
+  const animatedBodyStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: bodyBounce.value }],
     };
   });
 
@@ -93,27 +113,26 @@ export function LevelHeader({
         />
       </View>
 
-      {/* Letter Display */}
+      {/* Letter Character */}
       {!!letter && (
-        <View className="items-center justify-center gap-1 py-1">
-          <Animated.View style={animatedLetterStyle}>
+        <View className="items-center justify-center gap-1 py-4">
+          <Animated.View style={[animatedLetterStyle, animatedBodyStyle]}>
             <Text
               style={{
-                fontSize: 58,
-                lineHeight: 68,
-                fontFamily: "Fredoka_700Bold",
+                fontSize: 100,
+                lineHeight: 110,
+                fontFamily: "Cairo_700Bold",
                 color: palette.green,
-                paddingVertical: 4,
                 textAlign: "center",
               }}
             >
-              {letter.toUpperCase()}
+              {letter}
             </Text>
           </Animated.View>
           <Text
             variant="title"
             className="text-sm text-center"
-            style={{ color: palette.text }}
+            style={{ color: palette.text, marginTop: 12 }}
           >
             {t("games.letters.instruction")}
           </Text>
