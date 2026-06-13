@@ -10,11 +10,11 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from "react-i18next";
 import { Text } from "@/components/ui/Text";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { ImageItem } from "@/lib/letters-game-data";
 import { palette } from "@/lib/theme";
+import { useTranslation } from "react-i18next";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 

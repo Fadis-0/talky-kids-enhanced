@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -8,11 +9,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { useTranslation } from "react-i18next";
 
 import { Text } from "@/components/ui/Text";
-import { palette } from "@/lib/theme";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { palette } from "@/lib/theme";
 
 type LevelHeaderProps = {
   levelNumber: number;
@@ -37,7 +37,7 @@ export function LevelHeader({
   useEffect(() => {
     // Smooth progress bar update
     progressWidth.value = withSpring(progress, { damping: 15, stiffness: 90 });
-    
+
     // Bouncy letter entrance when it changes
     letterScale.value = 0.6;
     letterScale.value = withSpring(1.0, { damping: 10, stiffness: 120 });
@@ -119,8 +119,8 @@ export function LevelHeader({
           <Animated.View style={[animatedLetterStyle, animatedBodyStyle]}>
             <Text
               style={{
-                fontSize: 100,
-                lineHeight: 110,
+                fontSize: 50,
+                lineHeight: 75,
                 fontFamily: "Cairo_700Bold",
                 color: palette.green,
                 textAlign: "center",
