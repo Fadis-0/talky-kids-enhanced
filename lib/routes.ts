@@ -9,7 +9,11 @@ export const Routes = {
   tabs: "/(tabs)",
   settings: "/(tabs)/settings",
   lettersGame: "/letters-game",
-  videoQuestionsGame: "/video-questions",
+  videoQuestionsGame: "/questions-game",
+  questionsPlacesGame: "/questions-game/places",
+  questionsSizesGame: "/questions-game/sizes",
+  questionsColorsGame: "/questions-game/colors",
+  questionsInteractiveGame: "/questions-game/interactive",
   balloonGame: "/balloon-game",
   candlesGame: "/candles-game",
 } as const;

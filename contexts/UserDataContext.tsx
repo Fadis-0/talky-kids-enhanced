@@ -9,6 +9,10 @@ export type UserData = {
   videoQuestionsGameLevel: number;
   balloonGameLevel: number;
   candlesGameLevel: number;
+  questionsPlacesLevel: number;
+  questionsSizesLevel: number;
+  questionsColorsLevel: number;
+  questionsInteractiveLevel: number;
 };
 
 const defaultUserData: UserData = {
@@ -20,6 +24,10 @@ const defaultUserData: UserData = {
   videoQuestionsGameLevel: 0,
   balloonGameLevel: 0,
   candlesGameLevel: 0,
+  questionsPlacesLevel: 0,
+  questionsSizesLevel: 0,
+  questionsColorsLevel: 0,
+  questionsInteractiveLevel: 0,
 };
 
 type UserDataContextValue = {
