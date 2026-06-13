@@ -8,7 +8,7 @@ export type ImageItem = {
   label: string;
   emoji: string; // using emoji as placeholder for images
   audioFile: string; // audio pronunciation file
-  imageUrl?: string; // option for actual images later
+  imageUrl?: any; // option for actual images later
 };
 
 export type LetterLevel = {
@@ -21,26 +21,29 @@ export type LetterLevel = {
 export const LETTER_LEVELS: LetterLevel[] = [
   {
     id: "1",
-    letter: "ا",
-    letterUpper: "ا",
+    letter: "أ",
+    letterUpper: "أ",
     images: [
       {
         id: "alif-1",
         label: "ارنب",
         emoji: "🐰",
         audioFile: "arnab.mp3",
+        imageUrl: require("../assets/images/alif/rabbit.jpeg")
       },
       {
         id: "alif-2",
         label: "دار",
         emoji: "🏠",
         audioFile: "dar.mp3",
+        imageUrl: require("../assets/images/alif/home.jpeg")
       },
       {
         id: "alif-3",
         label: "ماء",
         emoji: "💧",
         audioFile: "maa.mp3",
+        imageUrl: require("../assets/images/alif/water.jpeg")
       },
     ],
   },

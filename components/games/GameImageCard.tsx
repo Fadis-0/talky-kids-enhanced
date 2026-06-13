@@ -91,9 +91,9 @@ export function GameImageCard({
     playAudio();
   };
 
-  // Fixed the endpoint format to .png, ensuring it loads correctly in React Native's Image component and is URL safe
+  // Support local require assets (number) and remote URI strings
   const placeholderSource = image.imageUrl
-    ? { uri: image.imageUrl }
+    ? (typeof image.imageUrl === "string" ? { uri: image.imageUrl } : image.imageUrl)
     : { uri: `https://placehold.co/150x150/DDF4FF/3C3C3C.png?text=${encodeURIComponent(image.label)}` };
 
   const animatedCardStyle = useAnimatedStyle(() => {
@@ -136,7 +136,7 @@ export function GameImageCard({
         <View
           style={{
             width: "100%",
-            aspectRatio: 1,
+            aspectRatio: 0.9,
             borderRadius: 12,
             overflow: "hidden",
             backgroundColor: "#FFFFFF",
@@ -147,7 +147,7 @@ export function GameImageCard({
           <View
             style={{
               ...StyleSheet.absoluteFillObject,
-              backgroundColor: palette.blueLight,
+              backgroundColor: "#FFFFFF",
               alignItems: "center",
               justifyContent: "center",
             }}
@@ -158,7 +158,7 @@ export function GameImageCard({
           <Image
             source={placeholderSource}
             style={{ width: "100%", height: "100%" }}
-            resizeMode="cover"
+            resizeMode="contain"
           />
 
           {/* Playing overlay with animated play icon */}
