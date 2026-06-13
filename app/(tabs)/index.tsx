@@ -168,24 +168,30 @@ export default function HomeScreen() {
         </Pressable>
 
         <Pressable
-          onPress={() => router.push(Routes.videoQuestionsGame)}
+          onPress={() => router.push(Routes.videoQuestionsGame as any)}
           accessibilityRole="button"
-          accessibilityLabel={t("accessibilityLabels.videoBtn")}
+          accessibilityLabel={isRTL ? "تشغيل لعبة الأسئلة والفهم" : "Play Questions Game"}
         >
           {({ pressed }: { pressed: boolean }) => {
-            const videoProgressPercent = Math.max(5, (user.videoQuestionsGameLevel / 8) * 100);
+            const totalQuestions = 13; // 4 places + 3 sizes + 3 colors + 3 interactive
+            const completedQuestions =
+              user.questionsPlacesLevel +
+              user.questionsSizesLevel +
+              user.questionsColorsLevel +
+              user.questionsInteractiveLevel;
+            const progressPercent = Math.max(5, (completedQuestions / totalQuestions) * 100);
 
             return (
               <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
                 <Card className={`overflow-hidden p-0 border-tk-blue`}>
                   <View className="flex-row items-center justify-between bg-tk-blue-light p-4">
-                    <View className="flex-row items-center gap-3">
+                    <View className="flex-row items-center gap-3" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
                       <View className="h-12 w-12 items-center justify-center rounded-2xl bg-tk-blue">
-                        <Video size={26} color="#FFFFFF" strokeWidth={2.5} />
+                        <Sparkles size={26} color="#FFFFFF" strokeWidth={2.5} />
                       </View>
-                      <View>
+                      <View style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
                         <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="title" className="text-lg">
-                          {t("tabs.home.videoQuestions")}
+                          {isRTL ? "لعبة الأسئلة والفهم" : "Questions & Cognitive Game"}
                         </Text>
                         <Text
                           style={{
@@ -196,26 +202,30 @@ export default function HomeScreen() {
                             textAlign: isRTL ? 'right' : 'left',
                           }}
                         >
-                          {user.videoQuestionsGameLevel === 0
-                            ? t("tabs.home.notStarted")
-                            : user.videoQuestionsGameLevel >= 8
-                              ? t("tabs.home.completed")
-                              : t("games.video.levelFormat", { level: user.videoQuestionsGameLevel, total: 8 })}
+                          {completedQuestions === 0
+                            ? (isRTL ? "لم تبدأ بعد" : "Not started")
+                            : completedQuestions >= totalQuestions
+                              ? (isRTL ? "مكتمل! 🎉" : "Completed! 🎉")
+                              : isRTL
+                                ? `المستوى ${completedQuestions} من ${totalQuestions}`
+                                : `Level ${completedQuestions} of ${totalQuestions}`}
                         </Text>
                       </View>
                     </View>
                   </View>
 
-                  <View className="gap-4 p-5">
+                  <View className="gap-4 p-5" style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
                     <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="body">
-                      {t("tabs.home.videoDesc")}
+                      {isRTL
+                        ? "ألعاب تفاعلية مسلية لتطوير النطق والذكاء والفهم البصري والسمعي!"
+                        : "Fun interactive games to develop pronunciation, cognitive logic, visual and auditory understanding!"}
                     </Text>
 
                     {/* Progress Bar Container */}
                     <View className="h-4 w-full overflow-hidden rounded-full bg-[#DDF4FF]">
                       <Animated.View
                         className="h-full rounded-full bg-tk-blue"
-                        style={{ width: `${videoProgressPercent}%` }}
+                        style={{ width: `${progressPercent}%` }}
                       />
                     </View>
                   </View>

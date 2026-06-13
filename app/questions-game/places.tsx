@@ -351,12 +351,12 @@ export default function PlacesGameScreen() {
             onNext={
               isRecordingCompleted && selectedOption === currentLevel.correctAnswer
                 ? handleNext
-                : undefined
+                : () => Speech.speak("سجل إجابتك الصحيحة أولاً", { language: "ar-SA" })
             }
             onFinish={
               isRecordingCompleted && selectedOption === currentLevel.correctAnswer
                 ? handleFinish
-                : undefined
+                : () => Speech.speak("سجل إجابتك الصحيحة أولاً", { language: "ar-SA" })
             }
           />
         </View>

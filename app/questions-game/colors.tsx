@@ -183,8 +183,8 @@ export default function ColorsGameScreen() {
             const isSelected = selectedIndex === idx;
             const isOptionCorrect = idx === currentLevel.correctIndex;
 
-            let cardBorderColor = palette.border;
-            let cardBgColor = palette.surface;
+            let cardBorderColor: string = palette.border;
+            let cardBgColor: string = palette.surface;
             if (isSelected) {
               cardBorderColor = isOptionCorrect ? palette.green : palette.red;
               cardBgColor = isOptionCorrect ? palette.greenLight : palette.redLight;
@@ -232,8 +232,8 @@ export default function ColorsGameScreen() {
             currentLevel={currentLevelIndex + 1}
             totalLevels={totalLevels}
             onPrevious={handlePrevious}
-            onNext={isCorrect ? handleNext : undefined}
-            onFinish={isCorrect ? handleFinish : undefined}
+            onNext={isCorrect ? handleNext : () => Speech.speak("اختر الإجابة الصحيحة أولاً", { language: "ar-SA" })}
+            onFinish={isCorrect ? handleFinish : () => Speech.speak("اختر الإجابة الصحيحة أولاً", { language: "ar-SA" })}
           />
         </View>
       </View>

@@ -28,11 +28,12 @@ export default function QuestionsGameSelectorScreen() {
       description: "داخل، خارج، فوق، تحت... تدرّب على نطق وتحديد مكان الأشياء!",
       progress: user.questionsPlacesLevel,
       total: PLACES_LEVELS.length,
-      route: Routes.questionsPlacesGame,
+      route: Routes.questionsPlacesGame as any,
       color: "purple" as const,
       icon: MapPin,
       bgColor: palette.purpleLight,
       borderColor: palette.purple,
+      borderClass: "border-tk-purple",
     },
     {
       id: "sizes",
@@ -40,11 +41,12 @@ export default function QuestionsGameSelectorScreen() {
       description: "كبير، صغير، طويل، قصير... تعلّم مقارنة أحجام الأشياء المختلفة!",
       progress: user.questionsSizesLevel,
       total: SIZES_LEVELS.length,
-      route: Routes.questionsSizesGame,
+      route: Routes.questionsSizesGame as any,
       color: "orange" as const,
       icon: Ruler,
       bgColor: palette.orangeLight,
       borderColor: palette.orange,
+      borderClass: "border-tk-orange",
     },
     {
       id: "colors",
@@ -52,11 +54,12 @@ export default function QuestionsGameSelectorScreen() {
       description: "الأحمر، الأزرق، الأخضر... تعرّف على الألوان المختلفة واختر الإجابة الصحيحة!",
       progress: user.questionsColorsLevel,
       total: COLORS_LEVELS.length,
-      route: Routes.questionsColorsGame,
+      route: Routes.questionsColorsGame as any,
       color: "blue" as const,
       icon: Palette,
       bgColor: palette.blueLight,
       borderColor: palette.blue,
+      borderClass: "border-tk-blue",
     },
     {
       id: "interactive",
@@ -64,11 +67,12 @@ export default function QuestionsGameSelectorScreen() {
       description: "ضع الفاكهة في المحفظة... اسحب وأسقط الأشياء لحلّ الألغاز المسلية!",
       progress: user.questionsInteractiveLevel,
       total: INTERACTIVE_LEVELS.length,
-      route: Routes.questionsInteractiveGame,
+      route: Routes.questionsInteractiveGame as any,
       color: "green" as const,
       icon: Sparkles,
       bgColor: palette.greenLight,
       borderColor: palette.green,
+      borderClass: "border-tk-green",
     },
   ];
 
@@ -131,8 +135,8 @@ export default function QuestionsGameSelectorScreen() {
               ]}
             >
               <Card
-                className="overflow-hidden p-0"
-                style={{ borderColor: category.borderColor, borderWidth: 2 }}
+                bordered={false}
+                className={`overflow-hidden p-0 border-2 ${category.borderClass}`}
               >
                 <View
                   className="flex-row items-center gap-3 p-4"
