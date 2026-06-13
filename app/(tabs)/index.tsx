@@ -3,7 +3,7 @@ import { getTotalCandlesLevels } from "@/lib/candles-game-data";
 import { getTotalLevels as getTotalLetterLevels } from "@/lib/letters-game-data";
 import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
-import { Flame, Mic, Sparkles, Type, Video, Wind } from "lucide-react-native";
+import { Flame, Sparkles, Type, Wind } from "lucide-react-native";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
@@ -16,7 +16,6 @@ import Animated, {
 import { TopNavBar } from "@/components/navigation/TopNavBar";
 import { ScreenShell } from "@/components/ScreenShell";
 import { Card } from "@/components/ui/Card";
-import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Text } from "@/components/ui/Text";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserData } from "@/contexts/UserDataContext";
@@ -75,36 +74,9 @@ export default function HomeScreen() {
       headerRight={<StreakBadge streak={user.streakDays} />}
     >
       <View style={{ direction: isRTL ? 'rtl' : 'ltr' }} className="-mt-2 gap-4">
-        <Card className="overflow-hidden border-tk-green p-0">
-          <View className="bg-tk-green-light px-5 py-4">
-            <View className="flex-row items-center gap-3">
-              <View className="h-12 w-12 items-center justify-center rounded-2xl bg-tk-green">
-                <Mic size={26} color="#FFFFFF" strokeWidth={2.5} />
-              </View>
-              <View className="flex-1">
-                <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="label" className="text-tk-green-dark">
-                  {t("tabs.home.dailyPractice")}
-                </Text>
-                <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="title" className="text-lg">
-                  {t("tabs.home.startSession")}
-                </Text>
-              </View>
-              <Sparkles size={22} color={palette.green} />
-            </View>
-          </View>
-          <View className="gap-3 p-5">
-            <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="body">
-              {t("tabs.home.dailyDesc")}
-            </Text>
-            <PrimaryButton
-              label={t("common.continue")}
-              color="green"
-              accessibilityLabel={t("accessibilityLabels.homeBtn")}
-            />
-          </View>
-        </Card>
 
-        <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="label" className="px-1">
+
+        <Text style={{ textAlign: isRTL ? 'left' : 'left' }} variant="label" className="px-1 mt-4">
           {t("tabs.home.exploreGames")}
         </Text>
 
@@ -121,12 +93,12 @@ export default function HomeScreen() {
               <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
                 <Card className={`overflow-hidden p-0 border-tk-purple`}>
                   <View className="flex-row items-center justify-between bg-tk-purple-light p-4">
-                    <View className="flex-row items-center gap-3">
-                      <View className="h-12 w-12 items-center justify-center rounded-2xl bg-tk-purple">
+                    <View className="flex-row items-center gap-3 flex-1">
+                      <View className="h-12 w-12 items-center ml-2 justify-center rounded-2xl bg-tk-purple">
                         <Type size={26} color="#FFFFFF" strokeWidth={2.5} />
                       </View>
-                      <View>
-                        <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="title" className="text-lg">
+                      <View className="flex-1">
+                        <Text style={{ textAlign: isRTL ? 'left' : 'left' }} variant="title" className="text-lg">
                           {t("tabs.home.lettersGame")}
                         </Text>
                         <Text
@@ -135,7 +107,7 @@ export default function HomeScreen() {
                             fontSize: 14,
                             color: palette.purple,
                             marginTop: 2,
-                            textAlign: isRTL ? 'right' : 'left',
+                            textAlign: isRTL ? 'left' : 'left',
                           }}
                         >
                           {user.lettersGameLevel === 0
@@ -149,7 +121,7 @@ export default function HomeScreen() {
                   </View>
 
                   <View className="gap-4 p-5">
-                    <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="body">
+                    <Text style={{ textAlign: isRTL ? 'left' : 'left' }} variant="body">
                       {t("tabs.home.lettersDesc")}
                     </Text>
 
@@ -185,12 +157,12 @@ export default function HomeScreen() {
               <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
                 <Card className={`overflow-hidden p-0 border-tk-blue`}>
                   <View className="flex-row items-center justify-between bg-tk-blue-light p-4">
-                    <View className="flex-row items-center gap-3" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
-                      <View className="h-12 w-12 items-center justify-center rounded-2xl bg-tk-blue">
+                    <View className="flex-row items-center gap-3 flex-1">
+                      <View className="h-12 w-12 ml-2 items-center justify-center rounded-2xl bg-tk-blue">
                         <Sparkles size={26} color="#FFFFFF" strokeWidth={2.5} />
                       </View>
-                      <View style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
-                        <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="title" className="text-lg">
+                      <View className="flex-1">
+                        <Text style={{ textAlign: isRTL ? 'left' : 'left' }} variant="title" className="text-lg">
                           {isRTL ? "لعبة الأسئلة والفهم" : "Questions & Cognitive Game"}
                         </Text>
                         <Text
@@ -199,7 +171,7 @@ export default function HomeScreen() {
                             fontSize: 14,
                             color: palette.blue,
                             marginTop: 2,
-                            textAlign: isRTL ? 'right' : 'left',
+                            textAlign: isRTL ? 'left' : 'left',
                           }}
                         >
                           {completedQuestions === 0
@@ -214,8 +186,8 @@ export default function HomeScreen() {
                     </View>
                   </View>
 
-                  <View className="gap-4 p-5" style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
-                    <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="body">
+                  <View className="gap-4 p-5">
+                    <Text style={{ textAlign: isRTL ? 'left' : 'left' }} variant="body">
                       {isRTL
                         ? "ألعاب تفاعلية مسلية لتطوير النطق والذكاء والفهم البصري والسمعي!"
                         : "Fun interactive games to develop pronunciation, cognitive logic, visual and auditory understanding!"}
@@ -248,12 +220,12 @@ export default function HomeScreen() {
               <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
                 <Card className={`overflow-hidden p-0 border-tk-orange`}>
                   <View className="flex-row items-center justify-between bg-tk-orange-light p-4">
-                    <View className="flex-row items-center gap-3">
-                      <View className="h-12 w-12 items-center justify-center rounded-2xl bg-tk-orange">
+                    <View className="flex-row items-center gap-3 flex-1">
+                      <View className="h-12 w-12 ml-2 items-center justify-center rounded-2xl bg-tk-orange">
                         <Wind size={26} color="#FFFFFF" strokeWidth={2.5} />
                       </View>
-                      <View>
-                        <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="title" className="text-lg">
+                      <View className="flex-1">
+                        <Text style={{ textAlign: isRTL ? 'left' : 'left' }} variant="title" className="text-lg">
                           {t("tabs.home.balloonTitle")}
                         </Text>
                         <Text
@@ -262,7 +234,7 @@ export default function HomeScreen() {
                             fontSize: 14,
                             color: palette.orange,
                             marginTop: 2,
-                            textAlign: isRTL ? 'right' : 'left',
+                            textAlign: isRTL ? 'left' : 'left',
                           }}
                         >
                           {user.balloonGameLevel === 0
@@ -276,7 +248,7 @@ export default function HomeScreen() {
                   </View>
 
                   <View className="gap-4 p-5">
-                    <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="body">
+                    <Text style={{ textAlign: isRTL ? 'left' : 'left' }} variant="body">
                       {t("tabs.home.balloonDesc")}
                     </Text>
 
@@ -307,12 +279,12 @@ export default function HomeScreen() {
               <Animated.View style={{ opacity: pressed ? 0.9 : 1, transform: [{ translateY: pressed ? 2 : 0 }] }}>
                 <Card className={`overflow-hidden p-0 border-tk-red`}>
                   <View className="flex-row items-center justify-between bg-tk-red-light p-4">
-                    <View className="flex-row items-center gap-3">
-                      <View className="h-12 w-12 items-center justify-center rounded-2xl bg-tk-red">
+                    <View className="flex-row items-center gap-3 flex-1">
+                      <View className="h-12 w-12 ml-2 items-center justify-center rounded-2xl bg-tk-red">
                         <Flame size={26} color="#FFFFFF" strokeWidth={2.5} />
                       </View>
-                      <View>
-                        <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="title" className="text-lg">
+                      <View className="flex-1">
+                        <Text style={{ textAlign: isRTL ? 'left' : 'left' }} variant="title" className="text-lg">
                           {t("tabs.home.candlesTitle")}
                         </Text>
                         <Text
@@ -321,7 +293,7 @@ export default function HomeScreen() {
                             fontSize: 14,
                             color: palette.red,
                             marginTop: 2,
-                            textAlign: isRTL ? 'right' : 'left',
+                            textAlign: isRTL ? 'left' : 'left',
                           }}
                         >
                           {user.candlesGameLevel === 0
@@ -335,7 +307,7 @@ export default function HomeScreen() {
                   </View>
 
                   <View className="gap-4 p-5">
-                    <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="body">
+                    <Text style={{ textAlign: isRTL ? 'left' : 'left' }} variant="body">
                       {t("tabs.home.candlesDesc")}
                     </Text>
 

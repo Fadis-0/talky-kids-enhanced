@@ -19,7 +19,10 @@ export default function SizesGameScreen() {
   const { user, setUser } = useUserData();
   const { isRTL } = useLanguage();
 
-  const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
+  const [currentLevelIndex, setCurrentLevelIndex] = useState(() => {
+    const saved = user.questionsSizesLevel || 0;
+    return saved < SIZES_LEVELS.length ? saved : 0;
+  });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState(false);
 
@@ -155,96 +158,102 @@ export default function SizesGameScreen() {
       topNavBar={backButton}
       hideTabBarClearance={true}
     >
-      <View style={{ flex: 1, direction: isRTL ? "rtl" : "ltr" }} className="gap-6">
-        <LevelHeader
-          levelNumber={currentLevelIndex + 1}
-          totalLevels={totalLevels}
-          letter=""
-        />
-
-        {/* Spoken Question Text */}
-        <View className="flex-row items-center justify-center gap-2 self-center mt-2 px-4">
-          <Text variant="title" className="text-xl text-center flex-1">
-            {currentLevel.question}
-          </Text>
-          <Pressable
-            onPress={playQuestionTTS}
-            className="p-2 bg-tk-orange-light rounded-full border border-[#FED7AA] active:opacity-75"
-          >
-            <Volume2 size={22} color={palette.orange} />
-          </Pressable>
-        </View>
-
-        {/* Sizes Choices Row */}
-        <View
-          style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
-          className="gap-5 px-1 justify-center items-end mt-4"
-        >
-          {currentLevel.options.map((option, idx) => {
-            const isSelected = selectedIndex === idx;
-            const isOptionCorrect = idx === currentLevel.correctIndex;
-            
-            let cardBorderColor: string = palette.border;
-            let cardBgColor: string = palette.surface;
-            if (isSelected) {
-              cardBorderColor = isOptionCorrect ? palette.green : palette.red;
-              cardBgColor = isOptionCorrect ? palette.greenLight : palette.redLight;
-            }
-
-            // custom container height if specified, or default 140
-            const containerHeight = option.height || 140;
-
-            return (
-              <Pressable
-                key={option.id}
-                onPress={() => handleSelectOption(idx)}
-                className="flex-1 rounded-2xl border-2 items-center justify-center p-4 active:opacity-95"
-                style={{
-                  height: containerHeight,
-                  borderColor: cardBorderColor,
-                  backgroundColor: cardBgColor,
-                  shadowColor: isSelected ? cardBorderColor : "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: isSelected ? 0.2 : 0.05,
-                  shadowRadius: 3,
-                  elevation: 2,
-                }}
-              >
-                <View
-                  style={{
-                    transform: [{ scale: option.scale }],
-                  }}
-                >
-                  <Text className="text-5xl">{option.emoji}</Text>
-                </View>
-                <Text
-                  variant="label"
-                  className="mt-3 text-sm text-center"
-                  style={{
-                    color: isSelected && isOptionCorrect ? palette.greenDark : palette.text,
-                  }}
-                >
-                  {option.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        {/* Duolingo Mascot Mentor */}
-        <View style={{ height: 90, justifyContent: "center" }} className="mt-4">
-          <TalkyMascot state={mascotState} label={mascotLabel} />
-        </View>
-
-        {/* Navigation bar at bottom */}
-        <View style={{ paddingVertical: 10, marginTop: 10 }}>
-          <GameNavigation
-            currentLevel={currentLevelIndex + 1}
+      <View style={{ flex: 1, justifyContent: "space-between", minHeight: 540, direction: isRTL ? "rtl" : "ltr" }}>
+        {/* Top/Middle Group */}
+        <View className="gap-6">
+          <LevelHeader
+            levelNumber={currentLevelIndex + 1}
             totalLevels={totalLevels}
-            onPrevious={handlePrevious}
-            onNext={isCorrect ? handleNext : () => Speech.speak("اختر الإجابة الصحيحة أولاً", { language: "ar-SA" })}
-            onFinish={isCorrect ? handleFinish : () => Speech.speak("اختر الإجابة الصحيحة أولاً", { language: "ar-SA" })}
+            letter=""
           />
+
+          {/* Spoken Question Text */}
+          <View className="flex-row items-center justify-center gap-2 self-center mt-2 px-4">
+            <Text variant="title" className="text-xl text-center flex-1">
+              {currentLevel.question}
+            </Text>
+            <Pressable
+              onPress={playQuestionTTS}
+              className="p-2 bg-tk-orange-light rounded-full border border-[#FED7AA] active:opacity-75"
+            >
+              <Volume2 size={22} color={palette.orange} />
+            </Pressable>
+          </View>
+
+          {/* Sizes Choices Row */}
+          <View
+            style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
+            className="gap-5 px-1 justify-center items-end mt-4"
+          >
+            {currentLevel.options.map((option, idx) => {
+              const isSelected = selectedIndex === idx;
+              const isOptionCorrect = idx === currentLevel.correctIndex;
+              
+              let cardBorderColor: string = palette.border;
+              let cardBgColor: string = palette.surface;
+              if (isSelected) {
+                cardBorderColor = isOptionCorrect ? palette.green : palette.red;
+                cardBgColor = isOptionCorrect ? palette.greenLight : palette.redLight;
+              }
+
+              // custom container height if specified, or default 140
+              const containerHeight = option.height || 140;
+
+              return (
+                <Pressable
+                  key={option.id}
+                  onPress={() => handleSelectOption(idx)}
+                  className="flex-1 rounded-2xl border-2 items-center justify-center p-4 active:opacity-95"
+                  style={{
+                    height: containerHeight,
+                    borderColor: cardBorderColor,
+                    backgroundColor: cardBgColor,
+                    shadowColor: isSelected ? cardBorderColor : "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: isSelected ? 0.2 : 0.05,
+                    shadowRadius: 3,
+                    elevation: 2,
+                  }}
+                >
+                  <View
+                    style={{
+                      transform: [{ scale: option.scale }],
+                    }}
+                  >
+                    <Text className="text-5xl">{option.emoji}</Text>
+                  </View>
+                  <Text
+                    variant="label"
+                    className="mt-3 text-sm text-center"
+                    style={{
+                      color: isSelected && isOptionCorrect ? palette.greenDark : palette.text,
+                    }}
+                  >
+                    {option.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* Bottom Mascot & controls */}
+        <View className="gap-3" style={{ marginTop: 16 }}>
+          {/* Duolingo Mascot Mentor */}
+          <View style={{ height: 90, justifyContent: "center" }} className="mt-4">
+            <TalkyMascot state={mascotState} label={mascotLabel} />
+          </View>
+
+          {/* Navigation bar at bottom */}
+          <View style={{ paddingVertical: 10, marginTop: 10 }}>
+            <GameNavigation
+              currentLevel={currentLevelIndex + 1}
+              totalLevels={totalLevels}
+              onPrevious={handlePrevious}
+              onNext={isCorrect ? handleNext : () => Speech.speak("اختر الإجابة الصحيحة أولاً", { language: "ar-SA" })}
+              onFinish={isCorrect ? handleFinish : () => Speech.speak("اختر الإجابة الصحيحة أولاً", { language: "ar-SA" })}
+            />
+          </View>
         </View>
       </View>
     </ScreenShell>

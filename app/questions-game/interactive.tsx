@@ -35,6 +35,10 @@ function DraggableItem({
 }: DraggableItemProps) {
   const pan = useRef(new Animated.ValueXY()).current;
 
+  // Track the latest props in a ref to avoid stale closure issues in PanResponder
+  const stateRef = useRef({ isCorrectDropped, targetBounds, isCorrect, label, onDrop });
+  stateRef.current = { isCorrectDropped, targetBounds, isCorrect, label, onDrop };
+
   // Reset position when level changes
   useEffect(() => {
     pan.setValue({ x: 0, y: 0 });
@@ -42,8 +46,8 @@ function DraggableItem({
 
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => !isCorrectDropped,
-      onMoveShouldSetPanResponder: () => !isCorrectDropped,
+      onStartShouldSetPanResponder: () => !stateRef.current.isCorrectDropped,
+      onMoveShouldSetPanResponder: () => !stateRef.current.isCorrectDropped,
       onPanResponderGrant: () => {
         pan.setOffset({
           // @ts-ignore
@@ -57,6 +61,8 @@ function DraggableItem({
       }),
       onPanResponderRelease: (e, gestureState) => {
         pan.flattenOffset();
+
+        const { targetBounds, onDrop, isCorrect, label } = stateRef.current;
 
         if (targetBounds) {
           const touchX = gestureState.moveX;
@@ -133,7 +139,10 @@ export default function InteractiveGameScreen() {
   const { user, setUser } = useUserData();
   const { isRTL } = useLanguage();
 
-  const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
+  const [currentLevelIndex, setCurrentLevelIndex] = useState(() => {
+    const saved = user.questionsInteractiveLevel || 0;
+    return saved < INTERACTIVE_LEVELS.length ? saved : 0;
+  });
   const [targetBounds, setTargetBounds] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const [isCorrectDropped, setIsCorrectDropped] = useState(false);
   const [droppedItemLabel, setDroppedItemLabel] = useState<string | null>(null);
@@ -275,86 +284,92 @@ export default function InteractiveGameScreen() {
       topNavBar={backButton}
       hideTabBarClearance={true}
     >
-      <View style={{ flex: 1, direction: isRTL ? "rtl" : "ltr" }} className="gap-5">
-        <LevelHeader
-          levelNumber={currentLevelIndex + 1}
-          totalLevels={totalLevels}
-          letter=""
-        />
-
-        {/* Spoken Question Text */}
-        <View className="flex-row items-center justify-center gap-2 self-center mt-2 px-4">
-          <Text variant="title" className="text-xl text-center flex-1">
-            {currentLevel.question}
-          </Text>
-          <Pressable
-            onPress={playQuestionTTS}
-            className="p-2 bg-tk-green-light rounded-full border border-[#BBF7D0] active:opacity-75"
-          >
-            <Volume2 size={22} color={palette.green} />
-          </Pressable>
-        </View>
-
-        {/* Target Zone Box */}
-        <View
-          ref={targetRef}
-          onLayout={updateTargetBounds}
-          className="w-44 h-44 rounded-3xl border-4 border-dashed items-center justify-center self-center my-2 relative"
-          style={{
-            borderColor: isCorrectDropped ? palette.green : palette.borderStrong,
-            backgroundColor: isCorrectDropped ? palette.greenLight : "#F9F9F9",
-          }}
-        >
-          {isCorrectDropped ? (
-            <View className="items-center justify-center">
-              <Text className="text-6xl">{currentLevel.items.find(i => i.isCorrect)?.emoji}</Text>
-              <Text variant="label" className="text-sm mt-2 font-bold text-tk-green-dark">
-                {currentLevel.targetLabel}
-              </Text>
-            </View>
-          ) : (
-            <View className="items-center justify-center p-4">
-              <Text className="text-6xl">{currentLevel.targetEmoji}</Text>
-              <Text variant="label" className="text-xs mt-2 text-tk-text-secondary text-center">
-                {`أفلت هنا: ${currentLevel.targetLabel}`}
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* Draggable items container */}
-        <View
-          style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
-          className="justify-around items-center h-28 mt-2 px-2"
-        >
-          {currentLevel.items.map((item) => (
-            <DraggableItem
-              key={item.id}
-              emoji={item.emoji}
-              label={item.label}
-              isCorrect={item.isCorrect}
-              onDrop={handleDrop}
-              targetBounds={targetBounds}
-              currentLevelIndex={currentLevelIndex}
-              isCorrectDropped={isCorrectDropped}
-            />
-          ))}
-        </View>
-
-        {/* Duolingo Mascot Mentor */}
-        <View style={{ height: 80, justifyContent: "center" }} className="mt-2">
-          <TalkyMascot state={mascotState} label={mascotLabel} />
-        </View>
-
-        {/* Navigation bar at bottom */}
-        <View style={{ paddingVertical: 10 }}>
-          <GameNavigation
-            currentLevel={currentLevelIndex + 1}
+      <View style={{ flex: 1, justifyContent: "space-between", minHeight: 580, direction: "ltr" }}>
+        {/* Top/Middle Group */}
+        <View className="gap-5">
+          <LevelHeader
+            levelNumber={currentLevelIndex + 1}
             totalLevels={totalLevels}
-            onPrevious={handlePrevious}
-            onNext={isCorrectDropped ? handleNext : () => Speech.speak("ضع الشكل في مكانه أولاً", { language: "ar-SA" })}
-            onFinish={isCorrectDropped ? handleFinish : () => Speech.speak("ضع الشكل في مكانه أولاً", { language: "ar-SA" })}
+            letter=""
           />
+
+          {/* Spoken Question Text */}
+          <View className="flex-row items-center justify-center gap-2 self-center mt-2 px-4">
+            <Text variant="title" className="text-xl text-center flex-1">
+              {currentLevel.question}
+            </Text>
+            <Pressable
+              onPress={playQuestionTTS}
+              className="p-2 bg-tk-green-light rounded-full border border-[#BBF7D0] active:opacity-75"
+            >
+              <Volume2 size={22} color={palette.green} />
+            </Pressable>
+          </View>
+
+          {/* Target Zone Box */}
+          <View
+            ref={targetRef}
+            onLayout={updateTargetBounds}
+            className="w-44 h-44 rounded-3xl border-4 border-dashed items-center justify-center self-center my-2 relative"
+            style={{
+              borderColor: isCorrectDropped ? palette.green : palette.borderStrong,
+              backgroundColor: isCorrectDropped ? palette.greenLight : "#F9F9F9",
+            }}
+          >
+            {isCorrectDropped ? (
+              <View className="items-center justify-center">
+                <Text className="text-6xl">{currentLevel.items.find(i => i.isCorrect)?.emoji}</Text>
+                <Text variant="label" className="text-sm mt-2 font-bold text-tk-green-dark">
+                  {currentLevel.targetLabel}
+                </Text>
+              </View>
+            ) : (
+              <View className="items-center justify-center p-4">
+                <Text className="text-6xl">{currentLevel.targetEmoji}</Text>
+                <Text variant="label" className="text-xs mt-2 text-tk-text-secondary text-center">
+                  {`أفلت هنا: ${currentLevel.targetLabel}`}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          {/* Draggable items container (LTR Row Flow) */}
+          <View
+            style={{ flexDirection: "row" }}
+            className="justify-around items-center h-28 mt-2 px-2"
+          >
+            {currentLevel.items.map((item) => (
+              <DraggableItem
+                key={item.id}
+                emoji={item.emoji}
+                label={item.label}
+                isCorrect={item.isCorrect}
+                onDrop={handleDrop}
+                targetBounds={targetBounds}
+                currentLevelIndex={currentLevelIndex}
+                isCorrectDropped={isCorrectDropped}
+              />
+            ))}
+          </View>
+        </View>
+
+        {/* Bottom Mascot & controls */}
+        <View className="gap-2" style={{ marginTop: 16 }}>
+          {/* Duolingo Mascot Mentor */}
+          <View style={{ height: 80, justifyContent: "center" }} className="mt-2">
+            <TalkyMascot state={mascotState} label={mascotLabel} />
+          </View>
+
+          {/* Navigation bar at bottom */}
+          <View style={{ paddingVertical: 10 }}>
+            <GameNavigation
+              currentLevel={currentLevelIndex + 1}
+              totalLevels={totalLevels}
+              onPrevious={handlePrevious}
+              onNext={isCorrectDropped ? handleNext : () => Speech.speak("ضع الشكل في مكانه أولاً", { language: "ar-SA" })}
+              onFinish={isCorrectDropped ? handleFinish : () => Speech.speak("ضع الشكل في مكانه أولاً", { language: "ar-SA" })}
+            />
+          </View>
         </View>
       </View>
     </ScreenShell>

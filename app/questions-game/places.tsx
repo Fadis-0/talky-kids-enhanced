@@ -125,7 +125,10 @@ export default function PlacesGameScreen() {
   const { user, setUser } = useUserData();
   const { isRTL } = useLanguage();
 
-  const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
+  const [currentLevelIndex, setCurrentLevelIndex] = useState(() => {
+    const saved = user.questionsPlacesLevel || 0;
+    return saved < PLACES_LEVELS.length ? saved : 0;
+  });
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
@@ -267,98 +270,104 @@ export default function PlacesGameScreen() {
       topNavBar={backButton}
       hideTabBarClearance={true}
     >
-      <View style={{ flex: 1, direction: isRTL ? "rtl" : "ltr" }} className="gap-4">
-        {/* Header progress info */}
-        <LevelHeader
-          levelNumber={currentLevelIndex + 1}
-          totalLevels={totalLevels}
-          letter=""
-        />
-
-        {/* Visual positioning container */}
-        <PlacesVisual
-          type={currentLevel.visualType}
-          position={currentLevel.visualPosition}
-        />
-
-        {/* Spoken Question Text */}
-        <View className="flex-row items-center justify-center gap-2 self-center mt-2 px-4">
-          <Text variant="title" className="text-xl text-center flex-1">
-            {currentLevel.question}
-          </Text>
-          <Pressable
-            onPress={playQuestionTTS}
-            className="p-2 bg-tk-purple-light rounded-full border border-[#E9D5FF] active:opacity-75"
-          >
-            <Volume2 size={22} color={palette.purple} />
-          </Pressable>
-        </View>
-
-        {/* Interactive options clickable to listen */}
-        <View
-          style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
-          className="gap-4 px-2 mt-1 justify-center"
-        >
-          {currentLevel.options.map((option) => {
-            const isSelected = selectedOption === option.label;
-            return (
-              <Pressable
-                key={option.label}
-                onPress={() => handleSelectOption(option)}
-                className="flex-1 py-4 px-6 rounded-2xl border-2 items-center active:opacity-95"
-                style={{
-                  backgroundColor: isSelected ? palette.purpleLight : palette.surface,
-                  borderColor: isSelected ? palette.purple : palette.border,
-                  shadowColor: isSelected ? palette.purple : "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: isSelected ? 0.2 : 0.05,
-                  shadowRadius: 3,
-                  elevation: 2,
-                }}
-              >
-                <Text
-                  variant="title"
-                  className="text-lg"
-                  style={{ color: isSelected ? palette.purple : palette.text }}
-                >
-                  {option.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        {/* Duolingo Mascot Mentor */}
-        <View style={{ height: 85, justifyContent: "center" }} className="my-1">
-          <TalkyMascot state={mascotState} label={mascotLabel} />
-        </View>
-
-        {/* Microphone speech recorder */}
-        <View className="-mt-3">
-          <RecordButton
-            selectedImageLabel={selectedOption}
-            onRecordingComplete={handleRecordingComplete}
-            onRecordingStatusChange={(recording) => setIsRecording(recording)}
-          />
-        </View>
-
-        {/* Navigation bottom bar */}
-        <View style={{ paddingVertical: 10 }}>
-          <GameNavigation
-            currentLevel={currentLevelIndex + 1}
+      <View style={{ flex: 1, justifyContent: "space-between", minHeight: 560, direction: isRTL ? "rtl" : "ltr" }}>
+        {/* Top & Middle Content Group */}
+        <View className="gap-4">
+          {/* Header progress info */}
+          <LevelHeader
+            levelNumber={currentLevelIndex + 1}
             totalLevels={totalLevels}
-            onPrevious={handlePrevious}
-            onNext={
-              isRecordingCompleted && selectedOption === currentLevel.correctAnswer
-                ? handleNext
-                : () => Speech.speak("سجل إجابتك الصحيحة أولاً", { language: "ar-SA" })
-            }
-            onFinish={
-              isRecordingCompleted && selectedOption === currentLevel.correctAnswer
-                ? handleFinish
-                : () => Speech.speak("سجل إجابتك الصحيحة أولاً", { language: "ar-SA" })
-            }
+            letter=""
           />
+
+          {/* Visual positioning container */}
+          <PlacesVisual
+            type={currentLevel.visualType}
+            position={currentLevel.visualPosition}
+          />
+
+          {/* Spoken Question Text */}
+          <View className="flex-row items-center justify-center gap-2 self-center mt-2 px-4">
+            <Text variant="title" className="text-xl text-center flex-1">
+              {currentLevel.question}
+            </Text>
+            <Pressable
+              onPress={playQuestionTTS}
+              className="p-2 bg-tk-purple-light rounded-full border border-[#E9D5FF] active:opacity-75"
+            >
+              <Volume2 size={22} color={palette.purple} />
+            </Pressable>
+          </View>
+
+          {/* Interactive options clickable to listen */}
+          <View
+            style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
+            className="gap-4 px-2 mt-1 justify-center"
+          >
+            {currentLevel.options.map((option) => {
+              const isSelected = selectedOption === option.label;
+              return (
+                <Pressable
+                  key={option.label}
+                  onPress={() => handleSelectOption(option)}
+                  className="flex-1 py-4 px-6 rounded-2xl border-2 items-center active:opacity-95"
+                  style={{
+                    backgroundColor: isSelected ? palette.purpleLight : palette.surface,
+                    borderColor: isSelected ? palette.purple : palette.border,
+                    shadowColor: isSelected ? palette.purple : "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: isSelected ? 0.2 : 0.05,
+                    shadowRadius: 3,
+                    elevation: 2,
+                  }}
+                >
+                  <Text
+                    variant="title"
+                    className="text-lg"
+                    style={{ color: isSelected ? palette.purple : palette.text }}
+                  >
+                    {option.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* Bottom Mascot & controls */}
+        <View className="gap-2" style={{ marginTop: 16 }}>
+          {/* Duolingo Mascot Mentor */}
+          <View style={{ height: 85, justifyContent: "center" }} className="my-1">
+            <TalkyMascot state={mascotState} label={mascotLabel} />
+          </View>
+
+          {/* Microphone speech recorder */}
+          <View className="-mt-3">
+            <RecordButton
+              selectedImageLabel={selectedOption}
+              onRecordingComplete={handleRecordingComplete}
+              onRecordingStatusChange={(recording) => setIsRecording(recording)}
+            />
+          </View>
+
+          {/* Navigation bottom bar */}
+          <View style={{ paddingVertical: 10 }}>
+            <GameNavigation
+              currentLevel={currentLevelIndex + 1}
+              totalLevels={totalLevels}
+              onPrevious={handlePrevious}
+              onNext={
+                isRecordingCompleted && selectedOption === currentLevel.correctAnswer
+                  ? handleNext
+                  : () => Speech.speak("سجل إجابتك الصحيحة أولاً", { language: "ar-SA" })
+              }
+              onFinish={
+                isRecordingCompleted && selectedOption === currentLevel.correctAnswer
+                  ? handleFinish
+                  : () => Speech.speak("سجل إجابتك الصحيحة أولاً", { language: "ar-SA" })
+              }
+            />
+          </View>
         </View>
       </View>
     </ScreenShell>

@@ -7,14 +7,14 @@ import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserData } from "@/contexts/UserDataContext";
-import { Routes } from "@/lib/routes";
-import { palette } from "@/lib/theme";
 import {
-  PLACES_LEVELS,
-  SIZES_LEVELS,
   COLORS_LEVELS,
   INTERACTIVE_LEVELS,
+  PLACES_LEVELS,
+  SIZES_LEVELS,
 } from "@/lib/questions-game-data";
+import { Routes } from "@/lib/routes";
+import { palette } from "@/lib/theme";
 
 export default function QuestionsGameSelectorScreen() {
   const router = useRouter();
@@ -142,7 +142,7 @@ export default function QuestionsGameSelectorScreen() {
                   className="flex-row items-center gap-3 p-4"
                   style={{
                     backgroundColor: category.bgColor,
-                    flexDirection: isRTL ? "row-reverse" : "row",
+                    flexDirection: isRTL ? "row" : "row",
                   }}
                 >
                   <View
@@ -151,11 +151,11 @@ export default function QuestionsGameSelectorScreen() {
                   >
                     <IconComponent size={26} color="#FFFFFF" strokeWidth={2.5} />
                   </View>
-                  <View className="flex-1" style={{ alignItems: isRTL ? "flex-end" : "flex-start" }}>
+                  <View className="flex-1 mr-2" style={{ alignItems: isRTL ? "flex-start" : "flex-start" }}>
                     <Text
                       variant="title"
                       className="text-lg"
-                      style={{ textAlign: isRTL ? "right" : "left" }}
+                      style={{ textAlign: isRTL ? "left" : "left" }}
                     >
                       {category.title}
                     </Text>
@@ -170,17 +170,17 @@ export default function QuestionsGameSelectorScreen() {
                       {category.progress === 0
                         ? "لم تبدأ بعد"
                         : isCompleted
-                        ? "مكتمل! 🎉"
-                        : `المستوى ${category.progress} من ${category.total}`}
+                          ? "مكتمل! 🎉"
+                          : `المستوى ${category.progress} من ${category.total}`}
                     </Text>
                   </View>
                 </View>
 
-                <View className="gap-4 p-5" style={{ alignItems: isRTL ? "flex-end" : "flex-start" }}>
+                <View className="gap-4 p-5" style={{ alignItems: isRTL ? "flex-start" : "flex-start" }}>
                   <Text
                     variant="body"
                     className="text-sm"
-                    style={{ textAlign: isRTL ? "right" : "left", color: palette.text }}
+                    style={{ textAlign: isRTL ? "left" : "left", color: palette.text }}
                   >
                     {category.description}
                   </Text>
