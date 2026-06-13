@@ -57,18 +57,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "باب",
         emoji: "🚪",
         audioFile: "bab.mp3",
+        imageUrl: require("../assets/images/ba/ba-1.jpeg")
       },
       {
         id: "ba-2",
         label: "كبش",
         emoji: "🐏",
         audioFile: "kabch.mp3",
+        imageUrl: require("../assets/images/ba/ba-2.jpeg")
       },
       {
         id: "ba-3",
         label: "حليب",
         emoji: "🥛",
         audioFile: "halib.mp3",
+        imageUrl: require("../assets/images/ba/ba-3.jpeg")
       },
     ],
   },
@@ -82,18 +85,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "تفاح",
         emoji: "🍎",
         audioFile: "tofah.mp3",
+        imageUrl: require("../assets/images/ta/ta-1.jpeg")
       },
       {
         id: "ta-2",
         label: "حوتة",
         emoji: "🐟",
         audioFile: "houta.mp3",
+        imageUrl: require("../assets/images/ta/ta-2.jpeg")
       },
       {
         id: "ta-3",
         label: "زيت",
         emoji: "🫒",
         audioFile: "zit.mp3",
+        imageUrl: require("../assets/images/ta/ta-3.jpeg")
       },
     ],
   },
@@ -107,18 +113,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "جبل",
         emoji: "⛰️",
         audioFile: "jabal.mp3",
+        imageUrl: require("../assets/images/jim/jim-1.jpeg")
       },
       {
         id: "jim-2",
         label: "حجرة",
         emoji: "🧱",
         audioFile: "hojra.mp3",
+        imageUrl: require("../assets/images/jim/jim-2.jpeg")
       },
       {
         id: "jim-3",
         label: "تلج",
         emoji: "❄️",
         audioFile: "talj.mp3",
+        imageUrl: require("../assets/images/jim/jim-3.jpeg")
       },
     ],
   },
@@ -132,18 +141,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "حصان",
         emoji: "🐴",
         audioFile: "hsan.mp3",
+        imageUrl: require("../assets/images/ha/ha-1.jpeg")
       },
       {
         id: "ha-2",
         label: "بحر",
         emoji: "🌊",
         audioFile: "bhar.mp3",
+        imageUrl: require("../assets/images/ha/ha-2.jpeg")
       },
       {
         id: "ha-3",
         label: "مفتاح",
         emoji: "🔑",
         audioFile: "moftah.mp3",
+        imageUrl: require("../assets/images/ha/ha-3.jpeg")
       },
     ],
   },
@@ -157,18 +169,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "خيار",
         emoji: "🥒",
         audioFile: "khyar.mp3",
+        imageUrl: require("../assets/images/kha/kha-1.jpeg")
       },
       {
         id: "kha-2",
         label: "مخدة",
         emoji: "🛏️",
         audioFile: "makhda.mp3",
+        imageUrl: require("../assets/images/kha/kha-2.jpeg")
       },
       {
         id: "kha-3",
         label: "مخ",
         emoji: "🧠",
         audioFile: "mokh.mp3",
+        imageUrl: require("../assets/images/kha/kha-3.jpeg")
       },
     ],
   },
@@ -182,18 +197,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "دجاجة",
         emoji: "🐔",
         audioFile: "djaja.mp3",
+        imageUrl: require("../assets/images/dal/dal-1.jpeg")
       },
       {
         id: "dal-2",
         label: "مدرسة",
         emoji: "🏫",
         audioFile: "madrasa.mp3",
+        imageUrl: require("../assets/images/dal/dal-2.jpeg")
       },
       {
         id: "dal-3",
         label: "قرد",
         emoji: "🐒",
         audioFile: "qerd.mp3",
+        imageUrl: require("../assets/images/dal/dal-3.jpeg")
       },
     ],
   },
@@ -207,18 +225,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "رمل",
         emoji: "🏖️",
         audioFile: "raml.mp3",
+        imageUrl: require("../assets/images/ra/ra-1.jpeg")
       },
       {
         id: "ra-2",
         label: "مراية",
         emoji: "🪞",
         audioFile: "mraya.mp3",
+        imageUrl: require("../assets/images/ra/ra-2.jpeg")
       },
       {
         id: "ra-3",
         label: "بحر",
         emoji: "🌊",
         audioFile: "bahr.mp3",
+        imageUrl: require("../assets/images/ra/ra-3.jpeg")
       },
     ],
   },
@@ -232,18 +253,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "زرافة",
         emoji: "🦒",
         audioFile: "zarafa.mp3",
+        imageUrl: require("../assets/images/zay/zay-1.jpeg")
       },
       {
         id: "zay-2",
         label: "غزال",
         emoji: "🦌",
         audioFile: "ghazal.mp3",
+        imageUrl: require("../assets/images/zay/zay-2.jpeg")
       },
       {
         id: "zay-3",
         label: "خبز",
         emoji: "🍞",
         audioFile: "khobz.mp3",
+        imageUrl: require("../assets/images/zay/zay-3.jpeg")
       },
     ],
   },
@@ -257,18 +281,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "سرير",
         emoji: "🛏️",
         audioFile: "srir.mp3",
+        imageUrl: require("../assets/images/sin/sin-1.jpeg")
       },
       {
         id: "sin-2",
         label: "كسرة",
         emoji: "🫓",
         audioFile: "kesra.mp3",
+        imageUrl: require("../assets/images/sin/sin-2.jpeg")
       },
       {
         id: "sin-3",
         label: "كاس",
         emoji: "🥤",
         audioFile: "kas.mp3",
+        imageUrl: require("../assets/images/sin/sin-3.jpeg")
       },
     ],
   },
@@ -282,18 +309,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "شمس",
         emoji: "☀️",
         audioFile: "shams.mp3",
+        imageUrl: require("../assets/images/shin/shin-1.jpeg")
       },
       {
         id: "shin-2",
         label: "مشطة",
         emoji: "💇",
         audioFile: "mochta.mp3",
+        imageUrl: require("../assets/images/shin/shin-2.jpeg")
       },
       {
         id: "shin-3",
         label: "مشماش",
         emoji: "🍑",
         audioFile: "mishmish.mp3",
+        imageUrl: require("../assets/images/shin/shin-3.jpeg")
       },
     ],
   },
@@ -307,18 +337,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "صحن",
         emoji: "🍽️",
         audioFile: "sahn.mp3",
+        imageUrl: require("../assets/images/sad/sad-1.jpeg")
       },
       {
         id: "sad-2",
         label: "بصلة",
         emoji: "🧅",
         audioFile: "basla.mp3",
+        imageUrl: require("../assets/images/sad/sad-2.jpeg")
       },
       {
         id: "sad-3",
         label: "قفص",
         emoji: "🦜",
         audioFile: "qafas.mp3",
+        imageUrl: require("../assets/images/sad/sad-3.jpeg")
       },
     ],
   },
@@ -332,18 +365,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "طابلة",
         emoji: "🪑",
         audioFile: "tabla.mp3",
+        imageUrl: require("../assets/images/ta2/ta2-1.jpeg")
       },
       {
         id: "ta2-2",
         label: "طماطم",
         emoji: "🍅",
         audioFile: "tomatem.mp3",
+        imageUrl: require("../assets/images/ta2/ta2-2.jpeg")
       },
       {
         id: "ta2-3",
         label: "خيط",
         emoji: "🧵",
         audioFile: "khit.mp3",
+        imageUrl: require("../assets/images/ta2/ta2-3.jpeg")
       },
     ],
   },
@@ -357,18 +393,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "عنب",
         emoji: "🍇",
         audioFile: "inab.mp3",
+        imageUrl: require("../assets/images/ain/ain-1.jpeg")
       },
       {
         id: "ain-2",
         label: "معجون",
         emoji: "🪥",
         audioFile: "maajoun.mp3",
+        imageUrl: require("../assets/images/ain/ain-2.jpeg")
       },
       {
         id: "ain-3",
         label: "ضبع",
         emoji: "🦡",
         audioFile: "daba3.mp3",
+        imageUrl: require("../assets/images/ain/ain-3.jpeg")
       },
     ],
   },
@@ -382,18 +421,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "غابة",
         emoji: "🌲",
         audioFile: "ghaba.mp3",
+        imageUrl: require("../assets/images/ghain/ghain-1.jpeg")
       },
       {
         id: "ghain-2",
         label: "مغرف",
         emoji: "🥄",
         audioFile: "maghraf.mp3",
+        imageUrl: require("../assets/images/ghain/ghain-2.jpeg")
       },
       {
         id: "ghain-3",
         label: "فارغ",
         emoji: "📭",
         audioFile: "farigh.mp3",
+        imageUrl: require("../assets/images/ghain/ghain-3.jpeg")
       },
     ],
   },
@@ -407,18 +449,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "فم",
         emoji: "👄",
         audioFile: "fam.mp3",
+        imageUrl: require("../assets/images/fa/fa-1.jpeg")
       },
       {
         id: "fa-2",
         label: "طفل",
         emoji: "👶",
         audioFile: "tifl.mp3",
+        imageUrl: require("../assets/images/fa/fa-2.jpeg")
       },
       {
         id: "fa-3",
         label: "غلاف",
         emoji: "✉️",
         audioFile: "ghilaf.mp3",
+        imageUrl: require("../assets/images/fa/fa-3.jpeg")
       },
     ],
   },
@@ -432,18 +477,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "قلب",
         emoji: "❤️",
         audioFile: "qalb.mp3",
+        imageUrl: require("../assets/images/qaf/qaf-1.jpeg")
       },
       {
         id: "qaf-2",
         label: "صقر",
         emoji: "🦅",
         audioFile: "saqr.mp3",
+        imageUrl: require("../assets/images/qaf/qaf-2.jpeg")
       },
       {
         id: "qaf-3",
         label: "ورق",
         emoji: "📄",
         audioFile: "waraq.mp3",
+        imageUrl: require("../assets/images/qaf/qaf-3.jpeg")
       },
     ],
   },
@@ -457,18 +505,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "كلب",
         emoji: "🐕",
         audioFile: "kalb.mp3",
+        imageUrl: require("../assets/images/kaf/kaf-1.jpeg")
       },
       {
         id: "kaf-2",
         label: "سكينة",
         emoji: "🔪",
         audioFile: "skina.mp3",
+        imageUrl: require("../assets/images/kaf/kaf-2.jpeg")
       },
       {
         id: "kaf-3",
         label: "سردوك",
         emoji: "🐓",
         audioFile: "sardouk.mp3",
+        imageUrl: require("../assets/images/kaf/kaf-3.jpeg")
       },
     ],
   },
@@ -482,18 +533,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "لسان",
         emoji: "👅",
         audioFile: "lsan.mp3",
+        imageUrl: require("../assets/images/lam/lam-1.jpeg")
       },
       {
         id: "lam-2",
         label: "علم",
         emoji: "🏳️",
         audioFile: "alam.mp3",
+        imageUrl: require("../assets/images/lam/lam-2.jpeg")
       },
       {
         id: "lam-3",
         label: "جمل",
         emoji: "🐫",
         audioFile: "jamal.mp3",
+        imageUrl: require("../assets/images/lam/lam-3.jpeg")
       },
     ],
   },
@@ -507,18 +561,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "مسجد",
         emoji: "🕌",
         audioFile: "masjid.mp3",
+        imageUrl: require("../assets/images/mim/mim-1.jpeg")
       },
       {
         id: "mim-2",
         label: "نمال",
         emoji: "🐜",
         audioFile: "nmal.mp3",
+        imageUrl: require("../assets/images/mim/mim-2.jpeg")
       },
       {
         id: "mim-3",
         label: "لحم",
         emoji: "🥩",
         audioFile: "laham.mp3",
+        imageUrl: require("../assets/images/mim/mim-3.jpeg")
       },
     ],
   },
@@ -532,18 +589,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "نجمة",
         emoji: "⭐",
         audioFile: "najma.mp3",
+        imageUrl: require("../assets/images/nun/nun-1.jpeg")
       },
       {
         id: "nun-2",
         label: "نعناع",
         emoji: "🌿",
         audioFile: "naanaa.mp3",
+        imageUrl: require("../assets/images/nun/nun-2.jpeg")
       },
       {
         id: "nun-3",
         label: "عين",
         emoji: "👁️",
         audioFile: "ain.mp3",
+        imageUrl: require("../assets/images/nun/nun-3.jpeg")
       },
     ],
   },
@@ -557,18 +617,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "هلال",
         emoji: "🌙",
         audioFile: "hilal.mp3",
+        imageUrl: require("../assets/images/ha2/ha2-1.jpeg")
       },
       {
         id: "ha2-2",
         label: "نهار",
         emoji: "☀️",
         audioFile: "nhar.mp3",
+        imageUrl: require("../assets/images/ha2/ha2-2.jpeg")
       },
       {
         id: "ha2-3",
         label: "وجه",
         emoji: "😊",
         audioFile: "wajh.mp3",
+        imageUrl: require("../assets/images/ha2/ha2-3.jpeg")
       },
     ],
   },
@@ -582,18 +645,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "وردة",
         emoji: "🌹",
         audioFile: "warda.mp3",
+        imageUrl: require("../assets/images/waw/waw-1.jpeg")
       },
       {
         id: "waw-2",
         label: "دواء",
         emoji: "💊",
         audioFile: "dwaa.mp3",
+        imageUrl: require("../assets/images/waw/waw-2.jpeg")
       },
       {
         id: "waw-3",
         label: "جرو",
         emoji: "🐶",
         audioFile: "jarw.mp3",
+        imageUrl: require("../assets/images/waw/waw-3.jpeg")
       },
     ],
   },
@@ -607,18 +673,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "يد",
         emoji: "✋",
         audioFile: "yad.mp3",
+        imageUrl: require("../assets/images/ya/ya-1.jpeg")
       },
       {
         id: "ya-2",
         label: "ليل",
         emoji: "🌙",
         audioFile: "lil.mp3",
+        imageUrl: require("../assets/images/ya/ya-2.jpeg")
       },
       {
         id: "ya-3",
         label: "كرسي",
         emoji: "🪑",
         audioFile: "korsi.mp3",
+        imageUrl: require("../assets/images/ya/ya-3.jpeg")
       },
     ],
   },
@@ -632,18 +701,21 @@ export const LETTER_LEVELS: LetterLevel[] = [
         label: "قندورة",
         emoji: "👗",
         audioFile: "gandoura.mp3",
+        imageUrl: require("../assets/images/qaf2/qaf2-1.jpeg")
       },
       {
         id: "qaf2-2",
         label: "بقرة",
         emoji: "🐄",
         audioFile: "baqara.mp3",
+        imageUrl: require("../assets/images/qaf2/qaf2-2.jpeg")
       },
       {
         id: "qaf2-3",
         label: "برق",
         emoji: "⚡",
         audioFile: "barq.mp3",
+        imageUrl: require("../assets/images/qaf2/qaf2-3.jpeg")
       },
     ],
   },
