@@ -74,7 +74,7 @@ export function TalkyTabBar({ state, navigation }: BottomTabBarProps) {
       <View style={[
         styles.bar,
         {
-          flexDirection: isRTL ? "row-reverse" : "row",
+          flexDirection: isRTL ? "row" : "row",
           paddingTop: isRTL ? 16 : 8
         }
       ]}>

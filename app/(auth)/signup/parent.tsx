@@ -20,7 +20,7 @@ const STEPS = 5;
 
 export default function ParentSignupScreen() {
   const { t } = useTranslation();
-  const { parent, setParent } = useSignup();
+  const { parent, setParent, submitParentSignup, isLoading, error } = useSignup();
   const [step, setStep] = useState(0);
 
   const TITLES = [
@@ -31,12 +31,18 @@ export default function ParentSignupScreen() {
     t("auth.signup.parentSteps.step5"),
   ];
 
-  const next = () => {
+  const next = async () => {
     if (step < STEPS - 1) {
       setStep((s) => s + 1);
       return;
     }
-    router.replace(Routes.tabs);
+    try {
+      await submitParentSignup();
+      router.replace(Routes.tabs);
+    } catch (err) {
+      // Error is handled and shown via context/state
+      console.error(err);
+    }
   };
 
   const back = () => {
@@ -67,11 +73,14 @@ export default function ParentSignupScreen() {
       onBack={back}
       accent="green"
       footer={
-        <PrimaryButton
-          label={footerLabel}
-          onPress={() => { if (canContinue()) next(); }}
-          accessibilityLabel={footerLabel}
-        />
+        <View className="gap-2">
+          {error ? <Text className="text-red-500 text-center">{error}</Text> : null}
+          <PrimaryButton
+            label={isLoading ? "Loading..." : footerLabel}
+            onPress={() => { if (canContinue() && !isLoading) next(); }}
+            accessibilityLabel={footerLabel}
+          />
+        </View>
       }
     >
       <View className="mb-6 mt-2">

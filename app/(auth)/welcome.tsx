@@ -24,7 +24,7 @@ export default function WelcomeScreen() {
           <View style={styles.logo}>
             <Mic size={44} color={palette.textOnPrimary} strokeWidth={2.5} />
           </View>
-          <Text style={styles.title}>{t("auth.welcome.title")}</Text>
+          <Text style={styles.title} >Talky Kids</Text>
           <Text style={styles.subtitle}>
             {t("auth.welcome.subtitle")}
           </Text>

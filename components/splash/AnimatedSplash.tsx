@@ -1,7 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { Mic } from "lucide-react-native";
 import { useEffect, useRef } from "react";
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import Animated, {
   Easing,
   runOnJS,
@@ -104,12 +103,16 @@ export function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
           <Animated.View style={[styles.ring, ringStyle]} />
           <Animated.View style={[styles.logoWrap, logoStyle]}>
             <View style={styles.logo}>
-              <Mic size={48} color={palette.textOnPrimary} strokeWidth={2.5} />
+              <Image
+                source={require("@/assets/images/splash-logo.jpeg")}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
             </View>
           </Animated.View>
           <Animated.View style={[styles.textBlock, textStyle]}>
             <Text style={styles.title}>Talky Kids</Text>
-            <Text style={styles.tagline}>Practice speaking, play, and grow</Text>
+
           </Animated.View>
         </View>
       </LinearGradient>
@@ -126,9 +129,9 @@ const styles = StyleSheet.create({
   },
   ring: {
     position: "absolute",
-    width: 188,
-    height: 188,
-    borderRadius: 94,
+    width: 240,
+    height: 240,
+    borderRadius: 120,
     backgroundColor: palette.green,
   },
   logoWrap: {
@@ -136,14 +139,19 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   logo: {
-    width: 96,
-    height: 96,
-    borderRadius: 28,
-    backgroundColor: palette.green,
+    width: 210,
+    height: 210,
+    borderRadius: 36,
+    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 4,
-    borderColor: palette.greenDark,
+    borderColor: palette.green,
+    overflow: "hidden",
+  },
+  logoImage: {
+    width: "110%",
+    height: "110%",
   },
   textBlock: {
     alignItems: "center",

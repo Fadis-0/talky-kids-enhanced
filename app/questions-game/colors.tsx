@@ -1,8 +1,8 @@
 import { useRouter } from "expo-router";
+import * as Speech from "expo-speech";
 import { ChevronLeft, Volume2 } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
-import * as Speech from "expo-speech";
 
 import { GameNavigation } from "@/components/games/GameNavigation";
 import { LevelHeader } from "@/components/games/LevelHeader";
@@ -211,7 +211,7 @@ export default function ColorsGameScreen() {
                     elevation: 2,
                   }}
                 >
-                  <Text className="text-6xl">{option.emoji}</Text>
+                  <Text className="text-5xl">{option.emoji}</Text>
                   <Text
                     variant="label"
                     className="mt-3 text-sm text-center"

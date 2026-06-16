@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, {
   Easing,
   useAnimatedProps,
@@ -12,7 +12,6 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Circle, Ellipse, G, Path } from "react-native-svg";
 
-import { Text } from "@/components/ui/Text";
 import { useUserData } from "@/contexts/UserDataContext";
 import { fonts, palette } from "@/lib/theme";
 
@@ -232,7 +231,7 @@ export function TalkyMascot({ state, label }: TalkyMascotProps) {
         </Animated.View>
 
         {/* Mascot Toggle Button */}
-        <Pressable
+        {/*<Pressable
           onPress={toggleMascot}
           accessibilityRole="button"
           style={({ pressed }) => [
@@ -246,7 +245,7 @@ export function TalkyMascot({ state, label }: TalkyMascotProps) {
               {gender === "male" ? "👧 Switch to Mia" : "👦 Switch to Leo"}
             </Text>
           </View>
-        </Pressable>
+        </Pressable>*/}
       </View>
     </View>
   );

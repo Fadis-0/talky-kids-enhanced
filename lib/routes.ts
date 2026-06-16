@@ -1,6 +1,6 @@
 /** Central route paths for Expo Router */
 export const Routes = {
-  splash: "/",
+  splash: "/splash",
   welcome: "/(auth)/welcome",
   login: "/(auth)/login",
   createAccount: "/(auth)/create-account",

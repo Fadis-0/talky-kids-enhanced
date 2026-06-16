@@ -140,7 +140,9 @@
       "language": "اللغة",
       "languageDesc": "اختر لغتك المفضلة",
       "arabic": "العربية",
-      "english": "English"
+      "english": "English",
+      "logout": "تسجيل الخروج",
+      "logoutDesc": "تسجيل الخروج من حسابك"
     }
   },
   "games": {

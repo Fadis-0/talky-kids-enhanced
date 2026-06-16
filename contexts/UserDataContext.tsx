@@ -1,4 +1,6 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useAuth } from "./AuthContext";
+import { supabase } from "../lib/supabase";
 
 export type UserData = {
   name: string;
@@ -40,28 +42,114 @@ type UserDataContextValue = {
 const UserDataContext = createContext<UserDataContextValue | null>(null);
 
 export function UserDataProvider({ children }: { children: ReactNode }) {
+  const { user: authUser } = useAuth();
   const [user, setUserState] = useState<UserData>(defaultUserData);
+  const [kidId, setKidId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!authUser) {
+      setUserState(defaultUserData);
+      setKidId(null);
+      return;
+    }
+
+    const fetchData = async () => {
+      const { data: kidsData } = await supabase
+        .from("kids")
+        .select("*")
+        .eq("parent_id", authUser.id)
+        .limit(1);
+
+      if (kidsData && kidsData.length > 0) {
+        const kid = kidsData[0];
+        setKidId(kid.id);
+
+        const { data: statsData } = await supabase
+          .from("kid_stats")
+          .select("*")
+          .eq("kid_id", kid.id)
+          .single();
+
+        if (statsData) {
+          setUserState({
+            name: kid.name,
+            gender: kid.gender,
+            streakDays: statsData.streak_days,
+            lastPracticeDate: statsData.last_practice_date,
+            lettersGameLevel: statsData.letters_game_level,
+            videoQuestionsGameLevel: statsData.video_questions_game_level,
+            balloonGameLevel: statsData.balloon_game_level,
+            candlesGameLevel: statsData.candles_game_level,
+            questionsPlacesLevel: statsData.questions_places_level,
+            questionsSizesLevel: statsData.questions_sizes_level,
+            questionsColorsLevel: statsData.questions_colors_level,
+            questionsInteractiveLevel: statsData.questions_interactive_level,
+          });
+        } else {
+            setUserState(prev => ({ ...prev, name: kid.name, gender: kid.gender }));
+        }
+      }
+    };
+
+    fetchData();
+  }, [authUser]);
+
+  const handleSetUser = async (patch: Partial<UserData>) => {
+    setUserState((u) => ({ ...u, ...patch }));
+    if (!kidId) return;
+
+    const updates: any = {};
+    if (patch.lettersGameLevel !== undefined) updates.letters_game_level = patch.lettersGameLevel;
+    if (patch.videoQuestionsGameLevel !== undefined) updates.video_questions_game_level = patch.videoQuestionsGameLevel;
+    if (patch.balloonGameLevel !== undefined) updates.balloon_game_level = patch.balloonGameLevel;
+    if (patch.candlesGameLevel !== undefined) updates.candles_game_level = patch.candlesGameLevel;
+    if (patch.questionsPlacesLevel !== undefined) updates.questions_places_level = patch.questionsPlacesLevel;
+    if (patch.questionsSizesLevel !== undefined) updates.questions_sizes_level = patch.questionsSizesLevel;
+    if (patch.questionsColorsLevel !== undefined) updates.questions_colors_level = patch.questionsColorsLevel;
+    if (patch.questionsInteractiveLevel !== undefined) updates.questions_interactive_level = patch.questionsInteractiveLevel;
+    
+    if (Object.keys(updates).length > 0) {
+      await supabase.from("kid_stats").update(updates).eq("kid_id", kidId);
+    }
+  };
+
+  const handleIncrementStreak = async () => {
+    const now = new Date().toISOString();
+    setUserState((u) => ({
+      ...u,
+      streakDays: u.streakDays + 1,
+      lastPracticeDate: now,
+    }));
+    if (!kidId) return;
+    
+    await supabase.from("kid_stats").update({
+      streak_days: user.streakDays + 1,
+      last_practice_date: now
+    }).eq("kid_id", kidId);
+  };
+
+  const handleResetStreak = async () => {
+    setUserState((u) => ({
+      ...u,
+      streakDays: 0,
+      lastPracticeDate: null,
+    }));
+    if (!kidId) return;
+    
+    await supabase.from("kid_stats").update({
+      streak_days: 0,
+      last_practice_date: null
+    }).eq("kid_id", kidId);
+  };
 
   const value = useMemo<UserDataContextValue>(
     () => ({
       user,
-      setUser: (patch) => setUserState((u) => ({ ...u, ...patch })),
-      incrementStreak: () => {
-        setUserState((u) => ({
-          ...u,
-          streakDays: u.streakDays + 1,
-          lastPracticeDate: new Date().toISOString(),
-        }));
-      },
-      resetStreak: () => {
-        setUserState((u) => ({
-          ...u,
-          streakDays: 0,
-          lastPracticeDate: null,
-        }));
-      },
+      setUser: handleSetUser,
+      incrementStreak: handleIncrementStreak,
+      resetStreak: handleResetStreak,
     }),
-    [user],
+    [user, kidId],
   );
 
   return (

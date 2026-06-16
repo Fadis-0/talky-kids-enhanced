@@ -18,7 +18,7 @@ const STEPS = 4;
 
 export default function OrthophonistSignupScreen() {
   const { t } = useTranslation();
-  const { orthophonist, setOrthophonist } = useSignup();
+  const { orthophonist, setOrthophonist, submitOrthophonistSignup, isLoading, error } = useSignup();
   const [step, setStep] = useState(0);
 
   const TITLES = [
@@ -28,9 +28,17 @@ export default function OrthophonistSignupScreen() {
     t("auth.signup.orthSteps.step4"),
   ];
 
-  const next = () => {
-    if (step < STEPS - 1) setStep((s) => s + 1);
-    else router.replace(Routes.tabs);
+  const next = async () => {
+    if (step < STEPS - 1) {
+      setStep((s) => s + 1);
+    } else {
+      try {
+        await submitOrthophonistSignup();
+        router.replace(Routes.tabs);
+      } catch (err) {
+        console.error(err);
+      }
+    }
   };
 
   const back = () => {
@@ -65,13 +73,16 @@ export default function OrthophonistSignupScreen() {
       onBack={back}
       accent="blue"
       footer={
-        <PrimaryButton
-          label={step === STEPS - 1 ? t("auth.signup.createBtn") : t("common.continue")}
-          color="blue"
-          onPress={() => {
-            if (canContinue()) next();
-          }}
-        />
+        <View className="gap-2">
+          {error ? <Text className="text-red-500 text-center">{error}</Text> : null}
+          <PrimaryButton
+            label={isLoading ? "Loading..." : (step === STEPS - 1 ? t("auth.signup.createBtn") : t("common.continue"))}
+            color="blue"
+            onPress={() => {
+              if (canContinue() && !isLoading) next();
+            }}
+          />
+        </View>
       }
     >
       <View className="mb-6 mt-2">

@@ -4,7 +4,8 @@ import { Pressable, StyleSheet, View } from "react-native";
 
 import { NavbarCharacter } from "@/components/navigation/NavbarCharacter";
 import { Text } from "@/components/ui/Text";
-import { fonts, palette } from "@/lib/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getFontForLanguage, palette } from "@/lib/theme";
 
 type TopNavBarProps = {
   userName: string;
@@ -14,6 +15,7 @@ type TopNavBarProps = {
 
 export function TopNavBar({ userName, gender, onProfilePress }: TopNavBarProps) {
   const { t } = useTranslation();
+  const { language } = useLanguage();
 
   return (
     <View style={styles.container}>
@@ -22,7 +24,7 @@ export function TopNavBar({ userName, gender, onProfilePress }: TopNavBarProps) 
         <View>
           <Text
             style={{
-              fontFamily: fonts.body,
+              fontFamily: getFontForLanguage(language, 'regular'),
               fontSize: 13,
               color: palette.textMuted,
             }}
@@ -31,13 +33,13 @@ export function TopNavBar({ userName, gender, onProfilePress }: TopNavBarProps) 
           </Text>
           <Text
             style={{
-              fontFamily: fonts.displaySemi,
+              fontFamily: getFontForLanguage(language, 'semi'),
               fontSize: 18,
               color: palette.text,
               marginTop: 0,
             }}
           >
-            {userName}
+            Aya Ayad
           </Text>
         </View>
       </View>

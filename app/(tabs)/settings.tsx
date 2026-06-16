@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import {
     ChevronRight,
     Globe,
@@ -5,6 +6,7 @@ import {
     Shield,
     UserRound,
     Volume2,
+    LogOut,
 } from "lucide-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -14,6 +16,7 @@ import { ScreenShell } from "@/components/ScreenShell";
 import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Routes } from "@/lib/routes";
 import { getFontForLanguage, palette } from "@/lib/theme";
 
 type SettingsRowProps = {
@@ -229,6 +232,17 @@ export default function SettingsScreen() {
         </Card>
 
         <LanguageSelector />
+
+        <Card className="overflow-hidden p-0">
+          <SettingsRow
+            icon={LogOut}
+            label={t("tabs.settings.logout")}
+            description={t("tabs.settings.logoutDesc")}
+            iconColor={palette.red}
+            iconBg={palette.redLight}
+            onPress={() => router.replace(Routes.splash)}
+          />
+        </Card>
       </View>
     </ScreenShell>
   );

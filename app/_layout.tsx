@@ -22,6 +22,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { UserDataProvider } from "@/contexts/UserDataContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -58,12 +59,15 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <LanguageProvider>
-        <UserDataProvider>
-          <StatusBar style="dark" />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" />
-          </Stack>
-        </UserDataProvider>
+        <AuthProvider>
+          <UserDataProvider>
+            <StatusBar style="dark" />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="splash" />
+              <Stack.Screen name="(tabs)" />
+            </Stack>
+          </UserDataProvider>
+        </AuthProvider>
       </LanguageProvider>
     </SafeAreaProvider>
   );
