@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { supabase } from "@/lib/supabase";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
@@ -18,6 +19,8 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const title =
     authMethod === "google"
@@ -31,7 +34,25 @@ export default function LoginScreen() {
       ? t("auth.login.googleSubtitle")
       : t("auth.login.otherSubtitle");
 
-  const finish = () => router.replace(Routes.tabs);
+  const finish = async () => {
+    if (authMethod === "email") {
+      setIsLoading(true);
+      setError(null);
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      setIsLoading(false);
+      
+      if (error) {
+        setError(error.message);
+      } else {
+        router.replace(Routes.tabs);
+      }
+    } else {
+      router.replace(Routes.tabs);
+    }
+  };
 
   return (
     <AuthShell
@@ -39,7 +60,17 @@ export default function LoginScreen() {
       subtitle={subtitle}
       onBack={() => router.back()}
       accent="blue"
-      footer={<PrimaryButton label={t("common.continue")} color="blue" onPress={finish} />}
+      footer={
+        <View className="gap-2">
+          {error ? <Text className="text-red-500 text-center">{error}</Text> : null}
+          <PrimaryButton 
+            label={isLoading ? "Loading..." : t("common.continue")} 
+            color="blue" 
+            onPress={finish} 
+            disabled={isLoading}
+          />
+        </View>
+      }
     >
       <View className="gap-4 pt-2">
         {authMethod === "google" ? (

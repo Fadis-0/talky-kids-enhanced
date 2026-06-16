@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, useRef, type ReactNode } from "react";
 import { useAuth } from "./AuthContext";
 import { supabase } from "../lib/supabase";
 
@@ -44,12 +44,12 @@ const UserDataContext = createContext<UserDataContextValue | null>(null);
 export function UserDataProvider({ children }: { children: ReactNode }) {
   const { user: authUser } = useAuth();
   const [user, setUserState] = useState<UserData>(defaultUserData);
-  const [kidId, setKidId] = useState<string | null>(null);
+  const kidIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!authUser) {
       setUserState(defaultUserData);
-      setKidId(null);
+      kidIdRef.current = null;
       return;
     }
 
@@ -62,7 +62,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
 
       if (kidsData && kidsData.length > 0) {
         const kid = kidsData[0];
-        setKidId(kid.id);
+        kidIdRef.current = kid.id;
 
         const { data: statsData } = await supabase
           .from("kid_stats")
@@ -96,7 +96,8 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
 
   const handleSetUser = async (patch: Partial<UserData>) => {
     setUserState((u) => ({ ...u, ...patch }));
-    if (!kidId) return;
+    const currentKidId = kidIdRef.current;
+    if (!currentKidId) return;
 
     const updates: any = {};
     if (patch.lettersGameLevel !== undefined) updates.letters_game_level = patch.lettersGameLevel;
@@ -109,7 +110,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
     if (patch.questionsInteractiveLevel !== undefined) updates.questions_interactive_level = patch.questionsInteractiveLevel;
     
     if (Object.keys(updates).length > 0) {
-      await supabase.from("kid_stats").update(updates).eq("kid_id", kidId);
+      await supabase.from("kid_stats").update(updates).eq("kid_id", currentKidId);
     }
   };
 
@@ -120,12 +121,14 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
       streakDays: u.streakDays + 1,
       lastPracticeDate: now,
     }));
-    if (!kidId) return;
+    
+    const currentKidId = kidIdRef.current;
+    if (!currentKidId) return;
     
     await supabase.from("kid_stats").update({
       streak_days: user.streakDays + 1,
       last_practice_date: now
-    }).eq("kid_id", kidId);
+    }).eq("kid_id", currentKidId);
   };
 
   const handleResetStreak = async () => {
@@ -134,12 +137,14 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
       streakDays: 0,
       lastPracticeDate: null,
     }));
-    if (!kidId) return;
+    
+    const currentKidId = kidIdRef.current;
+    if (!currentKidId) return;
     
     await supabase.from("kid_stats").update({
       streak_days: 0,
       last_practice_date: null
-    }).eq("kid_id", kidId);
+    }).eq("kid_id", currentKidId);
   };
 
   const value = useMemo<UserDataContextValue>(
@@ -149,7 +154,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
       incrementStreak: handleIncrementStreak,
       resetStreak: handleResetStreak,
     }),
-    [user, kidId],
+    [user], // Only user dependency needed now, kidId is accessed via ref
   );
 
   return (

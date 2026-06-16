@@ -39,7 +39,7 @@ export function TopNavBar({ userName, gender, onProfilePress }: TopNavBarProps) 
               marginTop: 0,
             }}
           >
-            Aya Ayad
+            {userName}
           </Text>
         </View>
       </View>
