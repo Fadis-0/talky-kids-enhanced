@@ -65,6 +65,9 @@ export default function RootLayout() {
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="splash" />
               <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="tasks" />
+              <Stack.Screen name="history" />
+              <Stack.Screen name="accomplishments" />
             </Stack>
           </UserDataProvider>
         </AuthProvider>

@@ -91,10 +91,10 @@ export default function SettingsScreen() {
             <UserRound size={32} color="#FFFFFF" strokeWidth={2.25} />
           </View>
           <View className="flex-1">
-            <Text variant="title" className="text-lg" style={{ textAlign: 'right' }}>
+            <Text variant="title" className="text-lg" style={{ textAlign: 'left' }}>
               {user.parentName || "ولي الأمر"}
             </Text>
-            <Text variant="body" className="mt-0.5" style={{ textAlign: 'right' }}>
+            <Text variant="body" className="mt-0.5" style={{ textAlign: 'left' }}>
               ولي أمر {user.name}
             </Text>
           </View>

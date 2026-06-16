@@ -1,20 +1,117 @@
-import { Award, Calendar, Target } from "lucide-react-native";
-import { View } from "react-native";
-import { useTranslation } from "react-i18next";
+import { router } from "expo-router";
+import { Award, Calendar, ChevronLeft, Target } from "lucide-react-native";
+import { Pressable, View } from "react-native";
 
 import { ScreenShell } from "@/components/ScreenShell";
-import { EmptyStateCard } from "@/components/ui/EmptyStateCard";
+import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
-import { palette } from "@/lib/theme";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserData } from "@/contexts/UserDataContext";
+import { palette } from "@/lib/theme";
+
+type StatCardProps = {
+  value: string;
+  label: string;
+  color: string;
+};
+
+function StatCard({ value, label, color }: StatCardProps) {
+  return (
+    <View className="flex-1 items-center rounded-2xl border-2 border-tk-border bg-tk-surface py-4 px-2">
+      <Text
+        style={{
+          fontFamily: "Cairo_700Bold",
+          fontSize: 28,
+          color,
+          lineHeight: 34,
+        }}
+      >
+        {value}
+      </Text>
+      <Text
+        style={{
+          fontFamily: "Cairo_400Regular",
+          fontSize: 12,
+          color: palette.textMuted,
+          textAlign: "center",
+          marginTop: 4,
+        }}
+      >
+        {label}
+      </Text>
+    </View>
+  );
+}
+
+type NavCardProps = {
+  icon: typeof Target;
+  title: string;
+  description: string;
+  iconColor: string;
+  iconBg: string;
+  onPress: () => void;
+};
+
+function NavCard({ icon: Icon, title, description, iconColor, iconBg, onPress }: NavCardProps) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+    >
+      <Card>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 14,
+            padding: 16,
+          }}
+        >
+          <View
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: 16,
+              backgroundColor: iconBg,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Icon size={26} color={iconColor} strokeWidth={2.25} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                fontFamily: "Cairo_700Bold",
+                fontSize: 16,
+                color: palette.text,
+                textAlign: "left",
+              }}
+            >
+              {title}
+            </Text>
+            <Text
+              style={{
+                fontFamily: "Cairo_400Regular",
+                fontSize: 13,
+                color: palette.textMuted,
+                textAlign: "left",
+                marginTop: 2,
+              }}
+            >
+              {description}
+            </Text>
+          </View>
+          <ChevronLeft size={20} color={palette.textMuted} />
+        </View>
+      </Card>
+    </Pressable>
+  );
+}
 
 export default function StatsScreen() {
-  const { t } = useTranslation();
-  const { isRTL } = useLanguage();
   const { user } = useUserData();
 
-  const totalLevels = 
+  const totalLevels =
     user.lettersGameLevel +
     user.videoQuestionsGameLevel +
     user.balloonGameLevel +
@@ -24,89 +121,170 @@ export default function StatsScreen() {
     user.questionsColorsLevel +
     user.questionsInteractiveLevel;
 
-  const minutesPlayed = totalLevels * 5; // roughly 5 mins per level completed
-  const goalsMet = Math.floor(totalLevels / 3); // arbitrarily every 3 levels is a goal
+  const minutesPlayed = totalLevels * 5;
+  const goalsMet = Math.floor(totalLevels / 3);
+
+  const gamesStarted = [
+    user.lettersGameLevel,
+    user.balloonGameLevel,
+    user.candlesGameLevel,
+    user.questionsColorsLevel,
+    user.questionsSizesLevel,
+    user.questionsPlacesLevel,
+    user.questionsInteractiveLevel,
+    user.videoQuestionsGameLevel,
+  ].filter((l) => l > 0).length;
 
   return (
     <ScreenShell
-      title={t("tabs.stats.title")}
-      subtitle={t("tabs.stats.subtitle")}
+      title="الإحصائيات"
+      subtitle={`تقدّم ${user.name}`}
       accent="blue"
     >
-      <View style={{ direction: isRTL ? 'rtl' : 'ltr' }} className="-mt-2 gap-4">
-        <View className="flex-row gap-3">
-          {[
-            { value: String(user.streakDays), label: t("tabs.stats.dayStreak"), color: palette.orange },
-            { value: String(minutesPlayed), label: t("tabs.stats.minutes"), color: palette.blue },
-            { value: String(goalsMet), label: t("tabs.stats.goalsMet"), color: palette.green },
-          ].map((stat) => (
-            <View
-              key={stat.label}
-              className="flex-1 items-center rounded-2xl border-2 border-tk-border bg-tk-surface py-4"
-            >
-              <Text
-                style={{
-                  fontFamily: isRTL ? "Cairo_700Bold" : "Fredoka_700Bold",
-                  fontSize: 26,
-                  color: stat.color,
-                }}
-              >
-                {stat.value}
-              </Text>
-              <Text variant="caption" className="mt-1 text-center">
-                {stat.label}
-              </Text>
-            </View>
-          ))}
+      <View className="-mt-2 gap-4">
+        {/* Top stat cards */}
+        <View style={{ flexDirection: "row-reverse", gap: 10 }}>
+          <StatCard
+            value={String(user.streakDays)}
+            label="يوم متتالي"
+            color={palette.orange}
+          />
+          <StatCard
+            value={String(minutesPlayed)}
+            label="دقيقة تدريب"
+            color={palette.blue}
+          />
+          <StatCard
+            value={String(goalsMet)}
+            label="هدف محقق"
+            color={palette.green}
+          />
         </View>
 
-        <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="label" className="px-1">
-          {t("tabs.stats.insights")}
+        {/* Quick summary card */}
+        <Card>
+          <View
+            style={{
+              padding: 16,
+              flexDirection: "row-reverse",
+              justifyContent: "space-around",
+              gap: 8,
+            }}
+          >
+            <View style={{ alignItems: "center", gap: 4 }}>
+              <Text
+                style={{
+                  fontFamily: "Cairo_700Bold",
+                  fontSize: 22,
+                  color: palette.purple,
+                }}
+              >
+                {gamesStarted}
+              </Text>
+              <Text
+                style={{
+                  fontFamily: "Cairo_400Regular",
+                  fontSize: 12,
+                  color: palette.textMuted,
+                  textAlign: "center",
+                }}
+              >
+                ألعاب جُرِّبت
+              </Text>
+            </View>
+            <View
+              style={{ width: 1, backgroundColor: palette.border, marginVertical: 4 }}
+            />
+            <View style={{ alignItems: "center", gap: 4 }}>
+              <Text
+                style={{
+                  fontFamily: "Cairo_700Bold",
+                  fontSize: 22,
+                  color: palette.blue,
+                }}
+              >
+                {totalLevels}
+              </Text>
+              <Text
+                style={{
+                  fontFamily: "Cairo_400Regular",
+                  fontSize: 12,
+                  color: palette.textMuted,
+                  textAlign: "center",
+                }}
+              >
+                مستوى أُنجز
+              </Text>
+            </View>
+            <View
+              style={{ width: 1, backgroundColor: palette.border, marginVertical: 4 }}
+            />
+            <View style={{ alignItems: "center", gap: 4 }}>
+              <Text
+                style={{
+                  fontFamily: "Cairo_700Bold",
+                  fontSize: 22,
+                  color: palette.green,
+                }}
+              >
+                {user.streakDays}
+              </Text>
+              <Text
+                style={{
+                  fontFamily: "Cairo_400Regular",
+                  fontSize: 12,
+                  color: palette.textMuted,
+                  textAlign: "center",
+                }}
+              >
+                أيام نشاط
+              </Text>
+            </View>
+          </View>
+        </Card>
+
+        {/* Section label */}
+        <Text
+          style={{
+            fontFamily: "Cairo_600SemiBold",
+            fontSize: 14,
+            color: palette.textMuted,
+            textAlign: "right",
+            paddingHorizontal: 4,
+          }}
+        >
+          استكشف التفاصيل
         </Text>
 
-        <EmptyStateCard
+        {/* Nav cards */}
+        <NavCard
           icon={Target}
-          title={t("tabs.stats.weeklyGoalsTitle")}
-          description={`${totalLevels} completed tasks out of 10 this week! Keep it up.`}
+          title="المهام الأسبوعية"
+          description={`${totalLevels} مهمة منجزة هذا الأسبوع`}
           iconColor={palette.green}
           iconBg={palette.greenLight}
+          onPress={() => router.push("/tasks")}
         />
-
-        {totalLevels > 0 ? (
-          <EmptyStateCard
-            icon={Calendar}
-            title={t("tabs.stats.practiceHistoryTitle")}
-            description={`Practiced recently on ${user.lastPracticeDate ? new Date(user.lastPracticeDate).toLocaleDateString() : 'today'}.`}
-            iconColor={palette.blue}
-            iconBg={palette.blueLight}
-          />
-        ) : (
-          <EmptyStateCard
-            icon={Calendar}
-            title={t("tabs.stats.practiceHistoryTitle")}
-            description={t("tabs.stats.practiceHistoryDesc")}
-            iconColor={palette.blue}
-            iconBg={palette.blueLight}
-          />
-        )}
-
-        {totalLevels > 0 ? (
-          <EmptyStateCard
-            icon={Award}
-            title={t("tabs.stats.achievementsTitle")}
-            description={`You have reached level ${user.balloonGameLevel} in Balloon Game and level ${user.candlesGameLevel} in Candles Game!`}
-            iconColor={palette.purple}
-            iconBg={palette.purpleLight}
-          />
-        ) : (
-          <EmptyStateCard
-            icon={Award}
-            title={t("tabs.stats.achievementsTitle")}
-            description={t("tabs.stats.achievementsDesc")}
-            iconColor={palette.purple}
-            iconBg={palette.purpleLight}
-          />
-        )}
+        <NavCard
+          icon={Calendar}
+          title="سجل التدريبات"
+          description={
+            user.lastPracticeDate
+              ? `آخر تدريب: ${new Date(user.lastPracticeDate).toLocaleDateString("ar-DZ")}`
+              : "ابدأ التدريب لتظهر سجلاتك هنا"
+          }
+          iconColor={palette.blue}
+          iconBg={palette.blueLight}
+          onPress={() => router.push("/history")}
+        />
+        <NavCard
+          icon={Award}
+          title="الإنجازات"
+          description={`${goalsMet} إنجاز محقق — استمر!`}
+          iconColor={palette.purple}
+          iconBg={palette.purpleLight}
+          onPress={() => router.push("/accomplishments")}
+        />
       </View>
     </ScreenShell>
   );

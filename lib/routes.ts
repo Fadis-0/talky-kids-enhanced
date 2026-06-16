@@ -16,4 +16,7 @@ export const Routes = {
   questionsInteractiveGame: "/questions-game/interactive",
   balloonGame: "/balloon-game",
   candlesGame: "/candles-game",
+  tasks: "/tasks",
+  history: "/history",
+  accomplishments: "/accomplishments",
 } as const;
