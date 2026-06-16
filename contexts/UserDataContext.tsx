@@ -4,6 +4,7 @@ import { supabase } from "../lib/supabase";
 
 export type UserData = {
   name: string;
+  parentName: string;
   streakDays: number;
   lastPracticeDate: string | null;
   gender?: "male" | "female" | null;
@@ -19,6 +20,7 @@ export type UserData = {
 
 const defaultUserData: UserData = {
   name: "Buddy",
+  parentName: "Parent",
   streakDays: 0,
   lastPracticeDate: null,
   gender: "male",
@@ -54,6 +56,17 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
     }
 
     const fetchData = async () => {
+      let currentParentName = defaultUserData.parentName;
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", authUser.id)
+        .single();
+        
+      if (profileData) {
+        currentParentName = `${profileData.first_name || ""} ${profileData.last_name || ""}`.trim();
+      }
+
       const { data: kidsData } = await supabase
         .from("kids")
         .select("*")
@@ -73,6 +86,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
         if (statsData) {
           setUserState({
             name: kid.name,
+            parentName: currentParentName,
             gender: kid.gender,
             streakDays: statsData.streak_days,
             lastPracticeDate: statsData.last_practice_date,
@@ -86,7 +100,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
             questionsInteractiveLevel: statsData.questions_interactive_level,
           });
         } else {
-            setUserState(prev => ({ ...prev, name: kid.name, gender: kid.gender }));
+            setUserState(prev => ({ ...prev, name: kid.name, parentName: currentParentName, gender: kid.gender }));
         }
       }
     };
