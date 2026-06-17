@@ -269,17 +269,11 @@ export default function PlacesGameScreen() {
             position={currentLevel.visualPosition}
           />
 
-          {/* Spoken Question Text */}
+          {/* Question Text */}
           <View className="flex-row items-center justify-center gap-2 self-center mt-2 px-4">
             <Text variant="title" className="text-xl text-center flex-1">
               {currentLevel.question}
             </Text>
-            <Pressable
-              onPress={playQuestionTTS}
-              className="p-2 bg-tk-purple-light rounded-full border border-[#E9D5FF] active:opacity-75"
-            >
-              <Volume2 size={22} color={palette.purple} />
-            </Pressable>
           </View>
 
           {/* Interactive options clickable to listen */}
