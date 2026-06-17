@@ -11,7 +11,7 @@ type AuthInputProps = TextInputProps & {
 
 export function AuthInput({ label, error, style, ...props }: AuthInputProps) {
   const { language } = useLanguage();
-  
+
   return (
     <View className="gap-1.5">
       <Text
@@ -19,6 +19,7 @@ export function AuthInput({ label, error, style, ...props }: AuthInputProps) {
           fontFamily: getFontForLanguage(language, 'semi'),
           fontSize: 14,
           color: palette.text,
+
         }}
       >
         {label}
@@ -26,7 +27,14 @@ export function AuthInput({ label, error, style, ...props }: AuthInputProps) {
       <TextInput
         placeholderTextColor={palette.textMuted}
         className="rounded-2xl border-2 border-tk-border bg-tk-surface px-4 py-3.5 text-base text-tk-text"
-        style={[{ fontFamily: getFontForLanguage(language, 'regular') }, style]}
+        style={[
+          {
+            fontFamily: getFontForLanguage(language, 'regular'),
+            direction: 'rtl',
+            textAlign: 'right',
+          },
+          style,
+        ]}
         {...props}
       />
       {error ? (

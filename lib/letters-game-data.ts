@@ -5,7 +5,7 @@
 
 export type ImageItem = {
   id: string;
-  label: string;
+  label?: string;
   emoji: string; // using emoji as placeholder for images
   audioFile: string; // audio pronunciation file
   imageUrl?: any; // option for actual images later
@@ -28,7 +28,7 @@ export const LETTER_LEVELS: LetterLevel[] = [
         id: "alif-1",
         label: "ارنب",
         emoji: "🐰",
-        audioFile: "arnab.mp3",
+        audioFile: "arnab.mp4",
         imageUrl: require("../assets/images/alif/rabbit.jpeg")
       },
       {
@@ -236,9 +236,9 @@ export const LETTER_LEVELS: LetterLevel[] = [
       },
       {
         id: "ra-3",
-        label: "بحر",
+        label: "قمر",
         emoji: "🌊",
-        audioFile: "bahr.mp3",
+        audioFile: "kmar.mp3",
         imageUrl: require("../assets/images/ra/ra-3.jpeg")
       },
     ],
@@ -432,7 +432,7 @@ export const LETTER_LEVELS: LetterLevel[] = [
       },
       {
         id: "ghain-3",
-        label: "فارغ",
+        label: "صباغ",
         emoji: "📭",
         audioFile: "farigh.mp3",
         imageUrl: require("../assets/images/ghain/ghain-3.jpeg")
@@ -460,7 +460,7 @@ export const LETTER_LEVELS: LetterLevel[] = [
       },
       {
         id: "fa-3",
-        label: "غلاف",
+        label: "سيف",
         emoji: "✉️",
         audioFile: "ghilaf.mp3",
         imageUrl: require("../assets/images/fa/fa-3.jpeg")
@@ -593,18 +593,20 @@ export const LETTER_LEVELS: LetterLevel[] = [
       },
       {
         id: "nun-2",
-        label: "نعناع",
-        emoji: "🌿",
-        audioFile: "naanaa.mp3",
-        imageUrl: require("../assets/images/nun/nun-2.jpeg")
-      },
-      {
-        id: "nun-3",
         label: "عين",
         emoji: "👁️",
         audioFile: "ain.mp3",
         imageUrl: require("../assets/images/nun/nun-3.jpeg")
       },
+
+      {
+        id: "nun-3",
+        label: "فنجال",
+        emoji: "🌿",
+        audioFile: "naanaa.mp3",
+        imageUrl: require("../assets/images/nun/nun-2.jpeg")
+      },
+
     ],
   },
   {
@@ -693,26 +695,26 @@ export const LETTER_LEVELS: LetterLevel[] = [
   },
   {
     id: "25",
-    letter: "ق",
-    letterUpper: "ق٢",
+    letter: "ڤ",
+    letterUpper: "ڤ",
     images: [
       {
         id: "qaf2-1",
-        label: "قندورة",
+        label: "ڤندورة",
         emoji: "👗",
         audioFile: "gandoura.mp3",
         imageUrl: require("../assets/images/qaf2/qaf2-1.jpeg")
       },
       {
         id: "qaf2-2",
-        label: "بقرة",
+        label: "بڨرة",
         emoji: "🐄",
         audioFile: "baqara.mp3",
         imageUrl: require("../assets/images/qaf2/qaf2-2.jpeg")
       },
       {
         id: "qaf2-3",
-        label: "برق",
+        label: "برڨ",
         emoji: "⚡",
         audioFile: "barq.mp3",
         imageUrl: require("../assets/images/qaf2/qaf2-3.jpeg")

@@ -1,11 +1,11 @@
 import { useRouter } from "expo-router";
-import * as Speech from "expo-speech";
-import { ChevronLeft, Volume2 } from "lucide-react-native";
+import { ChevronLeft } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 
 import { GameNavigation } from "@/components/games/GameNavigation";
 import { LevelHeader } from "@/components/games/LevelHeader";
+import { SubscriptionModal } from "@/components/games/SubscriptionModal";
 import { TalkyMascot } from "@/components/games/TalkyMascot";
 import { ScreenShell } from "@/components/ScreenShell";
 import { Text } from "@/components/ui/Text";
@@ -25,60 +25,19 @@ export default function ColorsGameScreen() {
   });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   const totalLevels = COLORS_LEVELS.length;
   const currentLevel = COLORS_LEVELS[currentLevelIndex] || COLORS_LEVELS[0];
 
-  const playQuestionTTS = () => {
-    Speech.stop();
-    Speech.speak(currentLevel.question, {
-      language: "ar-SA",
-      pitch: 1.1,
-      rate: 0.85,
-    });
-  };
-
   useEffect(() => {
     setSelectedIndex(null);
     setIsCorrect(false);
-
-    const timer = setTimeout(() => {
-      playQuestionTTS();
-    }, 500);
-    return () => clearTimeout(timer);
   }, [currentLevelIndex]);
 
   const handleSelectOption = (index: number) => {
     setSelectedIndex(index);
-    const option = currentLevel.options[index];
-
-    // Play option TTS
-    Speech.stop();
-    Speech.speak(option.label, {
-      language: "ar-SA",
-      pitch: 1.15,
-      rate: 0.8,
-    });
-
-    if (index === currentLevel.correctIndex) {
-      setIsCorrect(true);
-      setTimeout(() => {
-        Speech.speak("ممتاز! إجابة صحيحة", {
-          language: "ar-SA",
-          pitch: 1.2,
-          rate: 0.85,
-        });
-      }, 900);
-    } else {
-      setIsCorrect(false);
-      setTimeout(() => {
-        Speech.speak("حاول مرة أخرى", {
-          language: "ar-SA",
-          pitch: 1.0,
-          rate: 0.85,
-        });
-      }, 900);
-    }
+    setIsCorrect(index === currentLevel.correctIndex);
   };
 
   const handlePrevious = () => {
@@ -88,6 +47,12 @@ export default function ColorsGameScreen() {
   };
 
   const handleNext = () => {
+    // Show subscription modal after level 2
+    if (currentLevelIndex + 1 === 2) {
+      setShowSubscriptionModal(true);
+      return;
+    }
+
     if (currentLevelIndex < totalLevels - 1) {
       const nextLevel = currentLevelIndex + 1;
       setCurrentLevelIndex(nextLevel);
@@ -166,17 +131,11 @@ export default function ColorsGameScreen() {
             letter=""
           />
 
-          {/* Spoken Question Text */}
+          {/* Question Text */}
           <View className="flex-row items-center justify-center gap-2 self-center mt-2 px-4">
             <Text variant="title" className="text-xl text-center flex-1">
               {currentLevel.question}
             </Text>
-            <Pressable
-              onPress={playQuestionTTS}
-              className="p-2 bg-tk-blue-light rounded-full border border-[#BAE6FD] active:opacity-75"
-            >
-              <Volume2 size={22} color={palette.blue} />
-            </Pressable>
           </View>
 
           {/* Color Choices Row */}
@@ -240,12 +199,24 @@ export default function ColorsGameScreen() {
               currentLevel={currentLevelIndex + 1}
               totalLevels={totalLevels}
               onPrevious={handlePrevious}
-              onNext={isCorrect ? handleNext : () => Speech.speak("اختر الإجابة الصحيحة أولاً", { language: "ar-SA" })}
-              onFinish={isCorrect ? handleFinish : () => Speech.speak("اختر الإجابة الصحيحة أولاً", { language: "ar-SA" })}
+              onNext={isCorrect ? handleNext : undefined}
+              onFinish={isCorrect ? handleFinish : undefined}
             />
           </View>
         </View>
       </View>
+
+      <SubscriptionModal
+        visible={showSubscriptionModal}
+        onSubscribe={() => {
+          setShowSubscriptionModal(false);
+          // Handle subscription action
+        }}
+        onLater={() => {
+          setShowSubscriptionModal(false);
+          router.back();
+        }}
+      />
     </ScreenShell>
   );
 }

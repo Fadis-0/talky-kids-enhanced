@@ -1,76 +1,66 @@
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { AtSign, Globe, Mic, Phone } from "lucide-react-native";
+import { LogIn, UserPlus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AuthLink } from "@/components/auth/AuthShell";
 import { SocialAuthButton } from "@/components/auth/SocialAuthButton";
 import { Text } from "@/components/ui/Text";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Routes } from "@/lib/routes";
-import { fonts, palette } from "@/lib/theme";
+import { fonts, getFontForLanguage, palette } from "@/lib/theme";
 
 export default function WelcomeScreen() {
   const { t } = useTranslation();
-
-  const mockAuth = (method: "google" | "phone" | "email") => {
-    router.push({ pathname: "/(auth)/login", params: { method } });
-  };
+  const { language } = useLanguage();
 
   return (
     <View style={styles.screen}>
+      <LinearGradient
+        colors={[palette.greenLight, palette.blueLight, palette.background]}
+        style={StyleSheet.absoluteFillObject}
+      />
+
       <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
         <View style={styles.hero}>
           <View style={styles.logo}>
-            <Mic size={44} color={palette.textOnPrimary} strokeWidth={2.5} />
+            <Image
+              source={require("@/assets/images/splash-logo.jpeg")}
+              style={styles.logoImage}
+              resizeMode="cover"
+            />
           </View>
-          <Text style={styles.title} >Talky Kids</Text>
-          <Text style={styles.subtitle}>
+          <Text style={styles.title}>Talky Kids</Text>
+          <Text
+
+            style={[
+              styles.subtitle,
+              {
+                fontFamily: getFontForLanguage(language, 'semi'),
+              }
+            ]}
+          >
             {t("auth.welcome.subtitle")}
           </Text>
         </View>
 
         <View style={styles.actions}>
           <SocialAuthButton
-            label={t("auth.welcome.googleBtn")}
-            icon={Globe}
-            variant="google"
-            onPress={() => mockAuth("google")}
-          />
-          <SocialAuthButton
-            label={t("auth.welcome.phoneBtn")}
-            icon={Phone}
-            onPress={() => mockAuth("phone")}
-          />
-          <SocialAuthButton
-            label={t("auth.welcome.emailBtn")}
-            icon={AtSign}
-            onPress={() => mockAuth("email")}
-          />
-
-          <View style={styles.dividerRow}>
-            <View style={styles.divider} />
-            <Text style={styles.dividerText}>{t("common.or")}</Text>
-            <View style={styles.divider} />
-          </View>
-
-          <SocialAuthButton
             label={t("auth.welcome.createAccount")}
-            icon={Mic}
+            icon={UserPlus}
             variant="primary"
             onPress={() => router.push(Routes.createAccount)}
           />
 
-          <View style={styles.loginLink}>
-            <AuthLink
-              label={t("auth.welcome.haveAccount")}
-              onPress={() =>
-                router.push({ pathname: "/(auth)/login", params: { method: "email" } })
-              }
-            />
-          </View>
-
-          <Text style={styles.mockNote}>{t("auth.welcome.mockNote")}</Text>
+          <SocialAuthButton
+            label={t("auth.welcome.loginBtn")}
+            icon={LogIn}
+            variant="outline"
+            onPress={() =>
+              router.push({ pathname: "/(auth)/login", params: { method: "email" } })
+            }
+          />
         </View>
       </SafeAreaView>
     </View>
@@ -84,33 +74,43 @@ const styles = StyleSheet.create({
   },
   safe: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
   },
   hero: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 12,
-    paddingBottom: 16,
-    minHeight: 220,
+    paddingTop: 24,
+    paddingBottom: 24,
   },
   logo: {
-    width: 88,
-    height: 88,
-    borderRadius: 26,
-    backgroundColor: palette.green,
+    width: 120,
+    height: 120,
+    borderRadius: 32,
+    backgroundColor: "#FFFFFF",
     borderWidth: 4,
-    borderColor: palette.greenDark,
+    borderColor: palette.green,
+    overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginBottom: 24,
+    shadowColor: palette.greenDark,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  logoImage: {
+    width: "110%",
+    height: "110%",
   },
   title: {
     fontFamily: fonts.displayBold,
-    fontSize: 32,
+    fontSize: 36,
     color: palette.text,
     textAlign: "center",
-    padding: 10,
+    marginBottom: 8,
+    paddingBottom: 12,
   },
   subtitle: {
     fontFamily: fonts.body,
@@ -118,38 +118,13 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: palette.textSecondary,
     textAlign: "center",
-    marginTop: 10,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
   },
   actions: {
-    gap: 12,
-    paddingBottom: 8,
-  },
-  dividerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginVertical: 4,
-  },
-  divider: {
-    flex: 1,
-    height: 2,
-    backgroundColor: palette.border,
-  },
-  dividerText: {
-    fontFamily: fonts.body,
-    fontSize: 13,
-    color: palette.textMuted,
-  },
-  loginLink: {
-    marginTop: 8,
-  },
-  mockNote: {
-    fontFamily: fonts.bodyRegular,
-    fontSize: 12,
-    color: palette.textMuted,
-    textAlign: "center",
-    marginTop: 12,
-    marginBottom: 4,
+    gap: 16,
+    paddingBottom: 40,
+    width: "100%",
+    maxWidth: 320,
+    alignSelf: "center",
   },
 });

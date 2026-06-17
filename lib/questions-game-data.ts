@@ -18,15 +18,17 @@ export type PlacesLevel = {
 export type SizesLevel = {
   id: string;
   question: string;
+  audioFile: string; // audio file for the question (mp4)
   options: {
     id: string;
     emoji: string;
     label: string;
-    scale: number; // For scaling big/small
-    height?: number; // For taller/shorter representation
+    scale: number;
+    height?: number;
   }[];
   correctIndex: number;
 };
+
 
 export type ColorsLevel = {
   id: string;
@@ -40,18 +42,39 @@ export type ColorsLevel = {
   correctIndex: number;
 };
 
-export type InteractiveLevel = {
+export type ApplesLevel = {
   id: string;
-  question: string;
-  targetEmoji: string;
-  targetLabel: string;
-  items: {
-    id: string;
-    emoji: string;
-    label: string;
-    isCorrect: boolean;
-  }[];
+  type: "apples";
+  audioFile: string;
+  targetCount: number;
 };
+
+export type BooksLevel = {
+  id: string;
+  type: "books";
+  audioFile: string;
+  correctBook: "red" | "green" | "yellow";
+  maxAttempts: number;
+};
+
+export type InteractiveLevel = ApplesLevel | BooksLevel;
+
+export const INTERACTIVE_LEVELS: InteractiveLevel[] = [
+  {
+    id: "inter-1",
+    type: "apples",
+    audioFile: "interactive-apples.mp4",
+    targetCount: 6,
+  },
+  {
+    id: "inter-2",
+    type: "books",
+    audioFile: "books-audio.mp4",
+    correctBook: "red",
+    maxAttempts: 5,
+  },
+];
+
 
 export const PLACES_LEVELS: PlacesLevel[] = [
   {
@@ -103,32 +126,26 @@ export const PLACES_LEVELS: PlacesLevel[] = [
 export const SIZES_LEVELS: SizesLevel[] = [
   {
     id: "sizes-1",
-    question: "اختر الفيل الأكبر",
+    question: "اختر الولد الأطول",
+    audioFile: "sizes-tallest.mp4", // question audio: "Who is the tallest?"
     options: [
-      { id: "size-1-big", emoji: "🐘", label: "فيل كبير", scale: 1.5 },
-      { id: "size-1-small", emoji: "🐘", label: "فيل صغير", scale: 0.8 },
+      { id: "size-1-tall", emoji: "🧒", label: "طويل", scale: 1, height: 160 },
+      { id: "size-1-short", emoji: "🧒", label: "قصير", scale: 1, height: 90 },
     ],
     correctIndex: 0,
   },
   {
     id: "sizes-2",
-    question: "اختر النجم الأصغر",
+    question: "اختر الولد الأقصر",
+    audioFile: "sizes-shortest.mp4", // question audio: "Who is the shortest?"
     options: [
-      { id: "size-2-small", emoji: "⭐", label: "نجم صغير", scale: 0.7 },
-      { id: "size-2-big", emoji: "⭐", label: "نجم كبير", scale: 1.4 },
+      { id: "size-2-tall", emoji: "🧒", label: "طويل", scale: 1, height: 160 },
+      { id: "size-2-short", emoji: "🧒", label: "قصير", scale: 1, height: 90 },
     ],
-    correctIndex: 0,
-  },
-  {
-    id: "sizes-3",
-    question: "اختر الشجرة الطويلة",
-    options: [
-      { id: "size-3-tall", emoji: "🌳", label: "شجرة طويلة", scale: 1.5, height: 120 },
-      { id: "size-3-short", emoji: "🌳", label: "شجرة قصيرة", scale: 0.9, height: 70 },
-    ],
-    correctIndex: 0,
+    correctIndex: 1,
   },
 ];
+
 
 export const COLORS_LEVELS: ColorsLevel[] = [
   {
@@ -160,35 +177,3 @@ export const COLORS_LEVELS: ColorsLevel[] = [
   },
 ];
 
-export const INTERACTIVE_LEVELS: InteractiveLevel[] = [
-  {
-    id: "inter-1",
-    question: "ضع الموزة داخل المحفظة",
-    targetEmoji: "🎒",
-    targetLabel: "المحفظة",
-    items: [
-      { id: "inter-1-banana", emoji: "🍌", label: "موزة", isCorrect: true },
-      { id: "inter-1-apple", emoji: "🍎", label: "تفاحة", isCorrect: false },
-    ],
-  },
-  {
-    id: "inter-2",
-    question: "ضع السمكة داخل الماء",
-    targetEmoji: "🥣",
-    targetLabel: "الماء",
-    items: [
-      { id: "inter-2-bird", emoji: "🐦", label: "عصفور", isCorrect: false },
-      { id: "inter-2-fish", emoji: "🐟", label: "سمكة", isCorrect: true },
-    ],
-  },
-  {
-    id: "inter-3",
-    question: "ضع النجمة في السماء",
-    targetEmoji: "☁️",
-    targetLabel: "السماء",
-    items: [
-      { id: "inter-3-star", emoji: "⭐", label: "نجمة", isCorrect: true },
-      { id: "inter-3-car", emoji: "🚗", label: "سيارة", isCorrect: false },
-    ],
-  },
-];

@@ -1,13 +1,13 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { ChevronLeft } from "lucide-react-native";
+import { ChevronRight } from "lucide-react-native";
 import { ReactNode } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -45,9 +45,10 @@ export function AuthShell({
   const dynamicStyles = {
     title: {
       fontFamily: getFontForLanguage(language, 'bold'),
-      fontSize: 28,
+      fontSize: 22,
       lineHeight: 34,
       color: palette.text,
+      marginTop: 12,
     },
     subtitle: {
       fontFamily: getFontForLanguage(language, 'regular'),
@@ -77,7 +78,7 @@ export function AuthShell({
             accessibilityLabel="Go back"
             style={({ pressed }) => [styles.backBtn, pressed && styles.pressed]}
           >
-            <ChevronLeft size={24} color={palette.text} />
+            <ChevronRight size={24} color={palette.text} />
           </Pressable>
         ) : (
           <View style={styles.backSpacer} />
@@ -138,11 +139,13 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: palette.background,
+    direction: 'rtl',
   },
   flex: { flex: 1 },
   header: {
     paddingHorizontal: 20,
     paddingBottom: 20,
+    direction: 'rtl',
   },
   backBtn: {
     width: 44,
@@ -165,6 +168,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 8,
     paddingBottom: 24,
+    direction: 'rtl',
   },
   footer: {
     borderTopWidth: 2,
@@ -173,5 +177,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 12,
+    direction: 'rtl',
   },
 });

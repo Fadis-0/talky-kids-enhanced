@@ -145,7 +145,7 @@ export default function HomeScreen() {
           accessibilityLabel={isRTL ? "تشغيل لعبة الأسئلة والفهم" : "Play Questions Game"}
         >
           {({ pressed }: { pressed: boolean }) => {
-            const totalQuestions = 13; // 4 places + 3 sizes + 3 colors + 3 interactive
+            const totalQuestions = 11; // 4 places + 2 sizes + 3 colors + 2 interactive
             const completedQuestions =
               user.questionsPlacesLevel +
               user.questionsSizesLevel +

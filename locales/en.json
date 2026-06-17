@@ -26,6 +26,7 @@
       "emailBtn": "Continue with Email",
       "createAccount": "Create an account",
       "haveAccount": "Already have an account? Log in",
+      "loginBtn": "Log In",
       "mockNote": "Mock auth only — no real sign-in yet",
       "greeting": "Hello,"
     },

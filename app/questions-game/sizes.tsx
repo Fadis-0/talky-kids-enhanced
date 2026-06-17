@@ -1,11 +1,12 @@
+import { Audio } from "expo-av";
 import { useRouter } from "expo-router";
 import { ChevronLeft, Volume2 } from "lucide-react-native";
-import { useEffect, useState } from "react";
-import { Pressable, View } from "react-native";
-import * as Speech from "expo-speech";
+import { useEffect, useRef, useState } from "react";
+import { Image, Pressable, View } from "react-native";
 
 import { GameNavigation } from "@/components/games/GameNavigation";
 import { LevelHeader } from "@/components/games/LevelHeader";
+import { SubscriptionModal } from "@/components/games/SubscriptionModal";
 import { TalkyMascot } from "@/components/games/TalkyMascot";
 import { ScreenShell } from "@/components/ScreenShell";
 import { Text } from "@/components/ui/Text";
@@ -14,10 +15,17 @@ import { useUserData } from "@/contexts/UserDataContext";
 import { SIZES_LEVELS } from "@/lib/questions-game-data";
 import { palette } from "@/lib/theme";
 
+// Static map of question audio assets (Metro requires static require calls)
+const questionAudioMap: Record<string, any> = {
+  "sizes-tallest.mp4": require("../../assets/audio/sizes-game/sizes-tallest.mp4"),
+  "sizes-shortest.mp4": require("../../assets/audio/sizes-game/sizes-shortest.mp4"),
+};
+
 export default function SizesGameScreen() {
   const router = useRouter();
   const { user, setUser } = useUserData();
   const { isRTL } = useLanguage();
+  const soundRef = useRef<Audio.Sound | null>(null);
 
   const [currentLevelIndex, setCurrentLevelIndex] = useState(() => {
     const saved = user.questionsSizesLevel || 0;
@@ -25,60 +33,49 @@ export default function SizesGameScreen() {
   });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   const totalLevels = SIZES_LEVELS.length;
   const currentLevel = SIZES_LEVELS[currentLevelIndex] || SIZES_LEVELS[0];
 
-  const playQuestionTTS = () => {
-    Speech.stop();
-    Speech.speak(currentLevel.question, {
-      language: "ar-SA",
-      pitch: 1.1,
-      rate: 0.85,
-    });
-  };
+  // Cleanup audio on unmount
+  useEffect(() => {
+    return () => {
+      soundRef.current?.unloadAsync();
+    };
+  }, []);
 
+  // Reset state on level change
   useEffect(() => {
     setSelectedIndex(null);
     setIsCorrect(false);
-
-    const timer = setTimeout(() => {
-      playQuestionTTS();
-    }, 500);
-    return () => clearTimeout(timer);
   }, [currentLevelIndex]);
+
+  const playQuestionAudio = async () => {
+    try {
+      if (soundRef.current) {
+        await soundRef.current.unloadAsync();
+        soundRef.current = null;
+      }
+      const source = questionAudioMap[currentLevel.audioFile];
+      if (!source) {
+        console.warn("No audio found for", currentLevel.audioFile);
+        return;
+      }
+      const { sound } = await Audio.Sound.createAsync(source);
+      soundRef.current = sound;
+      await sound.playAsync();
+    } catch (err) {
+      console.warn("Failed to play question audio", err);
+    }
+  };
 
   const handleSelectOption = (index: number) => {
     setSelectedIndex(index);
-    const option = currentLevel.options[index];
-    
-    // Play option TTS
-    Speech.stop();
-    Speech.speak(option.label, {
-      language: "ar-SA",
-      pitch: 1.15,
-      rate: 0.8,
-    });
-
     if (index === currentLevel.correctIndex) {
       setIsCorrect(true);
-      // Speak success after a short delay
-      setTimeout(() => {
-        Speech.speak("أحسنت! إجابة صحيحة", {
-          language: "ar-SA",
-          pitch: 1.2,
-          rate: 0.85,
-        });
-      }, 900);
     } else {
       setIsCorrect(false);
-      setTimeout(() => {
-        Speech.speak("حاول مرة أخرى", {
-          language: "ar-SA",
-          pitch: 1.0,
-          rate: 0.85,
-        });
-      }, 900);
     }
   };
 
@@ -89,6 +86,12 @@ export default function SizesGameScreen() {
   };
 
   const handleNext = () => {
+    // Show subscription modal after level 2
+    if (currentLevelIndex + 1 === 2) {
+      setShowSubscriptionModal(true);
+      return;
+    }
+
     if (currentLevelIndex < totalLevels - 1) {
       const nextLevel = currentLevelIndex + 1;
       setCurrentLevelIndex(nextLevel);
@@ -107,7 +110,7 @@ export default function SizesGameScreen() {
 
   // Determine mascot state
   let mascotState: "idle" | "selected" | "recording" | "completed" = "idle";
-  let mascotLabel = currentLevel.question;
+  let mascotLabel: string | undefined;
 
   if (selectedIndex !== null) {
     if (isCorrect) {
@@ -153,7 +156,7 @@ export default function SizesGameScreen() {
   return (
     <ScreenShell
       title="الأحجام والمقاسات"
-      subtitle="استمع جيداً للسؤال واختر الإجابة الصحيحة!"
+      subtitle="اضغط على الزر واستمع للسؤال، ثم اختر الإجابة!"
       accent="orange"
       topNavBar={backButton}
       hideTabBarClearance={true}
@@ -167,95 +170,133 @@ export default function SizesGameScreen() {
             letter=""
           />
 
-          {/* Spoken Question Text */}
-          <View className="flex-row items-center justify-center gap-2 self-center mt-2 px-4">
-            <Text variant="title" className="text-xl text-center flex-1">
-              {currentLevel.question}
-            </Text>
+          {/* Audio Play Button — question is heard, not read */}
+          <View style={{ alignItems: "center", marginTop: 8 }}>
             <Pressable
-              onPress={playQuestionTTS}
-              className="p-2 bg-tk-orange-light rounded-full border border-[#FED7AA] active:opacity-75"
+              onPress={playQuestionAudio}
+              style={({ pressed }) => ({
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 10,
+                paddingHorizontal: 24,
+                paddingVertical: 14,
+                backgroundColor: pressed ? "#FED7AA" : "#FFF7ED",
+                borderRadius: 20,
+                borderWidth: 2,
+                borderColor: palette.orange,
+                opacity: pressed ? 0.85 : 1,
+                shadowColor: palette.orange,
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: 0.2,
+                shadowRadius: 6,
+                elevation: 4,
+              })}
             >
-              <Volume2 size={22} color={palette.orange} />
+              <Volume2 size={24} color={palette.orange} />
+              <Text variant="label" style={{ color: palette.orange, fontSize: 16, paddingVertical: 4 }}>
+                استمع للسؤال
+              </Text>
             </Pressable>
           </View>
 
-          {/* Sizes Choices Row */}
+          {/* Single image with two tap-zones overlaid (left = index 0, right = index 1) */}
           <View
-            style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
-            className="gap-5 px-1 justify-center items-end mt-4"
+            style={{
+              marginHorizontal: 16,
+              marginTop: 8,
+              borderRadius: 20,
+              overflow: "hidden",
+              borderWidth: 3,
+              borderColor:
+                selectedIndex !== null
+                  ? selectedIndex === currentLevel.correctIndex
+                    ? palette.green
+                    : palette.red
+                  : palette.border,
+              shadowColor:
+                selectedIndex !== null
+                  ? selectedIndex === currentLevel.correctIndex
+                    ? palette.green
+                    : palette.red
+                  : "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: selectedIndex !== null ? 0.3 : 0.08,
+              shadowRadius: 8,
+              elevation: 4,
+              backgroundColor: palette.surface,
+            }}
           >
-            {currentLevel.options.map((option, idx) => {
-              const isSelected = selectedIndex === idx;
-              const isOptionCorrect = idx === currentLevel.correctIndex;
-              
-              let cardBorderColor: string = palette.border;
-              let cardBgColor: string = palette.surface;
-              if (isSelected) {
-                cardBorderColor = isOptionCorrect ? palette.green : palette.red;
-                cardBgColor = isOptionCorrect ? palette.greenLight : palette.redLight;
-              }
+            {/* The image showing both boys side by side */}
+            <Image
+              source={require("../../assets/images/sizes.jpeg")}
+              style={{ width: "100%", height: 260 }}
+              resizeMode="contain"
+            />
 
-              // custom container height if specified, or default 140
-              const containerHeight = option.height || 140;
-
-              return (
-                <Pressable
-                  key={option.id}
-                  onPress={() => handleSelectOption(idx)}
-                  className="flex-1 rounded-2xl border-2 items-center justify-center p-4 active:opacity-95"
-                  style={{
-                    height: containerHeight,
-                    borderColor: cardBorderColor,
-                    backgroundColor: cardBgColor,
-                    shadowColor: isSelected ? cardBorderColor : "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: isSelected ? 0.2 : 0.05,
-                    shadowRadius: 3,
-                    elevation: 2,
-                  }}
-                >
-                  <View
+            {/* Invisible tap zones overlay — left half = option 0, right half = option 1 */}
+            <View
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                flexDirection: "row",
+              }}
+            >
+              {currentLevel.options.map((option, idx) => {
+                const isSelected = selectedIndex === idx;
+                const isOptionCorrect = idx === currentLevel.correctIndex;
+                return (
+                  <Pressable
+                    key={option.id}
+                    onPress={() => handleSelectOption(idx)}
                     style={{
-                      transform: [{ scale: option.scale }],
+                      flex: 1,
+                      backgroundColor:
+                        isSelected
+                          ? isOptionCorrect
+                            ? "rgba(34,197,94,0.18)"
+                            : "rgba(239,68,68,0.18)"
+                          : "transparent",
                     }}
-                  >
-                    <Text className="text-5xl">{option.emoji}</Text>
-                  </View>
-                  <Text
-                    variant="label"
-                    className="mt-3 text-sm text-center"
-                    style={{
-                      color: isSelected && isOptionCorrect ? palette.greenDark : palette.text,
-                    }}
-                  >
-                    {option.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
+                  />
+                );
+              })}
+            </View>
           </View>
         </View>
 
-        {/* Bottom Mascot & controls */}
+
+        {/* Bottom: Mascot + Navigation */}
         <View className="gap-3" style={{ marginTop: 16 }}>
-          {/* Duolingo Mascot Mentor */}
-          <View style={{ height: 90, justifyContent: "center" }} className="mt-4">
+          <View style={{ height: 90, justifyContent: "center" }} className="mt-2">
             <TalkyMascot state={mascotState} label={mascotLabel} />
           </View>
 
-          {/* Navigation bar at bottom */}
-          <View style={{ paddingVertical: 10, marginTop: 10 }}>
+          <View style={{ paddingVertical: 10, marginTop: 8 }}>
             <GameNavigation
               currentLevel={currentLevelIndex + 1}
               totalLevels={totalLevels}
               onPrevious={handlePrevious}
-              onNext={isCorrect ? handleNext : () => Speech.speak("اختر الإجابة الصحيحة أولاً", { language: "ar-SA" })}
-              onFinish={isCorrect ? handleFinish : () => Speech.speak("اختر الإجابة الصحيحة أولاً", { language: "ar-SA" })}
+              onNext={isCorrect ? handleNext : () => { }}
+              onFinish={isCorrect ? handleFinish : () => { }}
             />
           </View>
         </View>
       </View>
+
+      <SubscriptionModal
+        visible={showSubscriptionModal}
+        onSubscribe={() => {
+          setShowSubscriptionModal(false);
+          // Handle subscription action
+        }}
+        onLater={() => {
+          setShowSubscriptionModal(false);
+          router.back();
+        }}
+      />
     </ScreenShell>
   );
 }

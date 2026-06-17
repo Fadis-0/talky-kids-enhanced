@@ -1,5 +1,5 @@
-import { router, useLocalSearchParams } from "expo-router";
 import { supabase } from "@/lib/supabase";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
@@ -43,7 +43,7 @@ export default function LoginScreen() {
         password,
       });
       setIsLoading(false);
-      
+
       if (error) {
         setError(error.message);
       } else {
@@ -63,10 +63,10 @@ export default function LoginScreen() {
       footer={
         <View className="gap-2">
           {error ? <Text className="text-red-500 text-center">{error}</Text> : null}
-          <PrimaryButton 
-            label={isLoading ? "Loading..." : t("common.continue")} 
-            color="blue" 
-            onPress={finish} 
+          <PrimaryButton
+            label={isLoading ? "Loading..." : t("common.continue")}
+            color="blue"
+            onPress={finish}
             disabled={isLoading}
           />
         </View>

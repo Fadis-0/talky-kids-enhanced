@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { Baby, Stethoscope } from "lucide-react-native";
+import { Baby } from "lucide-react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
@@ -15,7 +15,7 @@ import { palette } from "@/lib/theme";
 export default function CreateAccountScreen() {
   const { t } = useTranslation();
   const { role, setRole } = useSignup();
-  const [picked, setPicked] = useState<UserRole | null>(role);
+  const [picked, setPicked] = useState<UserRole | null>("parent");
 
   const continueFlow = () => {
     if (!picked) return;
@@ -44,20 +44,12 @@ export default function CreateAccountScreen() {
           title={t("auth.createAccount.parentTitle")}
           description={t("auth.createAccount.parentDesc")}
           icon={Baby}
-          selected={picked === "parent"}
+          selected={true}
           accent={palette.green}
           accentLight={palette.greenLight}
           onPress={() => setPicked("parent")}
         />
-        <RoleCard
-          title={t("auth.createAccount.orthTitle")}
-          description={t("auth.createAccount.orthDesc")}
-          icon={Stethoscope}
-          selected={picked === "orthophonist"}
-          accent={palette.blue}
-          accentLight={palette.blueLight}
-          onPress={() => setPicked("orthophonist")}
-        />
+        
       </View>
     </AuthShell>
   );

@@ -2,7 +2,8 @@ import { ReactNode } from "react";
 import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
 import { Text } from "@/components/ui/Text";
-import { fonts, palette, radius } from "@/lib/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getFontForLanguage, palette, radius } from "@/lib/theme";
 
 type PrimaryButtonProps = {
   label: string;
@@ -32,6 +33,7 @@ export function PrimaryButton({
   icon,
 }: PrimaryButtonProps) {
   const c = colorMap[color];
+  const { language } = useLanguage();
 
   return (
     <Pressable
@@ -50,7 +52,7 @@ export function PrimaryButton({
         {icon && <View style={{ marginRight: 8 }}>{icon}</View>}
         <Text
           style={{
-            fontFamily: fonts.displayBold,
+            fontFamily: getFontForLanguage(language, 'bold'),
             fontSize: 17,
             color: c.text,
             textAlign: "center",

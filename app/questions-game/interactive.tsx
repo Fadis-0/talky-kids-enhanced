@@ -1,53 +1,82 @@
+import { Audio } from "expo-av";
 import { useRouter } from "expo-router";
 import { ChevronLeft, Volume2 } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
-import { Animated, PanResponder, Pressable, View } from "react-native";
-import * as Speech from "expo-speech";
+import { Animated, Image, PanResponder, Pressable, View } from "react-native";
 
 import { GameNavigation } from "@/components/games/GameNavigation";
 import { LevelHeader } from "@/components/games/LevelHeader";
+import { SubscriptionModal } from "@/components/games/SubscriptionModal";
 import { TalkyMascot } from "@/components/games/TalkyMascot";
 import { ScreenShell } from "@/components/ScreenShell";
 import { Text } from "@/components/ui/Text";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserData } from "@/contexts/UserDataContext";
-import { INTERACTIVE_LEVELS } from "@/lib/questions-game-data";
+import { BooksLevel, INTERACTIVE_LEVELS } from "@/lib/questions-game-data";
 import { palette } from "@/lib/theme";
 
-type DraggableItemProps = {
-  emoji: string;
-  label: string;
-  isCorrect: boolean;
-  onDrop: (isCorrect: boolean, label: string) => void;
-  targetBounds: { x: number; y: number; w: number; h: number } | null;
-  currentLevelIndex: number;
-  isCorrectDropped: boolean;
+// ─── Audio maps ─────────────────────────────────────────────────────────────
+const questionAudioMap: Record<string, any> = {
+  "interactive-apples.mp4": require("../../assets/audio/interactive-game/interactive-apples.mp4"),
+  "books-audio.mp4": require("../../assets/audio/interactive-game/books-audio.mp4"),
 };
 
-function DraggableItem({
-  emoji,
-  label,
-  isCorrect,
-  onDrop,
-  targetBounds,
-  currentLevelIndex,
-  isCorrectDropped,
-}: DraggableItemProps) {
+// ─── Apple positions on tree image ──────────────────────────────────────────
+const APPLE_POSITIONS = [
+  { x: 80,  y: 40  },
+  { x: 150, y: 10  },
+  { x: 230, y: 30  },
+  { x: 80,  y: 110 },
+  { x: 130, y: 100 },
+  { x: 180, y: 120 },
+  { x: 240, y: 100 },
+  { x: 180, y: 80 },
+];
+
+// ─── Book assets ─────────────────────────────────────────────────────────────
+const BOOK_IMAGES = {
+  red:    require("../../assets/images/red-book.png"),
+  green:  require("../../assets/images/green-book.png"),
+  yellow: require("../../assets/images/yellow-book.png"),
+};
+const BOOK_LIST = ["red", "green", "yellow"] as const;
+// Left-side starting positions for each book (absolute within game wrapper)
+const BOOK_POSITIONS = {
+  red:    { x: 8, y: 10  },
+  green:  { x: 8, y: 115 },
+  yellow: { x: 8, y: 220 },
+};
+
+// ─── Generic Draggable component ─────────────────────────────────────────────
+type DraggableProps = {
+  children: (panHandlers: any) => React.ReactNode;
+  initialX: number;
+  initialY: number;
+  targetBoundsRef: React.MutableRefObject<{ x: number; y: number; w: number; h: number } | null>;
+  onDrop: () => boolean; // returns true if drop accepted
+  levelKey: number;
+  disabled?: boolean;
+};
+
+function Draggable({ children, initialX, initialY, targetBoundsRef, onDrop, levelKey, disabled }: DraggableProps) {
   const pan = useRef(new Animated.ValueXY()).current;
+  const lockedRef = useRef(false);
 
-  // Track the latest props in a ref to avoid stale closure issues in PanResponder
-  const stateRef = useRef({ isCorrectDropped, targetBounds, isCorrect, label, onDrop });
-  stateRef.current = { isCorrectDropped, targetBounds, isCorrect, label, onDrop };
+  // Keep latest props in refs so PanResponder always reads fresh values
+  const onDropRef = useRef(onDrop);
+  onDropRef.current = onDrop;
+  const disabledRef = useRef(disabled);
+  disabledRef.current = disabled;
 
-  // Reset position when level changes
   useEffect(() => {
     pan.setValue({ x: 0, y: 0 });
-  }, [currentLevelIndex]);
+    lockedRef.current = false;
+  }, [levelKey]);
 
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => !stateRef.current.isCorrectDropped,
-      onMoveShouldSetPanResponder: () => !stateRef.current.isCorrectDropped,
+      onStartShouldSetPanResponder: () => !lockedRef.current && !disabledRef.current,
+      onMoveShouldSetPanResponder: () => !lockedRef.current && !disabledRef.current,
       onPanResponderGrant: () => {
         pan.setOffset({
           // @ts-ignore
@@ -59,190 +88,171 @@ function DraggableItem({
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
         useNativeDriver: false,
       }),
-      onPanResponderRelease: (e, gestureState) => {
+      onPanResponderRelease: (_e, gestureState) => {
         pan.flattenOffset();
-
-        const { targetBounds, onDrop, isCorrect, label } = stateRef.current;
-
-        if (targetBounds) {
-          const touchX = gestureState.moveX;
-          const touchY = gestureState.moveY;
-
-          const isOverTarget =
-            touchX >= targetBounds.x &&
-            touchX <= targetBounds.x + targetBounds.w &&
-            touchY >= targetBounds.y &&
-            touchY <= targetBounds.y + targetBounds.h;
-
-          if (isOverTarget) {
-            onDrop(isCorrect, label);
-            if (isCorrect) {
-              // Lock it or let it animate slightly
-            } else {
-              // Bounce back
-              Animated.spring(pan, {
-                toValue: { x: 0, y: 0 },
-                useNativeDriver: false,
-              }).start();
+        const bounds = targetBoundsRef.current;
+        if (bounds && !lockedRef.current) {
+          const { moveX, moveY } = gestureState;
+          const over =
+            moveX >= bounds.x && moveX <= bounds.x + bounds.w &&
+            moveY >= bounds.y && moveY <= bounds.y + bounds.h;
+          if (over) {
+            const accepted = onDropRef.current();
+            if (accepted) {
+              lockedRef.current = true;
+              return;
             }
-          } else {
-            // Bounce back
-            Animated.spring(pan, {
-              toValue: { x: 0, y: 0 },
-              useNativeDriver: false,
-            }).start();
           }
-        } else {
-          // Bounce back fallback
-          Animated.spring(pan, {
-            toValue: { x: 0, y: 0 },
-            useNativeDriver: false,
-          }).start();
         }
+        Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false }).start();
       },
     })
   ).current;
 
   return (
     <Animated.View
-      {...panResponder.panHandlers}
-      style={[
-        pan.getLayout(),
-        {
-          width: 100,
-          height: 100,
-          borderRadius: 20,
-          borderWidth: 2,
-          borderColor: palette.border,
-          backgroundColor: palette.surface,
-          alignItems: "center",
-          justifyContent: "center",
-          opacity: isCorrectDropped && !isCorrect ? 0.4 : 1,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.1,
-          shadowRadius: 2,
-          elevation: 2,
-        },
-      ]}
+      style={{
+        position: "absolute",
+        left: initialX,
+        top: initialY,
+        zIndex: 100,
+        transform: [{ translateX: pan.x }, { translateY: pan.y }],
+      }}
     >
-      <Text className="text-5xl">{emoji}</Text>
-      <Text variant="label" className="text-xs mt-1 text-tk-text">
-        {label}
-      </Text>
+      {children(panResponder.panHandlers)}
     </Animated.View>
   );
 }
 
+// ─── Hearts display ───────────────────────────────────────────────────────────
+function Hearts({ total, remaining }: { total: number; remaining: number }) {
+  return (
+    <View style={{ flexDirection: "row", gap: 6, justifyContent: "center", marginBottom: 4 }}>
+      {Array.from({ length: total }).map((_, i) => (
+        <Text key={i} style={{ fontSize: 22 }}>
+          {i < remaining ? "❤️" : "🖤"}
+        </Text>
+      ))}
+    </View>
+  );
+}
+
+// ─── Main Screen ─────────────────────────────────────────────────────────────
 export default function InteractiveGameScreen() {
   const router = useRouter();
   const { user, setUser } = useUserData();
   const { isRTL } = useLanguage();
+  const soundRef = useRef<Audio.Sound | null>(null);
+
+  // Drop target refs
+  const basketRef = useRef<View>(null);
+  const basketBoundsRef = useRef<{ x: number; y: number; w: number; h: number } | null>(null);
+  const teacherRef = useRef<View>(null);
+  const teacherBoundsRef = useRef<{ x: number; y: number; w: number; h: number } | null>(null);
 
   const [currentLevelIndex, setCurrentLevelIndex] = useState(() => {
     const saved = user.questionsInteractiveLevel || 0;
     return saved < INTERACTIVE_LEVELS.length ? saved : 0;
   });
-  const [targetBounds, setTargetBounds] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
-  const [isCorrectDropped, setIsCorrectDropped] = useState(false);
-  const [droppedItemLabel, setDroppedItemLabel] = useState<string | null>(null);
-  const [lastActionStatus, setLastActionStatus] = useState<"success" | "fail" | null>(null);
 
-  const targetRef = useRef<View>(null);
+  // Apples level state
+  const [droppedAppleIds, setDroppedAppleIds] = useState<Set<number>>(new Set());
+
+  // Books level state
+  const [heartsLeft, setHeartsLeft] = useState(5);
+  const [correctDropped, setCorrectDropped] = useState(false);
+  const [levelFailed, setLevelFailed] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+
   const totalLevels = INTERACTIVE_LEVELS.length;
   const currentLevel = INTERACTIVE_LEVELS[currentLevelIndex] || INTERACTIVE_LEVELS[0];
 
-  const updateTargetBounds = () => {
-    if (targetRef.current) {
-      targetRef.current.measure((x, y, w, h, pageX, pageY) => {
-        setTargetBounds({ x: pageX, y: pageY, w, h });
-      });
-    }
-  };
+  const isApplesLevel = currentLevel.type === "apples";
+  const isBooksLevel = currentLevel.type === "books";
 
-  const playQuestionTTS = () => {
-    Speech.stop();
-    Speech.speak(currentLevel.question, {
-      language: "ar-SA",
-      pitch: 1.1,
-      rate: 0.85,
-    });
-  };
+  const applesBasketCount = droppedAppleIds.size;
+  const applesComplete = isApplesLevel && applesBasketCount >= (currentLevel as any).targetCount;
+  const booksComplete = isBooksLevel && correctDropped;
+  const isComplete = applesComplete || booksComplete;
 
+  // Cleanup audio
   useEffect(() => {
-    setIsCorrectDropped(false);
-    setDroppedItemLabel(null);
-    setLastActionStatus(null);
+    return () => { soundRef.current?.unloadAsync(); };
+  }, []);
 
-    const timer = setTimeout(() => {
-      playQuestionTTS();
-      // Ensure target bounds are measured after render
-      updateTargetBounds();
-    }, 600);
-
-    return () => clearTimeout(timer);
+  // Reset state on level change
+  useEffect(() => {
+    setDroppedAppleIds(new Set());
+    setHeartsLeft(isBooksLevel ? (currentLevel as BooksLevel).maxAttempts : 5);
+    setCorrectDropped(false);
+    setLevelFailed(false);
   }, [currentLevelIndex]);
 
-  const handleDrop = (isCorrect: boolean, label: string) => {
-    if (isCorrect) {
-      setIsCorrectDropped(true);
-      setDroppedItemLabel(label);
-      setLastActionStatus("success");
+  const playQuestionAudio = async () => {
+    try {
+      if (soundRef.current) { await soundRef.current.unloadAsync(); soundRef.current = null; }
+      const source = questionAudioMap[currentLevel.audioFile];
+      if (!source) return;
+      const { sound } = await Audio.Sound.createAsync(source);
+      soundRef.current = sound;
+      await sound.playAsync();
+    } catch (err) { console.warn("Failed to play audio", err); }
+  };
 
-      // Play success audio
-      Speech.stop();
-      Speech.speak(`رائع! وضعت ${label} في ${currentLevel.targetLabel}`, {
-        language: "ar-SA",
-        pitch: 1.15,
-        rate: 0.85,
-      });
+  // ── Apple handlers ──
+  const handleAppleDropped = (id: number) => {
+    setDroppedAppleIds(prev => new Set([...prev, id]));
+  };
+
+  // ── Book handlers ──
+  const handleBookDrop = (bookType: "red" | "green" | "yellow"): boolean => {
+    const level = currentLevel as BooksLevel;
+    if (bookType === level.correctBook) {
+      setCorrectDropped(true);
+      return true; // accepted — lock in place
     } else {
-      setLastActionStatus("fail");
-      setDroppedItemLabel(label);
-
-      // Play try again advice
-      Speech.stop();
-      Speech.speak(`حاول مرة أخرى! ضع الإجراء الصحيح وليس ${label}`, {
-        language: "ar-SA",
-        pitch: 1.0,
-        rate: 0.85,
-      });
+      const newHearts = heartsLeft - 1;
+      setHeartsLeft(newHearts);
+      if (newHearts <= 0) setLevelFailed(true);
+      return false; // bounce back
     }
   };
 
-  const handlePrevious = () => {
-    if (currentLevelIndex > 0) {
-      setCurrentLevelIndex(currentLevelIndex - 1);
-    }
-  };
-
+  // ── Navigation ──
+  const handlePrevious = () => { if (currentLevelIndex > 0) setCurrentLevelIndex(currentLevelIndex - 1); };
   const handleNext = () => {
+    // Show subscription modal after level 2
+    if (currentLevelIndex + 1 === 2) {
+      setShowSubscriptionModal(true);
+      return;
+    }
+
     if (currentLevelIndex < totalLevels - 1) {
-      const nextLevel = currentLevelIndex + 1;
-      setCurrentLevelIndex(nextLevel);
-      if (nextLevel > user.questionsInteractiveLevel) {
-        setUser({ questionsInteractiveLevel: nextLevel });
-      }
+      const next = currentLevelIndex + 1;
+      setCurrentLevelIndex(next);
+      if (next > user.questionsInteractiveLevel) setUser({ questionsInteractiveLevel: next });
     }
   };
-
   const handleFinish = () => {
-    if (totalLevels > user.questionsInteractiveLevel) {
-      setUser({ questionsInteractiveLevel: totalLevels });
-    }
+    if (totalLevels > user.questionsInteractiveLevel) setUser({ questionsInteractiveLevel: totalLevels });
     router.back();
   };
+  const handleRetry = () => {
+    const level = currentLevel as BooksLevel;
+    setHeartsLeft(level.maxAttempts);
+    setLevelFailed(false);
+    setCorrectDropped(false);
+  };
 
-  // Determine mascot state
+  // ── Mascot ──
   let mascotState: "idle" | "selected" | "recording" | "completed" = "idle";
-  let mascotLabel = currentLevel.question;
-
-  if (lastActionStatus === "success") {
-    mascotState = "completed";
-    mascotLabel = `عمل ممتاز! لقد وضعت ال${droppedItemLabel} داخل ${currentLevel.targetLabel}! 🎉`;
-  } else if (lastActionStatus === "fail") {
-    mascotState = "selected";
-    mascotLabel = `حاول مجدداً! ضع المطلوب داخل ${currentLevel.targetLabel}.`;
+  let mascotLabel: string | undefined;
+  if (isApplesLevel) {
+    if (applesComplete) { mascotState = "completed"; mascotLabel = `رائع! وضعت 6 تفاحات في السلة! 🎉`; }
+    else if (applesBasketCount > 0) { mascotState = "selected"; mascotLabel = `${applesBasketCount} من 6، استمر! 🍎`; }
+  } else {
+    if (levelFailed) { mascotState = "selected"; mascotLabel = "نفدت المحاولات! حاول مجدداً 💪"; }
+    else if (booksComplete) { mascotState = "completed"; mascotLabel = "رائع! اخترت الكتاب الصحيح! 🎉"; }
   }
 
   const backButton = (
@@ -251,26 +261,7 @@ export default function InteractiveGameScreen() {
       accessibilityRole="button"
       accessibilityLabel="العودة"
       hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-      style={({ pressed }) => [
-        {
-          width: 44,
-          height: 44,
-          borderRadius: 14,
-          borderWidth: 2,
-          borderColor: palette.border,
-          backgroundColor: palette.surface,
-          alignItems: "center",
-          justifyContent: "center",
-          opacity: pressed ? 0.8 : 1,
-          elevation: 4,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.1,
-          shadowRadius: 2,
-          zIndex: 10,
-          transform: [{ scaleX: isRTL ? -1 : 1 }],
-        },
-      ]}
+      style={({ pressed }) => [{ width: 44, height: 44, borderRadius: 14, borderWidth: 2, borderColor: palette.border, backgroundColor: palette.surface, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.8 : 1, elevation: 4, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, zIndex: 10, transform: [{ scaleX: isRTL ? -1 : 1 }] }]}
     >
       <ChevronLeft size={24} color={palette.text} />
     </Pressable>
@@ -279,99 +270,148 @@ export default function InteractiveGameScreen() {
   return (
     <ScreenShell
       title="الأسئلة التفاعلية"
-      subtitle="اسحب العنصر الصحيح وأفلته في المكان المناسب!"
+      subtitle={isApplesLevel ? "اسحب التفاحات من الشجرة إلى السلة!" : "اسحب الكتاب المناسب إلى المعلمة!"}
       accent="green"
       topNavBar={backButton}
       hideTabBarClearance={true}
     >
-      <View style={{ flex: 1, justifyContent: "space-between", minHeight: 580, direction: "ltr" }}>
-        {/* Top/Middle Group */}
-        <View className="gap-5">
-          <LevelHeader
-            levelNumber={currentLevelIndex + 1}
-            totalLevels={totalLevels}
-            letter=""
-          />
+      <View style={{ flex: 1, direction: isRTL ? "rtl" : "ltr", gap: 12 }}>
+        <LevelHeader levelNumber={currentLevelIndex + 1} totalLevels={totalLevels} letter="" />
 
-          {/* Spoken Question Text */}
-          <View className="flex-row items-center justify-center gap-2 self-center mt-2 px-4">
-            <Text variant="title" className="text-xl text-center flex-1">
-              {currentLevel.question}
-            </Text>
-            <Pressable
-              onPress={playQuestionTTS}
-              className="p-2 bg-tk-green-light rounded-full border border-[#BBF7D0] active:opacity-75"
-            >
-              <Volume2 size={22} color={palette.green} />
-            </Pressable>
-          </View>
+        {/* Hearts — books level only */}
+        {isBooksLevel && (
+          <Hearts total={(currentLevel as BooksLevel).maxAttempts} remaining={heartsLeft} />
+        )}
 
-          {/* Target Zone Box */}
-          <View
-            ref={targetRef}
-            onLayout={updateTargetBounds}
-            className="w-44 h-44 rounded-3xl border-4 border-dashed items-center justify-center self-center my-2 relative"
-            style={{
-              borderColor: isCorrectDropped ? palette.green : palette.borderStrong,
-              backgroundColor: isCorrectDropped ? palette.greenLight : "#F9F9F9",
-            }}
+        {/* Audio button */}
+        <View style={{ alignItems: "center" }}>
+          <Pressable
+            onPress={playQuestionAudio}
+            style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 22, paddingVertical: 11, backgroundColor: pressed ? "#BBF7D0" : "#F0FDF4", borderRadius: 20, borderWidth: 2, borderColor: palette.green, opacity: pressed ? 0.85 : 1, elevation: 3 })}
           >
-            {isCorrectDropped ? (
-              <View className="items-center justify-center">
-                <Text className="text-6xl">{currentLevel.items.find(i => i.isCorrect)?.emoji}</Text>
-                <Text variant="label" className="text-sm mt-2 font-bold text-tk-green-dark">
-                  {currentLevel.targetLabel}
-                </Text>
-              </View>
-            ) : (
-              <View className="items-center justify-center p-4">
-                <Text className="text-6xl">{currentLevel.targetEmoji}</Text>
-                <Text variant="label" className="text-xs mt-2 text-tk-text-secondary text-center">
-                  {`أفلت هنا: ${currentLevel.targetLabel}`}
-                </Text>
+            <Volume2 size={24} color={palette.green} />
+            <Text variant="label" style={{ color: palette.green, fontSize: 15, paddingVertical: 5 }}>استمع للسؤال</Text>
+          </Pressable>
+        </View>
+
+        {/* ── APPLES LEVEL ── */}
+        {isApplesLevel && (
+          <View style={{ position: "relative", marginHorizontal: 16, height: 385 }}>
+            {/* Tree scene */}
+            <Image source={require("../../assets/images/apples.jpeg")} style={{ width: "100%", height: 300, borderRadius: 20 }} resizeMode="contain" />
+
+            {/* Basket */}
+            <View
+              ref={basketRef}
+              onLayout={() => basketRef.current?.measure((_x, _y, w, h, px, py) => { basketBoundsRef.current = { x: px, y: py, w, h }; })}
+              style={{ position: "absolute", bottom: 0, left: 40, right: 40, height: 110, borderRadius: 20, borderWidth: 3, borderStyle: "dashed", borderColor: applesComplete ? palette.green : palette.orange, backgroundColor: applesComplete ? palette.greenLight : "#FFF7ED", alignItems: "center", justifyContent: "center", gap: 4 }}
+            >
+              <Text style={{ fontSize: 64, padding: 28 }}>🧺</Text>
+            </View>
+
+            {/* Draggable apples */}
+            {APPLE_POSITIONS.map((pos, id) =>
+              droppedAppleIds.has(id) ? null : (
+                <Draggable
+                  key={`apple-${currentLevelIndex}-${id}`}
+                  initialX={pos.x}
+                  initialY={pos.y}
+                  targetBoundsRef={basketBoundsRef}
+                  onDrop={() => { handleAppleDropped(id); return true; }}
+                  levelKey={currentLevelIndex}
+                >
+                  {(handlers) => (
+                    <Image {...handlers} source={require("../../assets/images/apple.png")} style={{ width: 52, height: 52 }} resizeMode="contain" />
+                  )}
+                </Draggable>
+              )
+            )}
+          </View>
+        )}
+
+        {/* ── BOOKS LEVEL ── */}
+        {isBooksLevel && (
+          <View style={{ position: "relative", marginHorizontal: 16, height: 330 }}>
+            {/* Background panel */}
+            <View style={{ position: "absolute", inset: 0, borderRadius: 20, backgroundColor: "#F0FDF4", borderWidth: 2, borderColor: palette.border }} />
+
+            {/* Teacher drop zone — right side */}
+            <View
+              ref={teacherRef}
+              onLayout={() => teacherRef.current?.measure((_x, _y, w, h, px, py) => { teacherBoundsRef.current = { x: px, y: py, w, h }; })}
+              style={{ position: "absolute", right: 12, top: 20, width: 160, height: 290, borderRadius: 16, borderWidth: correctDropped ? 3 : 2, borderColor: correctDropped ? palette.green : palette.border, backgroundColor: correctDropped ? palette.greenLight : "transparent", alignItems: "center", justifyContent: "center", overflow: "hidden" }}
+            >
+              <Image source={require("../../assets/images/teacher.jpeg")} style={{ width: "100%", height: "100%", borderRadius: 14 }} resizeMode="cover" />
+              {!correctDropped && (
+                <View style={{ position: "absolute", bottom: 8, left: 0, right: 0, alignItems: "center" }}>
+                  <View style={{ backgroundColor: "rgba(0,0,0,0.45)", borderRadius: 10, paddingHorizontal: 10, paddingVertical: 4 }}>
+                    <Text style={{ color: "#fff", fontSize: 11 }}>أفلت الكتاب هنا</Text>
+                  </View>
+                </View>
+              )}
+            </View>
+
+            {/* Draggable books — left side */}
+            {!levelFailed && !correctDropped && BOOK_LIST.map(bookType => (
+              <Draggable
+                key={`book-${currentLevelIndex}-${bookType}`}
+                initialX={BOOK_POSITIONS[bookType].x}
+                initialY={BOOK_POSITIONS[bookType].y}
+                targetBoundsRef={teacherBoundsRef}
+                onDrop={() => handleBookDrop(bookType)}
+                levelKey={currentLevelIndex}
+                disabled={levelFailed || correctDropped}
+              >
+                {(handlers) => (
+                  <Image {...handlers} source={BOOK_IMAGES[bookType]} style={{ width: 90, height: 100, borderRadius: 10 }} resizeMode="contain" />
+                )}
+              </Draggable>
+            ))}
+
+            {/* Retry overlay on fail */}
+            {levelFailed && (
+              <View style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.55)", borderRadius: 20, alignItems: "center", justifyContent: "center", gap: 16 }}>
+                <Text style={{ fontSize: 40 }}>💔</Text>
+                <Text style={{ color: "#fff", fontSize: 16, textAlign: "center" }}>نفدت المحاولات!</Text>
+                <Pressable
+                  onPress={handleRetry}
+                  style={({ pressed }) => ({ backgroundColor: pressed ? palette.greenDark : palette.green, paddingHorizontal: 28, paddingVertical: 12, borderRadius: 16, opacity: pressed ? 0.85 : 1 })}
+                >
+                  <Text style={{ color: "#fff", fontSize: 15, fontWeight: "bold" }}>حاول مجدداً 🔄</Text>
+                </Pressable>
               </View>
             )}
           </View>
+        )}
 
-          {/* Draggable items container (LTR Row Flow) */}
-          <View
-            style={{ flexDirection: "row" }}
-            className="justify-around items-center h-28 mt-2 px-2"
-          >
-            {currentLevel.items.map((item) => (
-              <DraggableItem
-                key={item.id}
-                emoji={item.emoji}
-                label={item.label}
-                isCorrect={item.isCorrect}
-                onDrop={handleDrop}
-                targetBounds={targetBounds}
-                currentLevelIndex={currentLevelIndex}
-                isCorrectDropped={isCorrectDropped}
-              />
-            ))}
-          </View>
+        {/* Mascot */}
+        <View style={{ height: 80, marginTop: 24, justifyContent: "center" }}>
+          <TalkyMascot state={mascotState} label={mascotLabel} />
         </View>
 
-        {/* Bottom Mascot & controls */}
-        <View className="gap-2" style={{ marginTop: 16 }}>
-          {/* Duolingo Mascot Mentor */}
-          <View style={{ height: 80, justifyContent: "center" }} className="mt-2">
-            <TalkyMascot state={mascotState} label={mascotLabel} />
-          </View>
-
-          {/* Navigation bar at bottom */}
-          <View style={{ paddingVertical: 10 }}>
-            <GameNavigation
-              currentLevel={currentLevelIndex + 1}
-              totalLevels={totalLevels}
-              onPrevious={handlePrevious}
-              onNext={isCorrectDropped ? handleNext : () => Speech.speak("ضع الشكل في مكانه أولاً", { language: "ar-SA" })}
-              onFinish={isCorrectDropped ? handleFinish : () => Speech.speak("ضع الشكل في مكانه أولاً", { language: "ar-SA" })}
-            />
-          </View>
+        {/* Navigation */}
+        <View style={{ paddingVertical: 12 }}>
+          <GameNavigation
+            currentLevel={currentLevelIndex + 1}
+            totalLevels={totalLevels}
+            onPrevious={handlePrevious}
+            onNext={isComplete ? handleNext : () => {}}
+            onFinish={isComplete ? handleFinish : () => {}}
+          />
         </View>
       </View>
+
+      <SubscriptionModal
+        visible={showSubscriptionModal}
+        onSubscribe={() => {
+          setShowSubscriptionModal(false);
+          // Handle subscription action
+        }}
+        onLater={() => {
+          setShowSubscriptionModal(false);
+          router.back();
+        }}
+      />
     </ScreenShell>
   );
 }

@@ -1,5 +1,4 @@
 import { Audio } from "expo-av";
-import * as Speech from "expo-speech";
 import { Play } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
@@ -42,14 +41,14 @@ export function GameImageCard({
   const playAudio = async () => {
     try {
       setIsPlaying(true);
-      // Speak the label aloud using native Text-to-Speech with the correct language
+      /* Speak the label aloud using native Text-to-Speech with the correct language
       Speech.speak(image.label, {
         language: language === 'ar' ? 'ar-SA' : 'en-US',
         pitch: 1.1, // slightly higher pitch for a kid-friendly tone
         rate: 0.85,  // slightly slower speaking rate for clarity
         onDone: () => setIsPlaying(false),
         onError: () => setIsPlaying(false),
-      });
+      });*/
 
       // Safety fallback timeout to reset state
       setTimeout(() => {
@@ -94,7 +93,7 @@ export function GameImageCard({
   // Support local require assets (number) and remote URI strings
   const placeholderSource = image.imageUrl
     ? (typeof image.imageUrl === "string" ? { uri: image.imageUrl } : image.imageUrl)
-    : { uri: `https://placehold.co/150x150/DDF4FF/3C3C3C.png?text=${encodeURIComponent(image.label)}` };
+    : { uri: `https://placehold.co/150x150/DDF4FF/3C3C3C.png?text=${encodeURIComponent(image.label ?? "")}` };
 
   const animatedCardStyle = useAnimatedStyle(() => {
     return {

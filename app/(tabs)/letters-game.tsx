@@ -1,23 +1,28 @@
+import { audioMap } from "@/lib/audioMap";
+import { Audio } from "expo-av";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { Pressable, ScrollView, View } from "react-native";
 
 import { GameImageCard } from "@/components/games/GameImageCard";
 import { GameNavigation } from "@/components/games/GameNavigation";
 import { LevelHeader } from "@/components/games/LevelHeader";
 import { RecordButton } from "@/components/games/RecordButton";
+import { SubscriptionModal } from "@/components/games/SubscriptionModal";
 import { TalkyMascot } from "@/components/games/TalkyMascot";
 import { ScreenShell } from "@/components/ScreenShell";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserData } from "@/contexts/UserDataContext";
 import {
-  LETTER_LEVELS,
-  getLetterLevel,
-  getTotalLevels,
+    LETTER_LEVELS,
+    getLetterLevel,
+    getTotalLevels,
 } from "@/lib/letters-game-data";
 import { palette } from "@/lib/theme";
+
+
 
 export default function LettersGameScreen() {
   const router = useRouter();
@@ -29,6 +34,8 @@ export default function LettersGameScreen() {
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   const totalLevels = getTotalLevels();
   const currentLevel = getLetterLevel(currentLevelIndex) || LETTER_LEVELS[0];
@@ -54,9 +61,39 @@ export default function LettersGameScreen() {
     setIsRecordingCompleted(false);
   }, [currentLevelIndex]);
 
-  const handleSelectImage = (id: string) => {
+  // Cleanup sound on unmount
+  useEffect(() => {
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
+      }
+    };
+  }, []);
+
+  const handleSelectImage = async (id: string) => {
     setSelectedImageId(id);
     setIsRecordingCompleted(false);
+    // Audio source is resolved via static audioMap; no need to lookup image data
+    // Build the require path to the audio asset. Assume files are .mp4; replace extension if needed.
+    // Use static audio map for bundler compatibility
+    const source = audioMap[id];
+    if (!source) {
+      console.warn('Audio asset not found for id', id);
+      return;
+    }
+    try {
+      // Unload previous sound if any
+      if (sound) {
+        await sound.unloadAsync();
+        setSound(null);
+      }
+      const soundObject = new Audio.Sound();
+      await soundObject.loadAsync(source);
+      await soundObject.playAsync();
+      setSound(soundObject);
+    } catch (error) {
+      console.warn('Failed to play sound for image', id, error);
+    }
   };
 
   const handlePrevious = () => {
@@ -66,6 +103,12 @@ export default function LettersGameScreen() {
   };
 
   const handleNext = () => {
+    // Show subscription modal after level 3
+    if (currentLevelIndex + 1 === 3) {
+      setShowSubscriptionModal(true);
+      return;
+    }
+
     if (currentLevelIndex < totalLevels - 1) {
       const nextLevel = currentLevelIndex + 1;
       setCurrentLevelIndex(nextLevel);
@@ -186,6 +229,18 @@ export default function LettersGameScreen() {
           />
         </View>
       </View>
+
+      <SubscriptionModal
+        visible={showSubscriptionModal}
+        onSubscribe={() => {
+          setShowSubscriptionModal(false);
+          // Handle subscription action
+        }}
+        onLater={() => {
+          setShowSubscriptionModal(false);
+          router.back();
+        }}
+      />
     </ScreenShell>
   );
 }

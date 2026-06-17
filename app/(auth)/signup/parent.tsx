@@ -1,34 +1,125 @@
 import { router } from "expo-router";
-import { Mail } from "lucide-react-native";
-import { useState } from "react";
+import { Search } from "lucide-react-native";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, TextInput, View } from "react-native";
 
 import { AuthInput } from "@/components/auth/AuthInput";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { OptionChip } from "@/components/auth/OptionChip";
-import { SocialAuthButton } from "@/components/auth/SocialAuthButton";
 import { StepIndicator } from "@/components/auth/StepIndicator";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Text } from "@/components/ui/Text";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useSignup } from "@/contexts/SignupContext";
-import { MOCK_ORTHOPHONISTS, type KidAgeRange, type KidGender } from "@/lib/auth-types";
+import type { KidAgeRange, KidGender } from "@/lib/auth-types";
 import { Routes } from "@/lib/routes";
-import { fonts, palette } from "@/lib/theme";
+import { supabase } from "@/lib/supabase";
+import { getFontForLanguage, palette } from "@/lib/theme";
 
-const STEPS = 5;
+const STEPS = 4;
 
 export default function ParentSignupScreen() {
   const { t } = useTranslation();
+  const { language } = useLanguage();
   const { parent, setParent, submitParentSignup, isLoading, error } = useSignup();
   const [step, setStep] = useState(0);
+  const [orthophonists, setOrthophonists] = useState<any[]>([]);
+  const [filteredOrthophonists, setFilteredOrthophonists] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loadingOrths, setLoadingOrths] = useState(false);
+
+  // Set default method to email since we removed the method selection step
+  useEffect(() => {
+    if (!parent.method) {
+      setParent({ method: "email" });
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchOrthophonists = async () => {
+      setLoadingOrths(true);
+      try {
+        console.log("Fetching orthophonists from step:", step);
+        
+        // Fetch orthophonists with all columns
+        const { data: orthsData, error: orthsError } = await supabase
+          .from("orthophonists")
+          .select("*");
+
+        console.log("Orthophonists query result:", { orthsData, orthsError });
+
+        if (orthsError) {
+          console.error("RLS or query error:", orthsError);
+          throw orthsError;
+        }
+        
+        if (!orthsData || orthsData.length === 0) {
+          console.log("No orthophonists found in table");
+          setOrthophonists([]);
+          setFilteredOrthophonists([]);
+          return;
+        }
+
+        console.log("Found orthophonists count:", orthsData.length);
+
+        // Fetch profile data for names
+        const profileIds = orthsData.map((o: any) => o.profile_id);
+        console.log("Profile IDs to fetch:", profileIds);
+        
+        const { data: profiles, error: profileError } = await supabase
+          .from("profiles")
+          .select("id, first_name, last_name")
+          .in("id", profileIds);
+
+        console.log("Profiles query result:", { profiles, profileError });
+
+        if (profileError) throw profileError;
+
+        // Merge profile data with orthophonist data
+        const merged = orthsData.map((orth: any) => {
+          const profile = profiles?.find((p: any) => p.id === orth.profile_id);
+          return {
+            ...orth,
+            firstName: profile?.first_name || "",
+            lastName: profile?.last_name || "",
+            clinicName: orth.clinic_name,
+          };
+        });
+
+        console.log("Merged orthophonists:", merged);
+        setOrthophonists(merged);
+        setFilteredOrthophonists(merged);
+      } catch (err) {
+        console.error("Error fetching orthophonists:", err);
+      } finally {
+        setLoadingOrths(false);
+      }
+    };
+
+    // Fetch orthophonists when we reach step 2
+    if (step === 2) {
+      fetchOrthophonists();
+    }
+  }, [step]);
+
+  useEffect(() => {
+    // Filter orthophonists based on search query
+    const filtered = orthophonists.filter((orth) => {
+      const fullName = `${orth.firstName} ${orth.lastName}`.toLowerCase();
+      const clinic = orth.clinicName?.toLowerCase() || "";
+      const city = orth.city?.toLowerCase() || "";
+      const query = searchQuery.toLowerCase();
+      return fullName.includes(query) || clinic.includes(query) || city.includes(query);
+    });
+    setFilteredOrthophonists(filtered);
+  }, [searchQuery, orthophonists]);
 
   const TITLES = [
     t("auth.signup.parentSteps.step1"),
     t("auth.signup.parentSteps.step2"),
     t("auth.signup.parentSteps.step3"),
     t("auth.signup.parentSteps.step4"),
-    t("auth.signup.parentSteps.step5"),
   ];
 
   const next = async () => {
@@ -55,10 +146,12 @@ export default function ParentSignupScreen() {
       return parent.firstName.trim() && parent.lastName.trim() && parent.phone.trim();
     if (step === 1)
       return parent.kidName.trim() && parent.kidAge && parent.kidGender;
-    if (step === 2) return true;
-    if (step === 3) return parent.method !== null;
-    if (step === 4) {
-      if (parent.method === "google") return true;
+    // Step 2: Mandatory if orthophonists exist, optional if none
+    if (step === 2) {
+      if (orthophonists.length === 0) return true; // Allow skipping if no orthophonists exist
+      return parent.orthophonistId !== null; // Mandatory when orthophonists exist
+    }
+    if (step === 3) {
       return parent.email.trim().length > 3 && parent.password.length >= 6;
     }
     return false;
@@ -119,7 +212,7 @@ export default function ParentSignupScreen() {
             onChangeText={(v) => setParent({ kidName: v })}
           />
           <View className="gap-2">
-            <Text style={{ fontFamily: fonts.displaySemi, fontSize: 14 }}>{t("auth.signup.ageRange")}</Text>
+            <Text >{t("auth.signup.ageRange")}</Text>
             <View className="flex-row gap-2">
               <OptionChip<KidAgeRange>
                 label={t("auth.signup.age3to5")}
@@ -136,7 +229,7 @@ export default function ParentSignupScreen() {
             </View>
           </View>
           <View className="gap-2">
-            <Text style={{ fontFamily: fonts.displaySemi, fontSize: 14 }}>{t("auth.signup.gender")}</Text>
+            <Text>{t("auth.signup.gender")}</Text>
             <View className="flex-row gap-2">
               <OptionChip<KidGender>
                 label={t("auth.signup.boy")}
@@ -160,99 +253,107 @@ export default function ParentSignupScreen() {
           <Text variant="body">
             {t("auth.signup.linkOrthNow")}
           </Text>
-          {MOCK_ORTHOPHONISTS.map((o) => {
-            const selected = parent.orthophonistId === o.id;
-            return (
-              <Pressable
-                key={o.id}
-                onPress={() =>
-                  setParent({ orthophonistId: selected ? null : o.id })
-                }
-                className="active:opacity-90"
-              >
-                <View
-                  className="rounded-2xl border-2 p-4"
-                  style={{
-                    borderColor: selected ? palette.green : palette.border,
-                    backgroundColor: selected ? palette.greenLight : palette.surface,
-                  }}
-                >
-                  <Text style={{ fontFamily: fonts.displaySemi, fontSize: 16 }}>
-                    {o.name}
-                  </Text>
-                  <Text variant="caption" className="mt-1">
-                    {o.clinic} · {o.city}
-                  </Text>
-                </View>
-              </Pressable>
-            );
-          })}
-          <Pressable onPress={() => setParent({ orthophonistId: null })}>
-            <Text
+          
+          {/* Search Box */}
+          <View className="rounded-2xl border-2 border-tk-border bg-tk-surface flex-row items-center px-4 py-3">
+            <Search size={20} color={palette.textMuted} />
+            <TextInput
+              placeholder={t("common.search") || "Search..."}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholderTextColor={palette.textMuted}
+              className="flex-1 ml-2 text-base text-tk-text"
               style={{
-                fontFamily: fonts.displaySemi,
-                color: palette.blue,
-                textAlign: "center",
-                marginTop: 8,
+                fontFamily: getFontForLanguage(language, 'regular'),
+                direction: 'rtl',
+                textAlign: 'right',
               }}
-            >
-              {t("common.skip")}
-            </Text>
-          </Pressable>
+            />
+          </View>
+
+          {loadingOrths ? (
+            <View className="justify-center items-center py-8">
+              <ActivityIndicator size="large" color={palette.green} />
+            </View>
+          ) : filteredOrthophonists.length === 0 ? (
+            <View className="justify-center items-center py-8 gap-4">
+              <Text className="text-center text-tk-text-muted">
+                {searchQuery ? t("common.noResults") || "No results found" : "No orthophonists available yet"}
+              </Text>
+              {!searchQuery && orthophonists.length === 0 && (
+                <Pressable onPress={() => { /* Continue to next step */ }}>
+                  <Text
+                    style={{
+                      fontFamily: getFontForLanguage(language, 'semi'),
+                      color: palette.blue,
+                      textAlign: "center",
+                      marginTop: 8,
+                    }}
+                  >
+                    {t("common.skip")}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+          ) : (
+            <ScrollView className="max-h-96">
+              <View className="gap-2">
+                {filteredOrthophonists.map((o) => {
+                  const selected = parent.orthophonistId === o.id;
+                  const fullName = `${o.firstName} ${o.lastName}`;
+                  return (
+                    <Pressable
+                      key={o.id}
+                      onPress={() =>
+                        setParent({ orthophonistId: selected ? null : o.id })
+                      }
+                      className="active:opacity-90"
+                    >
+                      <View
+                        className="rounded-2xl border-2 p-4"
+                        style={{
+                          borderColor: selected ? palette.green : palette.border,
+                          backgroundColor: selected ? palette.greenLight : palette.surface,
+                        }}
+                      >
+                        <Text style={{ fontFamily: getFontForLanguage(language, 'semi'), fontSize: 16 }}>
+                          {fullName}
+                        </Text>
+                        <Text variant="caption" className="mt-1">
+                          {o.clinicName} · {o.city}
+                        </Text>
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </ScrollView>
+          )}
         </View>
       ) : null}
 
       {step === 3 ? (
-        <View className="gap-3">
-          <SocialAuthButton
-            label={t("auth.signup.googleSignup")}
-            icon={Mail}
-            variant="google"
-            onPress={() => setParent({ method: "google" })}
-          />
-          <SocialAuthButton
-            label={t("auth.signup.emailSignup")}
-            icon={Mail}
-            onPress={() => setParent({ method: "email" })}
-          />
-          {parent.method ? (
-            <Text variant="caption" className="text-center">
-              Selected: {parent.method === "google" ? "Google" : "Email & password"}
-            </Text>
-          ) : null}
-        </View>
-      ) : null}
-
-      {step === 4 ? (
         <View className="gap-4">
-          {parent.method === "google" ? (
-            <Text variant="body">
-              {t("auth.signup.googleMock")}
-            </Text>
-          ) : (
-            <>
-              <AuthInput
-                label={t("common.email")}
-                value={parent.email}
-                onChangeText={(v) => setParent({ email: v })}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-              <AuthInput
-                label={t("common.password")}
-                value={parent.password}
-                onChangeText={(v) => setParent({ password: v })}
-                secureTextEntry
-                placeholder="At least 6 characters"
-              />
-            </>
-          )}
+          <AuthInput
+            label={t("common.email")}
+            value={parent.email}
+            onChangeText={(v) => setParent({ email: v })}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <AuthInput
+            label={t("common.password")}
+            value={parent.password}
+            onChangeText={(v) => setParent({ password: v })}
+            secureTextEntry
+            placeholder="At least 6 characters"
+          />
         </View>
       ) : null}
 
       {!canContinue() ? (
         <Text variant="caption" className="mt-4 text-center text-tk-text-muted">
-          Fill required fields to continue
+          
         </Text>
       ) : null}
     </AuthShell>

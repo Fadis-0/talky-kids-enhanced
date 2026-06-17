@@ -1,16 +1,17 @@
-import { BellOff, MessageCircle, PartyPopper } from "lucide-react-native";
-import { View } from "react-native";
+import { router } from "expo-router";
+import { ChevronLeft, MessageCircle, PartyPopper } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { ScreenShell } from "@/components/ScreenShell";
-import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
-import { palette } from "@/lib/theme";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { massageReminders } from "@/lib/massage-reminders-data";
+import { getFontForLanguage, palette } from "@/lib/theme";
 
 export default function NotificationsScreen() {
   const { t } = useTranslation();
-  const { isRTL } = useLanguage();
+  const { isRTL, language } = useLanguage();
 
   return (
     <ScreenShell
@@ -18,25 +19,142 @@ export default function NotificationsScreen() {
       subtitle={t("tabs.notifications.subtitle")}
       accent="purple"
     >
-      <View style={{ direction: isRTL ? 'rtl' : 'ltr' }} className="-mt-2">
-        <Card className="items-center px-6 py-10">
-          <View
-            className="mb-4 h-16 w-16 items-center justify-center rounded-full"
-            style={{ backgroundColor: palette.purpleLight }}
+      <ScrollView
+        style={{ direction: isRTL ? 'rtl' : 'ltr' }}
+        className="-mt-2"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Massage Reminders Section */}
+        <View style={{ marginBottom: 24 }}>
+          <Text
+            style={{
+              fontFamily: getFontForLanguage(language as any, "bold"),
+              fontSize: 16,
+              fontWeight: "600",
+              color: palette.text,
+              marginHorizontal: 20,
+              marginBottom: 12,
+              textAlign: isRTL ? "right" : "left",
+            }}
           >
-            <BellOff size={32} color={palette.purple} strokeWidth={2.25} />
-          </View>
-          <Text variant="title" className="text-center text-lg">
-            {t("tabs.notifications.empty")}
+            📋 تنبيهات التدليك
           </Text>
-          <Text variant="body" className="mt-2 text-center">
-            {t("tabs.notifications.emptyDesc")}
-          </Text>
-        </Card>
 
-        <View className="mt-6 gap-3">
-          <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="label" className="px-1">
-            {t("tabs.notifications.youWillSee")}
+          {massageReminders.map((reminder) => (
+            <Pressable
+              key={reminder.id}
+              onPress={() => router.push({ pathname: "/reminder-detail", params: { id: reminder.id } })}
+              style={({ pressed }) => [
+                styles.reminderCard,
+                {
+                  opacity: pressed ? 0.7 : 1,
+                  backgroundColor: reminder.backgroundColor,
+                  flexDirection: isRTL ? "row-reverse" : "row",
+                },
+              ]}
+            >
+              {/* Icon Circle */}
+              <View
+                style={[
+                  styles.iconCircle,
+                  { backgroundColor: reminder.color + "20" },
+                  { marginEnd: isRTL ? 0 : 12, marginStart: isRTL ? 12 : 0 },
+                ]}
+              >
+                <Text style={{ fontSize: 24 }}>{reminder.emoji}</Text>
+              </View>
+
+              {/* Content */}
+              <View style={styles.reminderContent}>
+                <Text
+                  style={{
+                    fontFamily: getFontForLanguage(language as any, "bold"),
+                    fontSize: 14,
+                    fontWeight: "600",
+                    color: palette.text,
+                    marginBottom: 4,
+                    textAlign: isRTL ? "right" : "left",
+                  }}
+                >
+                  {t(reminder.titleKey)}
+                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text
+                    style={{
+                      fontFamily: getFontForLanguage(language as any, "bold"),
+                      fontSize: 13,
+                      fontWeight: "600",
+                      color: reminder.color,
+                      marginEnd: 6,
+                    }}
+                  >
+                    ⏰ {reminder.time}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: getFontForLanguage(language as any, "regular"),
+                      fontSize: 12,
+                      color: palette.textSecondary,
+                    }}
+                  >
+                    • {reminder.steps.length} خطوات
+                  </Text>
+                </View>
+              </View>
+
+              {/* Chevron */}
+              <ChevronLeft
+                size={20}
+                color={palette.textMuted}
+                strokeWidth={2.5}
+                style={{ marginStart: isRTL ? 0 : 8, marginEnd: isRTL ? 8 : 0 }}
+              />
+            </Pressable>
+          ))}
+
+          <View
+            style={{
+              backgroundColor: palette.blueLight,
+              borderRadius: 16,
+              padding: 12,
+              marginHorizontal: 20,
+              marginTop: 12,
+              borderLeftWidth: isRTL ? 0 : 4,
+              borderLeftColor: isRTL ? "transparent" : palette.blue,
+              borderRightWidth: isRTL ? 4 : 0,
+              borderRightColor: isRTL ? palette.blue : "transparent",
+              flexDirection: isRTL ? "row-reverse" : "row",
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: getFontForLanguage(language as any, "regular"),
+                fontSize: 12,
+                color: palette.text,
+                flex: 1,
+                textAlign: isRTL ? "right" : "left",
+                marginEnd: isRTL ? 0 : 8,
+                marginStart: isRTL ? 8 : 0,
+              }}
+            >
+              💡 <Text style={{ fontWeight: "600" }}>تلميح:</Text> انقر على أي تنبيه لرؤية الخطوات التفصيلية والنصائح المهمة
+            </Text>
+          </View>
+        </View>
+
+        {/* Other Notifications Info */}
+        <View style={{ paddingHorizontal: 20, paddingBottom: 24 }}>
+          <Text
+            style={{
+              fontFamily: getFontForLanguage(language as any, "bold"),
+              fontSize: 14,
+              fontWeight: "600",
+              color: palette.text,
+              marginBottom: 12,
+              textAlign: isRTL ? "right" : "left",
+            }}
+          >
+            سيتم إظهار المزيد من التنبيهات
           </Text>
           {[
             {
@@ -54,21 +172,68 @@ export default function NotificationsScreen() {
           ].map((item) => (
             <View
               key={item.text}
-              className="flex-row items-center gap-3 rounded-2xl border-2 border-tk-border bg-tk-surface px-4 py-3"
+              style={{
+                flexDirection: isRTL ? "row-reverse" : "row",
+                alignItems: "center",
+                gap: 12,
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: palette.border,
+                backgroundColor: palette.surface,
+                paddingVertical: 12,
+                paddingHorizontal: 12,
+                marginBottom: 8,
+              }}
             >
               <View
-                className="h-10 w-10 items-center justify-center rounded-xl"
-                style={{ backgroundColor: item.bg }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 12,
+                  backgroundColor: item.bg,
+                }}
               >
                 <item.icon size={20} color={item.color} strokeWidth={2.25} />
               </View>
-              <Text style={{ textAlign: isRTL ? 'right' : 'left' }} variant="subtitle" className="flex-1 text-tk-text">
+              <Text
+                style={{
+                  flex: 1,
+                  fontFamily: getFontForLanguage(language as any, "regular"),
+                  fontSize: 13,
+                  color: palette.text,
+                  textAlign: isRTL ? "right" : "left",
+                }}
+              >
                 {item.text}
               </Text>
             </View>
           ))}
         </View>
-      </View>
+      </ScrollView>
     </ScreenShell>
   );
 }
+
+const styles = StyleSheet.create({
+  reminderCard: {
+    borderRadius: 16,
+    padding: 14,
+    marginHorizontal: 20,
+    marginBottom: 10,
+    alignItems: "center",
+    borderWidth: 1.5,
+    borderColor: "transparent",
+  },
+  iconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  reminderContent: {
+    flex: 1,
+  },
+});

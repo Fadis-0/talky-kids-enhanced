@@ -1,12 +1,12 @@
 import { useRouter } from "expo-router";
-import { ChevronLeft, Volume2 } from "lucide-react-native";
+import { ChevronLeft } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
-import * as Speech from "expo-speech";
 
 import { GameNavigation } from "@/components/games/GameNavigation";
 import { LevelHeader } from "@/components/games/LevelHeader";
 import { RecordButton } from "@/components/games/RecordButton";
+import { SubscriptionModal } from "@/components/games/SubscriptionModal";
 import { TalkyMascot } from "@/components/games/TalkyMascot";
 import { ScreenShell } from "@/components/ScreenShell";
 import { Text } from "@/components/ui/Text";
@@ -42,20 +42,20 @@ function PlacesVisual({ type, position }: { type: string; position: string }) {
                     position === "inside"
                       ? 0
                       : position === "above"
-                      ? -60
-                      : position === "under"
-                      ? 60
-                      : 0,
+                        ? -60
+                        : position === "under"
+                          ? 60
+                          : 0,
                 },
                 {
                   translateX:
                     position === "outside"
                       ? 60
                       : position === "left"
-                      ? -60
-                      : position === "right"
-                      ? 60
-                      : 0,
+                        ? -60
+                        : position === "right"
+                          ? 60
+                          : 0,
                 },
               ],
             }}
@@ -133,32 +133,17 @@ export default function PlacesGameScreen() {
   const [isRecording, setIsRecording] = useState(false);
   const [isRecordingCompleted, setIsRecordingCompleted] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   const totalLevels = PLACES_LEVELS.length;
   const currentLevel = PLACES_LEVELS[currentLevelIndex] || PLACES_LEVELS[0];
 
-  // TTS for question
-  const playQuestionTTS = () => {
-    Speech.stop();
-    Speech.speak(currentLevel.question, {
-      language: "ar-SA",
-      pitch: 1.1,
-      rate: 0.85,
-    });
-  };
-
+  // Reset states when level changes
   useEffect(() => {
-    // Reset states when level changes
     setSelectedOption(null);
     setIsRecording(false);
     setIsRecordingCompleted(false);
     setHasError(false);
-    
-    // Automatically play question on load
-    const timer = setTimeout(() => {
-      playQuestionTTS();
-    }, 500);
-    return () => clearTimeout(timer);
   }, [currentLevelIndex]);
 
   const handleSelectOption = (option: { label: string; pronunciation: string }) => {
@@ -166,14 +151,6 @@ export default function PlacesGameScreen() {
     setSelectedOption(option.label);
     setIsRecordingCompleted(false);
     setHasError(false);
-
-    // Play selection TTS
-    Speech.stop();
-    Speech.speak(option.pronunciation, {
-      language: "ar-SA",
-      pitch: 1.15,
-      rate: 0.8,
-    });
   };
 
   const handleRecordingComplete = (duration: number) => {
@@ -194,6 +171,12 @@ export default function PlacesGameScreen() {
   };
 
   const handleNext = () => {
+    // Show subscription modal after level 2
+    if (currentLevelIndex + 1 === 2) {
+      setShowSubscriptionModal(true);
+      return;
+    }
+
     if (currentLevelIndex < totalLevels - 1) {
       const nextLevel = currentLevelIndex + 1;
       setCurrentLevelIndex(nextLevel);
@@ -359,17 +342,29 @@ export default function PlacesGameScreen() {
               onNext={
                 isRecordingCompleted && selectedOption === currentLevel.correctAnswer
                   ? handleNext
-                  : () => Speech.speak("سجل إجابتك الصحيحة أولاً", { language: "ar-SA" })
+                  : undefined
               }
               onFinish={
                 isRecordingCompleted && selectedOption === currentLevel.correctAnswer
                   ? handleFinish
-                  : () => Speech.speak("سجل إجابتك الصحيحة أولاً", { language: "ar-SA" })
+                  : undefined
               }
             />
           </View>
         </View>
       </View>
+
+      <SubscriptionModal
+        visible={showSubscriptionModal}
+        onSubscribe={() => {
+          setShowSubscriptionModal(false);
+          // Handle subscription action
+        }}
+        onLater={() => {
+          setShowSubscriptionModal(false);
+          router.back();
+        }}
+      />
     </ScreenShell>
   );
 }

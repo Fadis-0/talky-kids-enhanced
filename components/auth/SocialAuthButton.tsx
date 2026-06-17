@@ -59,10 +59,10 @@ const styles = StyleSheet.create({
   wrap: { width: "100%" },
   pressed: { opacity: 0.88, transform: [{ scale: 0.99 }] },
   inner: {
-    flexDirection: "row",
+    flexDirection: "row-reverse",
     alignItems: "center",
     justifyContent: "center",
-    gap: 12,
+    gap: 24,
     borderRadius: radius.lg,
     borderWidth: 2,
     borderColor: palette.border,

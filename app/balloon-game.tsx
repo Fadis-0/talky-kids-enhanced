@@ -3,38 +3,39 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { ChevronLeft, Square, Wind } from "lucide-react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withSequence,
-  withSpring,
-  withTiming,
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withDelay,
+    withRepeat,
+    withSequence,
+    withSpring,
+    withTiming,
 } from "react-native-reanimated";
-import { useTranslation } from "react-i18next";
 import Svg, {
-  Circle,
-  Defs,
-  Ellipse,
-  LinearGradient,
-  Path,
-  Stop,
+    Circle,
+    Defs,
+    Ellipse,
+    LinearGradient,
+    Path,
+    Stop,
 } from "react-native-svg";
 
 import { GameNavigation } from "@/components/games/GameNavigation";
 import { LevelHeader } from "@/components/games/LevelHeader";
+import { SubscriptionModal } from "@/components/games/SubscriptionModal";
 import { TalkyMascot } from "@/components/games/TalkyMascot";
 import { ScreenShell } from "@/components/ScreenShell";
 import { Text } from "@/components/ui/Text";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useUserData } from "@/contexts/UserDataContext";
 import {
-  BALLOON_LEVELS,
-  getBalloonLevel,
-  getTotalBalloonLevels,
+    BALLOON_LEVELS,
+    getBalloonLevel,
+    getTotalBalloonLevels,
 } from "@/lib/balloon-game-data";
 import { fonts, palette } from "@/lib/theme";
 
@@ -179,6 +180,7 @@ export default function BalloonGameScreen() {
   const [gameState, setGameState] = useState<"idle" | "listening" | "popped">("idle");
   const [isBlowing, setIsBlowing] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   const totalLevels = getTotalBalloonLevels();
   const currentLevel = getBalloonLevel(currentLevelIndex) || BALLOON_LEVELS[0];
@@ -424,6 +426,12 @@ export default function BalloonGameScreen() {
   };
 
   const handleNext = () => {
+    // Show subscription modal after level 2
+    if (currentLevelIndex + 1 === 2) {
+      setShowSubscriptionModal(true);
+      return;
+    }
+
     if (currentLevelIndex < totalLevels - 1) {
       const next = currentLevelIndex + 1;
       resetLevel(next);
@@ -584,6 +592,18 @@ export default function BalloonGameScreen() {
           )}
         </View>
       </View>
+
+      <SubscriptionModal
+        visible={showSubscriptionModal}
+        onSubscribe={() => {
+          setShowSubscriptionModal(false);
+          // Handle subscription action
+        }}
+        onLater={() => {
+          setShowSubscriptionModal(false);
+          router.back();
+        }}
+      />
     </ScreenShell>
   );
 }
